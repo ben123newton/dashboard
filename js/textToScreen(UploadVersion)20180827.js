@@ -937,7 +937,7 @@ function populateSummaryKpiTable(){
 	//Monthly Predictability of Cash Flow
 	document.querySelector('#monthlyCashflow_Tgt').innerHTML = document.querySelector('#monthlyCashflowPctTarget').value; 
 	document.querySelector('#monthlyCashflow_Act').innerHTML = document.querySelector('#monthlyCashflowPctActual').value;
-	document.querySelector('#monthlyCashflow_Var').innerHTML = document.querySelector('#monthlyCashflowPctVariance' );
+	document.querySelector('#monthlyCashflow_Var').innerHTML = document.querySelector('#monthlyCashflowPctVariance').value;
 	//Quarterly Predictability of Cash Flow
 	document.querySelector('#qtrCashflow_Tgt').innerHTML = document.querySelector('#qtrCashflowPctTarget').value;
 	document.querySelector('#qtrCashflow_Act').innerHTML = document.querySelector('#qtrCashflowVariance' ).value;
@@ -945,7 +945,7 @@ function populateSummaryKpiTable(){
 	//Non-Recoverable Works
 	document.querySelector('#nonRecWorks_Tgt').innerHTML = document.querySelector('#nonRecWorksPctTarget').value;
 	document.querySelector('#nonRecWorks_Act').innerHTML = document.querySelector('#nonRecWorksPctActual').value;
-	document.querySelector('#nonRecWorks_Var').innerHTML = document.querySelector('#nonRecWorksPctVariance');
+	document.querySelector('#nonRecWorks_Var').innerHTML = document.querySelector('#nonRecWorksPctVariance').value;
 	//Predicability of Programme
 	document.querySelector('#predOfProgram_Tgt').innerHTML = document.querySelector('#predOfProgramTarget').value;
 	document.querySelector('#predOfProgram_Act').innerHTML = document.querySelector('#predOfProgramActual').value;
