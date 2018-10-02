@@ -78,10 +78,10 @@ function to_json(workbook) {
 function createDataStructures(){
 	createSummarySections();
 	createProjectKpiSection();
-	createProgressSection('progress');
-	createSubContractorSection('subContractorData');
+	createProgressSection('#progress');
+	createSubContractorSection('#subContractorData');
 	createFinancialDataSection();
-	createHSDataSection('hsData');
+	createHSDataSection('#hsData');
 }
 
 function createGraphsStructures(){
@@ -597,20 +597,20 @@ function hideSections(sectionName){
 	var section = ['inputData','summary-page', 'progressGraphs','financialGraph','subcontractorGraphs','hsGraphs','progress', 'ccsCosts','subContractorData','financialData','hsData','projectKPIs','timeValueGraphs'];
 	for (var i=0;i<section.length;i++){
 		if(sectionName!=section[i]){
-			document.getElementById(section[i]).style.display = "none";
+			document.querySelector('#'+section[i]).style.display = "none";
 		}else{
-			document.getElementById(section[i]).style.display = "block";
+			document.querySelector('#'+section[i]).style.display = "block";
 		}
 	}
 	document.body.scrollTop = 0;
 }
 
 function hideInput(){
-	var inputFields = document.getElementById("inputData");
+	var inputFields = document.querySelector("#inputData");
 	inputFields.style.display="none";
 }
 
-function conNum(){con=document.getElementById("contractNumber").value;}
+function conNum(){con=document.querySelector("#contractNumber").value;}
 
 
 function addCommas(intNum){return (intNum + '').replace(/(\d)(?=(\d{3})+$)/g, '$1,');}
@@ -688,9 +688,9 @@ function considerateConstractorsAverage(location){
 	}
 	scoreAverage=(scoreTotal/rowNum).toFixed(0);
 	if(isNaN(scoreAverage) || scoreAverage<1){
-		document.getElementById(location).value='';
+		document.querySelector(location).value='';
 	}else{
-		document.getElementById(location).value = scoreAverage;
+		document.querySelector(location).value = scoreAverage;
 	}
 }
 
@@ -773,12 +773,12 @@ function lessThanZero(figure, location){
 		var numericFigure = figure;
 	}
 	if(parseInt(numericFigure)>0){
-		document.getElementById(location).setAttribute('class','red-text center-align');
+		document.querySelector(location).setAttribute('class','red-text center-align');
 	}
 	else if(parseInt(numericFigure)<0){
-		document.getElementById(location).setAttribute('class','green-text center-align');
+		document.querySelector(location).setAttribute('class','green-text center-align');
 	}else{
-		document.getElementById(location).setAttribute('class','orange-text center-align');
+		document.querySelector(location).setAttribute('class','orange-text center-align');
 	}
 }
 
@@ -790,9 +790,9 @@ function lessThanZero2Colours(figure, location){
 		var numericFigure = figure;
 	}
 	if(parseInt(numericFigure)>0){
-		document.getElementById(location).setAttribute('class','red-text center-align');
+		document.querySelector(location).setAttribute('class','red-text center-align');
 	}else{
-		document.getElementById(location).setAttribute('class','green-text center-align');
+		document.querySelector(location).setAttribute('class','green-text center-align');
 	}
 }
 
@@ -804,10 +804,10 @@ function moreThanOnePct(figure, location){
 		var numericFigure = figure;
 	}
 	if(parseInt(numericFigure)>0.99){
-		document.getElementById(location).setAttribute('class','red-text center-align');
+		document.querySelector(location).setAttribute('class','red-text center-align');
 	}
 	else{
-		document.getElementById(location).setAttribute('class','green-text center-align');
+		document.querySelector(location).setAttribute('class','green-text center-align');
 	}
 }
 
@@ -815,26 +815,26 @@ function targetComparison(projectKpiFigure, monthlyKpiFigure, location){
 	var projectKpi = projectKpiFigure
 	if(projectKpi==''){projectKpi='0'};
 	if(parseInt(monthlyKpiFigure)>parseInt(projectKpi)){
-		document.getElementById(location).setAttribute('class','red-text center-align');
+		document.querySelector(location).setAttribute('class','red-text center-align');
 	}else{
-		document.getElementById(location).setAttribute('class','green-text center-align');
+		document.querySelector(location).setAttribute('class','green-text center-align');
 	}
 }
 
 function progressTrafficLight(figure, location){
 	var progressFigure= parseInt(figure);
 	if(progressFigure < -2){
-		document.getElementById(location).setAttribute('class','red-text center-align');
+		document.querySelector(location).setAttribute('class','red-text center-align');
 	}else if(progressFigure>=0){
-		document.getElementById(location).setAttribute('class','green-text center-align');
+		document.querySelector(location).setAttribute('class','green-text center-align');
 	}else{
-		document.getElementById(location).setAttribute('class','orange-text center-align');
+		document.querySelector(location).setAttribute('class','orange-text center-align');
 	}
 }
 
 //Populating tables
 function findConsiderateConstructorVariance(){
-	var considerateConstructorScore = document.getElementById('considerateConstructorActual').value-document.getElementById('considerateConstructorTarget').value;
+	var considerateConstructorScore = document.querySelector('#considerateConstructorActual').value-document.querySelector('#considerateConstructorTarget').value;
 	if(isNaN(considerateConstructorScore)){
 		return '';
 	}
@@ -863,8 +863,8 @@ function getLastTurnoverItem(){
 
 function populateTables(){
 	weeksCompleted = parseInt(result.timeValue.WeeksCompleted);
-	tblAccidentType('ByTypeTbl');
-	tblAccidentTrade('ByTradeTbl');
+	tblAccidentType('#ByTypeTbl');
+	tblAccidentTrade('#ByTradeTbl');
 	//Import CWD and Record Of Labour Information
 	createTimeTable();
 	//createValueTable();
@@ -889,8 +889,8 @@ function populateTables(){
 	populateKpiTable();
 	createsubConOrderVarTbl();
 	createHSMonthlyAuditTbl();
-	document.getElementById('weeksCompleted').value=result.timeValue.WeeksCompleted;
-	document.getElementById('weeksContracted').value=result.timeValue.WeeksContracted;
+	document.querySelector('#weeksCompleted').value=result.timeValue.WeeksCompleted;
+	document.querySelector('#weeksContracted').value=result.timeValue.WeeksContracted;
 	HSMonthlyAuditAvg();
 	HSMonthlyAuditAvgPct();
 	//Summary Section
@@ -972,7 +972,7 @@ function populateKpiTable(){
 	//Energy Kg CO2 per £100k
 	document.querySelector('#energy100kActual').value = result.monthlyKPI[result.monthlyKPI.length-1].emitFromEnergyKgCo2Per100k
 
-	//document.getElementById('energy100kAct').innerHTML = document.getElementById('emitFromEnergyKgCo2Per100k_'+projectMonths.length).innerHTML;
+	//document.constructDate('#energy100kAct').innerHTML = document.constructDate('#emitFromEnergyKgCo2Per100k_'+projectMonths.length).innerHTML;
 }
 
 function populateSummaryKpiTable(){
@@ -1049,7 +1049,6 @@ function populateProgressTbl(){
 			index++;
 		}
 	}
-	//progressTrafficLight(document.getElementById(progressField).value = progressInfo[progressItem], progressField);
 }
 
 
@@ -1181,7 +1180,7 @@ function createValuationInfoTbl(){
 }
 
 function createOverheardContributionTbl(){
-	var overheadContributionTblLoc = document.getElementById('SummaryofOverheadContributionTbl');
+	var overheadContributionTblLoc = document.querySelector('#SummaryofOverheadContributionTbl');
 	var overheadContributionTbl = document.createElement('table');
 	overheadContributionTbl.setAttribute('class','striped responsive');
 	var tblHeader = document.createElement('thead');
@@ -1376,7 +1375,7 @@ function createProjectKPITbl(){
 }
 
 function createCompletionDatesTbl(){
-	var tableLocation = document.getElementById('completionTable');
+	var tableLocation = document.querySelector('#completionTable');
 	var completionDateTbl = document.createElement('table');
 	completionDateTbl.setAttribute('class','striped');
 	var tableBody = document.createElement('tbody');
@@ -1409,8 +1408,8 @@ function createCompletionDatesTbl(){
 	}
 	completionDateTbl.appendChild(tableBody);
 	tableLocation.appendChild(completionDateTbl);
-	document.getElementById('contractualEndDate').value = result.timeValue.ConCompDate;
-	document.getElementById('estimateEndDate').value = result.timeValue.EstCompDate;
+	document.querySelector('#contractualEndDate').value = result.timeValue.ConCompDate;
+	document.querySelector('#estimateEndDate').value = result.timeValue.EstCompDate;
 }
 
 //summary section - fill tables
@@ -1471,12 +1470,12 @@ function populateOverheadContributionTbl(){
 
 //Progress Graphs Section - Structure
 function createProgressGraphs(){
-	createProgressGraphTop('progressGraphs');
-	createProgressGraphBottom('progressGraphs')
+	createProgressGraphTop('#progressGraphs');
+	createProgressGraphBottom('#progressGraphs')
 }
 
 function createProgressGraphTop(location){
-	var sectionLocation = document.getElementById(location);
+	var sectionLocation = document.querySelector(location);
 	var ProgressGraphSection = createDiv('progressGraphRow','row');
 	var monthlyProgress = createGraphCard('col s12', 'monthProgressSection', 'monthProgressContent', 'Monthly Progress');
 	ProgressGraphSection.appendChild(monthlyProgress);
@@ -1484,7 +1483,7 @@ function createProgressGraphTop(location){
 }
 
 function createProgressGraphBottom(location){
-	var sectionLocation = document.getElementById(location);
+	var sectionLocation = document.querySelector(location);
 	var ProgressGraphSection = createDiv('progressGraphRow','row');
 	var weekRecOfLbrGraph = createGraphCard('col s12 l6', 'weeklyRecOfLbrGraphSection', 'weeklyRecOfLbrGraphContent', 'Record Of Labour for Most Recent Week');
 	ProgressGraphSection.appendChild(weekRecOfLbrGraph);
@@ -1561,28 +1560,28 @@ function getProgressDate(progressDate){
 }
 
 function getRecordOfLbrFigures(){
-	var recOfLbrTbl = document.getElementById("recOfLbr");
-	var rowNums = document.getElementById("recOfLbr").rows.length-1;
+	var recOfLbrTbl = document.querySelector("#recOfLbr");
+	var rowNums = document.querySelector("#recOfLbr").rows.length-1;
 	var cellNum = recOfLbrTbl.rows[rowNums].cells.length;
 	var recordOfLabourFigures = [];
 	for(var i=0;i<cellNum;i++){
 		if(i!=0&&i!=8){
 			var weekDay = getRecordOfLabourDay(i);
-			recordOfLabourFigures.push(document.getElementById('week'+(rowNums)+weekDay).value);
+			recordOfLabourFigures.push(document.querySelector('#week'+(rowNums)+weekDay).value);
 		}
 	}
 	return recordOfLabourFigures;
 }
 
 function getRecordOfLbrTotals(){
-	var recOfLbrTbl = document.getElementById("recOfLbr");
-	var rowNums = document.getElementById("recOfLbr").rows.length-1;
+	var recOfLbrTbl = document.querySelector("#recOfLbr");
+	var rowNums = document.querySelector("#recOfLbr").rows.length-1;
 	var cellNum = recOfLbrTbl.rows[rowNums].cells.length;
 	var recordOfLabourTotals = [];
 	for(var i=0;i<rowNums;i++){
 		if(i>1){
-			var fieldID = 'week'+i+'Total';
-			recordOfLabourTotals.push(parseInt(document.getElementById(fieldID).value));
+			var fieldID = '#week'+i+'Total';
+			recordOfLabourTotals.push(parseInt(document.querySelector(fieldID).value));
 		}
 	}
 	return recordOfLabourTotals;
@@ -1861,12 +1860,12 @@ function subContractorOrderVariations(location){
 
 //HS Graph Section - Structure
 function createHSGraphSection(){
-	createHSGraphTopSection('hsGraphs');
-	createHSGraphBottomSection('hsGraphs');
+	createHSGraphTopSection('#hsGraphs');
+	createHSGraphBottomSection('#hsGraphs');
 }
 
 function createHSGraphTopSection(location){
-	var sectionLocation = document.getElementById(location);
+	var sectionLocation = document.querySelector(location);
 	var HSTopGraphSection = createDiv('HSGraphTopRow','row');
 	var monthlyAuditGraph = createGraphCard('col s12 l6', 'monthlyAuditGraphSection', 'monthlyAuditGraphContent', 'Health and Safety');
 	HSTopGraphSection.appendChild(monthlyAuditGraph);
@@ -1876,7 +1875,7 @@ function createHSGraphTopSection(location){
 }
 
 function createHSGraphBottomSection(location){
-	var sectionLocation = document.getElementById(location);
+	var sectionLocation = document.querySelector(location);
 	var HSBottomGraphSection = createDiv('HSGraphBottomRow','row');
 	var HSDataTables = createDataCard('col s12 l4','HsDataTableSection','HsDataTableContent','');
 	HSBottomGraphSection.appendChild(HSDataTables);
@@ -1890,7 +1889,7 @@ function createHSGraphBottomSection(location){
 
 //HS Graph Section
 function createEnforcementActionTbl(){
-	var tableLocation = document.getElementById('enforcementActionTbl');
+	var tableLocation = document.querySelector('#enforcementActionTbl');
 	var enforementTbl = document.createElement('table');
 	var tableHeader = document.createElement('thead');
 	var headerRow = document.createElement('tr');
@@ -1964,7 +1963,7 @@ function typeAccidentGraph(location){
 }
 
 function HSMonthlyAuditGraph(location){
-	var auditData = tableToArray(document.getElementById('monthlyAuditTbl'));
+	var auditData = tableToArray(document.querySelector('#monthlyAuditTbl'));
 	var auditGraphData=[]
 	for(var prop in auditData){
 		if(auditData[prop][1]!='undefined'){
@@ -1985,7 +1984,7 @@ function HSMonthlyAuditGraph(location){
 }
 
 function daysLostGraph(location){
-	daysLostData = tableToArray(document.getElementById('daysLostTbl'));
+	daysLostData = tableToArray(document.querySelector('#daysLostTbl'));
 	daysLostGraphData=[];
 	for(var prop in daysLostData){
 		daysLostGraphData.push({dateYear:daysLostData[prop][0],riddor7days: daysLostData[prop][1],nonRiddorLostTime06Days: daysLostData[prop][2]});
@@ -2003,7 +2002,7 @@ function daysLostGraph(location){
 }
 
 function createEnforcementActionTbl(){
-	var tableLocation = document.getElementById('enforcementActionTbl');
+	var tableLocation = document.querySelector('#enforcementActionTbl');
 	var enforementTbl = document.createElement('table');
 	var tableHeader = document.createElement('thead');
 	var headerRow = document.createElement('tr');
@@ -2040,7 +2039,7 @@ function createEnforcementActionTbl(){
 
 //TimeValue - structure
 function createTimeStats(location){
-	var sectionLocation = document.getElementById(location);
+	var sectionLocation = document.querySelector(location);
 	var timeStatsSection = createDiv('timeStats','row');
 	var timeTableContainer = createDataCard('col s12 l6', 'timeTable', 'timeTable', 'Time');
 	timeStatsSection.appendChild(timeTableContainer);
@@ -2050,7 +2049,7 @@ function createTimeStats(location){
 }
 
 function createValueStats(location){
-	var sectionLocation = document.getElementById(location);
+	var sectionLocation = document.querySelector(location);
 	var valueStatsSection = createDiv('valueStats','row');
 	var valueTableContainer = createDataCard('col s12 l6', 'valueTable', 'valueTable', 'Value')
 	valueStatsSection.appendChild(valueTableContainer);
@@ -2061,7 +2060,7 @@ function createValueStats(location){
 
 //timeValue - create tables
 function createTimeTable(){
-	var tableLocation = document.getElementById('completionTable');
+	var tableLocation = document.querySelector('#completionTable');
 	var timeTable = document.createElement('table');
 	timeTable.setAttribute('class','striped');
 	var tableHeader = document.createElement('thead');
@@ -2139,7 +2138,7 @@ function createTimeTable(){
 }
 
 function createValueTable(){
-	var tableLocation = document.getElementById('completionTable');
+	var tableLocation = document.querySelector('#completionTable');
 	var valueTable = document.createElement('table');
 	valueTable.setAttribute('class','striped');
 	var tableHeader = document.createElement('thead');
@@ -2208,7 +2207,7 @@ function createValueChart(chartLocation){
 //Project KPI - Structure
 
 function createProjectKpiSection(){
-	var rowLocation = document.getElementById('projectKPIs');
+	var rowLocation = document.querySelector('#projectKPIs');
 	var projectKpiRow = createDiv('projectKPIsRow','row');
 	var projectKPIcontainer =createDataCard('col s12 l5', 'projectKPI', 'KpiTable', 'Project KPI\'s')
 	projectKpiRow.appendChild(projectKPIcontainer);
@@ -2219,7 +2218,7 @@ function createProjectKpiSection(){
 
 //Project KPI - create tables
 function createKpiCatTbl(){
-	var tblLocation = document.getElementById("KpiTable");
+	var tblLocation = document.querySelector("#KpiTable");
 	var kpiHTMLtable = document.createElement('table');
 	kpiHTMLtable.setAttribute('class','striped');
 	var kpiHeader = document.createElement('thead');
@@ -2300,7 +2299,7 @@ function createKpiCatTbl(){
 }
 
 function createMonthlyKPITbl(){
-	var monthlyKpiTblLoc = document.getElementById('monthlyKpiTable');
+	var monthlyKpiTblLoc = document.querySelector('#monthlyKpiTable');
 	var monthlyKpiTbl = document.createElement('table');
 	monthlyKpiTbl.setAttribute('class','striped responsive');
 	var tblHeaders=['Date','Total Skip waste m3','Total Cart Away Waste m3','% All Skip Waste Recycled','Water m3','Emissions from Diesel KG CO2','Emissions from Electricity KG CO2','Total Emissions KG CO2','Waste per £100k m3','Emissions from Energy KG CO2 per 100KG','Water m3 per £100k','Actual T.O'];
@@ -2357,19 +2356,19 @@ function populateMonthlyKpiTbl(){
 	for(var Prop in kpiData){
 		var tblRowIndex = 0;
 		for(var innerProp in kpiData[Prop]){
-			var fieldID=tblColIds[tblRowIndex]+(parseInt(Prop)+1);
+			var fieldID='#'+tblColIds[tblRowIndex]+(parseInt(Prop)+1);
 			if(innerProp!='ContractNumber'){
-				document.getElementById(fieldID).value = kpiData[Prop][innerProp];
+				document.querySelector(fieldID).value = kpiData[Prop][innerProp];
 				if(innerProp=='Wstper100kM3'||innerProp=='emitFromEnergyKgCo2Per100k'||innerProp=='waterM3Per100k'){
 					switch(innerProp){
 						case 'Wstper100kM3':
-							targetComparison(document.getElementById('waste100kTarget').value,document.getElementById(fieldID).value =  kpiData[Prop][innerProp], fieldID);
+							targetComparison(document.querySelector('#waste100kTarget').value,document.querySelector(fieldID).value =  kpiData[Prop][innerProp], fieldID);
 							break;
 						case 'emitFromEnergyKgCo2Per100k':
-							targetComparison(document.getElementById('energy100kTarget').value,document.getElementById(fieldID).value =  kpiData[Prop][innerProp], fieldID);
+							targetComparison(document.querySelector('#energy100kTarget').value,document.querySelector(fieldID).value =  kpiData[Prop][innerProp], fieldID);
 							break;
 						case 'waterM3Per100k':
-							targetComparison(document.getElementById('water100kTarget').value,document.getElementById(fieldID).value =  kpiData[Prop][innerProp], fieldID);
+							targetComparison(document.querySelector('#water100kTarget').value,document.querySelector(fieldID).value =  kpiData[Prop][innerProp], fieldID);
 							break;
 					}
 				}
@@ -2381,7 +2380,7 @@ function populateMonthlyKpiTbl(){
 
 //Progress Data Section - Structure
 function createProgressSection(location){
-	var sectionLocation = document.getElementById(location);
+	var sectionLocation = document.querySelector(location);
 	var section = createDiv('progressSection','row');
 	var leftColumn = createDataCard('col s12 l3', 'progressTbl', 'progressTblContent', 'Progress')
 	section.appendChild(leftColumn);
@@ -2420,7 +2419,7 @@ function createProgressSection(location){
 
 //Progress Data Section - Create Tables
 function createProgressTbl(){
-	var tableLocation = document.getElementById('progressTblContent');
+	var tableLocation = document.querySelector('#progressTblContent');
 	var progressTable = document.createElement('table');
 	progressTable.setAttribute('class','striped');
 	var progressHeader = document.createElement('thead');
@@ -2519,7 +2518,7 @@ function createConsiderateConstructorsTable(location){
 }
 
 function createMatsByCats(){
-	 var tblLocation = document.getElementById('matsByCats');
+	 var tblLocation = document.querySelector('#matsByCats');
 	 var matsByCatsTbl = document.createElement('table');
 	 matsByCatsTbl.setAttribute('class','striped');
 	 matsByCatsTbl.setAttribute('id','materialsByCat');
@@ -2593,7 +2592,7 @@ function createMatsByCats(){
 }
 
 function createMatsByReason(){
-	 var tblLocation = document.getElementById('matsbyReason');
+	 var tblLocation = document.querySelector('#matsbyReason');
 	 var matsByReasonTbl = document.createElement('table');
 	 matsByReasonTbl.setAttribute('class','striped');
 	 matsByReasonTbl.setAttribute('id','replacementsByReason');
@@ -2726,7 +2725,7 @@ function createRecordOfLabourTable(){
 		tableBody.appendChild(bodyRow);
 	}
 	labourTable.appendChild(tableBody);
-	document.getElementById("recordOfLabourContent").appendChild(labourTable);
+	document.querySelector("#recordOfLabourContent").appendChild(labourTable);
 }
 
 function recordOfLabourRows(weekNumber){
@@ -2790,22 +2789,22 @@ function populateRecordOfLabourTbl(){
 function setRecordOfLabourRows(weekNumber){
 	var totalLabour =0;
 	for(var prop in result.NewRecordOfLabour[weekNumber]){
-		var fieldId = 'week'+(weekNumber+1)+prop;
+		var fieldId = '#week'+(weekNumber+1)+prop;
 		if(prop != 'ContractNumber'){
 			if(prop != 'WeekNum'){
 				totalLabour =  totalLabour + parseInt(result.NewRecordOfLabour[weekNumber][prop]);
 			}
-			document.getElementById(fieldId).value = result.NewRecordOfLabour[weekNumber][prop];
+			document.querySelector(fieldId).value = result.NewRecordOfLabour[weekNumber][prop];
 		}
 	}
-	var fieldId = 'week'+(weekNumber+1)+'Total';
-	document.getElementById(fieldId).value =totalLabour;
+	var fieldId = '#week'+(weekNumber+1)+'Total';
+	document.querySelector(fieldId).value =totalLabour;
 }
 
 //Financial Data Section - Structure
 
 function createfinancialData(){
-	var location = document.getElementById('finacialData');
+	var location = document.querySelector('#finacialData');
 	var row = createDiv('financialDataRow','row');
 	var monthlyCWD = createDataCard('col s12 l2', 'totalCWD', 'totalCWDCardContent', 'CWD To Date');
 	var totalCWD = createDataCard('col s12 l2', 'monthlyCWD', 'monthlyCWDCardContent', 'CWD In Month');
@@ -2821,7 +2820,7 @@ function createfinancialData(){
 //Financial Data Section - create tables
 
 function createFinancialDataSection(){
-	var sectionLocation = document.getElementById('financialData');
+	var sectionLocation = document.querySelector('#financialData');
 	var sectionRow = createDiv('financialRow','row');
 	var CwdToDate = createDataCard('col s12 l2', 'totalCWD', 'totalCwdContent', 'CWD To Date');
 	var monthlyCwds = createDataCard('col s12 l2', 'monthlyCWD', 'monthlyCwdContent', 'CWD In Month');
@@ -3084,7 +3083,7 @@ function createCostflowTbl(){
 		tableBody.appendChild(bodyRow);
 	}
 	costflowTbl.appendChild(tableBody);
-	document.getElementById('costflowContent').appendChild(costflowTbl);
+	document.querySelector('#costflowContent').appendChild(costflowTbl);
 }
 
 
@@ -3092,7 +3091,7 @@ function createCostflowTbl(){
 //Subcontractor Financial Data Section
 
 function createSubContractorSection(location){
-	var sectionLocation = document.getElementById(location);
+	var sectionLocation = document.querySelector(location);
 	var section= createDiv('subContractorContainer','row');
 	var subContractorDiv = createDataCard('col s12 l12', 'subContractor', 'subConOrderVariations', 'Subcontractor Orders and Variations');
 	section.appendChild(subContractorDiv);
@@ -3105,7 +3104,7 @@ function createsubConOrderVarTbl(){
 		var startOfFieldID;
 		var middleOfFieldID=1;
 		var endOfFieldID;
-		var tableLocation = document.getElementById('subConOrderVariations');
+		var tableLocation = document.querySelector('#subConOrderVariations');
 		var subConOrderTable = document.createElement('table');
 		subConOrderTable.setAttribute('id','subbieOrders');
 		subConOrderTable.setAttribute('class','striped');
@@ -3175,8 +3174,8 @@ function populateSubConOrderVarTbl(){
 		if(result.SubConFinData.hasOwnProperty(prop)){
 			for(var innerProp in result.SubConFinData[prop]){
 				if(innerProp!='ContractNumber'){
-					var fieldID = innerProp+(parseInt(prop)+1);
-					document.getElementById(fieldID).value = result.SubConFinData[prop][innerProp];
+					var fieldID = '#'+innerProp+(parseInt(prop)+1);
+					document.querySelector(fieldID).value = result.SubConFinData[prop][innerProp];
 				}
 			}
 		}
@@ -3188,7 +3187,7 @@ function populateSubConOrderVarTbl(){
 //HS Data Section Structure
 
 function createHSDataSection(locaton){
-	var sectionLocation = document.getElementById(locaton);
+	var sectionLocation = document.querySelector(locaton);
 	var HsRow = createDiv('HsRow','row');
 	var monthlyAuditCard = createDataCard('col s12 l2','monthlyAudit','HSMonthlyAudit','Monthly Audit');
 	var accidentTradeTypeCard = createMultiDataCard('col s12 l4', 'accidentTradeType', 2, '', ['By Type','By Trade'])
@@ -3209,7 +3208,7 @@ function getProjectMonths(){
 
 //HS Data Section Create Table
 function createHSMonthlyAuditTbl(){
-	var tableLocation = document.getElementById('HSMonthlyAudit');
+	var tableLocation = document.querySelector('#HSMonthlyAudit');
 	var HSAuditTable = document.createElement('table');
 	HSAuditTable.setAttribute('id','monthlyAuditTbl');
 	HSAuditTable.setAttribute('class','striped');
@@ -3269,7 +3268,7 @@ function createHSMonthlyAuditTbl(){
 }
 
 function tblAccidentType(location){
-	var accidentTypeTblLoc=document.getElementById(location);
+	var accidentTypeTblLoc=document.querySelector(location);
 	var typeTable = document.createElement('table');
 	typeTable.setAttribute('id','accidentsType');
 	typeTable.setAttribute('class','striped');
@@ -3325,7 +3324,7 @@ function tblAccidentType(location){
 }
 
 function tblAccidentTrade(location){
-	var accidentTradeTblLoc=document.getElementById(location);
+	var accidentTradeTblLoc=document.querySelector(location);
 	var tradeTable = document.createElement('table');
 	tradeTable.setAttribute('id','accidentsTrade');
 	tradeTable.setAttribute('class','striped');
@@ -3378,7 +3377,7 @@ function tblAccidentTrade(location){
 }
 
 function createAccidentReportTbl(){
-	var tableLocation = document.getElementById('tblAccidentReport');
+	var tableLocation = document.querySelector('#tblAccidentReport');
 	var accidentReportTable = document.createElement('table');
 	accidentReportTable.setAttribute('class','striped');
 	accidentReportTable.setAttribute('id','AccidentReportTbl');
@@ -3483,7 +3482,7 @@ function createAccidentReportTbl(){
 }
 
 function createDaysLostTbl(){
-	var tblLocation = document.getElementById('daysLostContent');
+	var tblLocation = document.querySelector('#daysLostContent');
 	var DaysLostTable = document.createElement('table');
 	DaysLostTable.setAttribute('id','daysLostTbl');
 	DaysLostTable.setAttribute('class','striped');
@@ -3563,7 +3562,7 @@ function HSMonthlyAuditAvg(){
 			}
 		}
 	}
-	document.getElementById("HSAuditActual").value = (HSsum/numberOfMonths).toFixed(0);
+	document.querySelector("#HSAuditActual").value = (HSsum/numberOfMonths).toFixed(0);
 }
 
 function HSMonthlyAuditAvgPct(){
@@ -3582,7 +3581,7 @@ function HSMonthlyAuditAvgPct(){
 			}
 		}
 	}
-	document.getElementById("HSAuditPctActual").value = (HSsum/numberOfMonths).toFixed(0);
+	document.querySelector("#HSAuditPctActual").value = (HSsum/numberOfMonths).toFixed(0);
 }
 
 function populateAccidentReportTbl(){
@@ -3595,26 +3594,26 @@ function populateAccidentReportTbl(){
 				if(middleOfFieldID==51){middleOfFieldID=1};
 				if(innerProp!='ContractNumber' && typeof(innerProp)!==undefined){
 					if(innerProp=='Date'){
-						var fieldID ='_datepicker_accidentReport'+(parseInt(prop)+1);
+						var fieldID ='#_datepicker_accidentReport'+(parseInt(prop)+1);
 						dateMonth= result.AccidentReport[prop]["Date"].substr(3,2);
 						dateYear = result.AccidentReport[prop]["Date"].substr(6,2);
 
 					}else{
-						var fieldID = 'accidentReport'+(parseInt(prop)+1)+innerProp;
+						var fieldID = '#accidentReport'+(parseInt(prop)+1)+innerProp;
 					}
-					document.getElementById(fieldID).value = result.AccidentReport[prop][innerProp];
+					document.querySelector(fieldID).value = result.AccidentReport[prop][innerProp];
 					switch(innerProp){
 						case 'Type':
 							var type = result.AccidentReport[prop][innerProp];
-							var typeTableID = getTypeFieldID(type);
-							var currentTypeValue = document.getElementById(typeTableID).value;
-							document.getElementById(typeTableID).value=++currentTypeValue;
+							var typeTableID = '#'+getTypeFieldID(type);
+							var currentTypeValue = document.querySelector(typeTableID).value;
+							document.querySelector(typeTableID).value=++currentTypeValue;
 							break;
 						case 'Trade':
 							var trade = getTradeCategory(result.AccidentReport[prop][innerProp]);
-							var tradeTableID = getTradeFieldID(trade);
-							var currentTradeValue = document.getElementById(tradeTableID).value;
-							document.getElementById(tradeTableID).value=++currentTradeValue;
+							var tradeTableID = '#'+getTradeFieldID(trade);
+							var currentTradeValue = document.querySelector(tradeTableID).value;
+							document.querySelector(tradeTableID).value=++currentTradeValue;
 							break;
 						case 'LostDays':
 							var newdaysLost =parseInt(result.AccidentReport[prop][innerProp].replace(/[^0-9 ]/g, ""));
@@ -3627,12 +3626,12 @@ function populateAccidentReportTbl(){
 							document.querySelector(lostDaysFieldID).setAttribute('value',totalLostDays);
 							break;
 						case 'Riddor':
-							var riddorFieldID=findLostDaysID(dateMonth,dateYear,'riddor');
-							var totalRiddor = parseInt(document.getElementById(riddorFieldID).value);
+							var riddorFieldID='#'+findLostDaysID(dateMonth,dateYear,'riddor');
+							var totalRiddor = parseInt(document.querySelector(riddorFieldID).value);
 							var riddor = parseInt(result.AccidentReport[prop][innerProp]);
 							totalRiddor+=riddor;
-							document.querySelector('#'+riddorFieldID).value=totalRiddor;
-							document.querySelector('#'+riddorFieldID).setAttribute('value',totalLostDays);
+							document.querySelector(riddorFieldID).value=totalRiddor;
+							document.querySelector(riddorFieldID).setAttribute('value',totalLostDays);
 							break;
 					};
 				}

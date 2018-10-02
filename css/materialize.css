@@ -4751,7 +4751,6 @@ small {
   transition: box-shadow .25s;
   transition: box-shadow .25s, -webkit-box-shadow .25s;
   border-radius: 2px;
-  height: 100%;
 }
 
 .card .card-title {
@@ -9088,4 +9087,7 @@ input[type=range]::-ms-thumb {
 /* custom queries */
 .dashboard{
   background-color:#f5f6f8;
+}
+.flex{
+  display:flex;
 }
