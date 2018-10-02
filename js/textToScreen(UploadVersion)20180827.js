@@ -24,7 +24,7 @@ function to_json(workbook) {
 		var roa = X.utils.sheet_to_json(workbook.Sheets[sheetName]);
 		var startPoint;
 		if(roa.length >= 0){
-			if (sheetName=="considerateConstructors" ||sheetName=="SubConFinData" || sheetName=="HSData" || sheetName=="monthlyKPI"|| sheetName=="NewRecordOfLabour"|| sheetName=="financialData"|| sheetName=="TradeAccidents"|| sheetName=="AccidentReport" || sheetName=="MaterialOrdersCategories" || sheetName=="MaterialOrdersType" ){
+			if (sheetName=="considerateConstructors" ||sheetName=="SubConFinData" || sheetName=="HSData" || sheetName=="monthlyKPI"|| sheetName=="NewRecordOfLabour"|| sheetName=="financialData"|| sheetName=="TradeAccidents"|| sheetName=="AccidentReport" || sheetName=="MaterialOrdersCategories" || sheetName=="MaterialOrdersType"|| sheetName=="CCS"|| sheetName=="CWDsTotal"|| sheetName=="CWDsMonthly" ){
 				var subConData=[];
 				var totalSubConData=roa;
 				for(var j=0;j<totalSubConData.length;j++){
@@ -88,12 +88,13 @@ function createGraphsStructures(){
 	createProgressGraphs();
 	createFinancialGraphs();
 	createCcsGraphs();
-	createSubConFinGraphs('subcontractorGraphs');
+	createSubConFinGraphs('#subcontractorGraphs');
 	createHSGraphSection();
 }
 
 function createGraphsContent(){
 	//Summary
+	progressGraph('summaryProgressGraph');
 	HSMonthlyAuditGraph('hsGraphGraph');
 	createTimeChart('timeGraphGraph');
 	createValueChart('valueGraphGraph');
@@ -104,14 +105,14 @@ function createGraphsContent(){
 	//financial Graphs
 	createTurnoverGraph('predictabilitySectionGraph');
 	costflowGraph('costflowGraphSectionGraph');
-	//totalCwdToDate('cwdGraphSectionGraph');
-	//monthlyCwdToDate('monthlyCwdGraphSectionGraph');
+	totalCwdToDate('cwdGraphSectionGraph');
+	monthlyCwdToDate('monthlyCwdGraphSectionGraph');
 	
 	//Sub-Contractor Finance Graphs
 	subContractorOrderVariations('subConFinGraphSectionGraph');
 
 	//CCS & Costs Graphs
-	//considerateContractorsGraph('consConstructorsGraphSectionGraph');
+	considerateContractorsGraph('consConstructorsGraphSectionGraph');
 	materialsOrderedChart('matsSummaryGraphSectionGraph');
 	materialsReasonChart('matsReplacementGraphSectionGraph');
 	
@@ -212,8 +213,7 @@ function getContractNumber(){
 	return conNumber
 }
 
-function getAccidentReport(){
-	
+function getAccidentReport(){	
 }
 
 function constructDate(fieldContents, fieldID) {
@@ -654,12 +654,32 @@ function tableToArray(table){
 		}
 		tableArray.push(t)
 	}
-	
+	return tableArray;
+}
+
+function CwdTableToArray(table){
+	var tableArray=[];
+	var rows = Array.from(table.rows);
+	rows.shift();
+	var inputs = table.querySelectorAll('input'); 
+	var cells;
+	var t;
+	var cellId = 0;
+	for(var i=0; i<rows.length;i++){
+		cells=Array.from(rows[i].cells);
+		t=[];
+		for(var j=0;j<cells.length;j++){
+			var cellContents = inputs[cellId].value; 
+			t.push(cellContents);
+			cellId++;
+		}
+		tableArray.push(t)
+	}
 	return tableArray;
 }
 
 function considerateConstractorsAverage(location){
-	var table = tableToArray(document.getElementById('considerContractorTbl'));
+	var table = tableToArray(document.querySelector('#considerContractorTbl'));
 	var rowNum= table.length;
 	var scoreTotal=0;
 	var scoreAverage;
@@ -701,6 +721,29 @@ function formatDate(datetag, rowName)
 
 			dateFields[i].innerHTML= dateDay+"/"+ dateMonth +"/"+ dateYear;
 	}
+}
+
+function sortTwoColTable(tableId) {
+  var table, rows, switching, i, x, y, shouldSwitch;
+  table = document.querySelector(tableId);
+  switching = true;
+  while (switching) {
+    switching = false;
+    rows = table.rows;
+    for (i = 1; i < (rows.length - 1); i++) {
+      shouldSwitch = false;
+      rowOne = rows[i].getElementsByTagName("td")[0].getElementsByTagName("input")[0].value;
+      rowTwo = rows[i +1].getElementsByTagName("td")[0].getElementsByTagName("input")[0].value;
+      if (rowOne.toLowerCase() > rowTwo.toLowerCase()) {
+        shouldSwitch = true;
+        break;
+      }
+    }
+    if (shouldSwitch) {
+      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+      switching = true;
+    }
+  }
 }
 
 //traffic light filters
@@ -825,7 +868,7 @@ function populateTables(){
 	//Import CWD and Record Of Labour Information
 	createTimeTable();
 	//createValueTable();
-	//createConsiderateConstructorsTable('considerateContractorsTbl');
+	createConsiderateConstructorsTable('#considerateContractorsTbl');
 	createRecordOfLabourTable();
 	createValuationInfoTbl();
 	createOverheardContributionTbl();
@@ -833,6 +876,9 @@ function populateTables(){
 	populateOverheadContributionTbl();
 	//createCompletionDatesTbl();
 	createProgressTbl();
+	createCwdToDateTbl();
+	createMonthlyCwdTbl();
+	sortTwoColTable('#monthlyCwdTbl');
 	createPredTurnoverTbl();
 	createCostflowTbl();
 	createMonthlyKPITbl();
@@ -1589,12 +1635,12 @@ function currentWeekRecordOfLabourGraph(location){
 
 //Financial Graph Section -structure
 function createFinancialGraphs(){
-	createFinancialGraphTop('financialGraph');
-	createFinancialGraphBottom('financialGraph')
+	createFinancialGraphTop('#financialGraph');
+	createFinancialGraphBottom('#financialGraph')
 }
 
 function createFinancialGraphTop(location){
-	var sectionLocation = document.getElementById(location);
+	var sectionLocation = document.querySelector(location);
 	var topFinGraphs = createDiv('finGraphsTop','row');
 	var predictabilityGraph= createGraphCard('col s12 l6', 'predictabilitySection', 'predictabilityContent', 'Predictability (Turnover)');
 	topFinGraphs.appendChild(predictabilityGraph);
@@ -1604,7 +1650,7 @@ function createFinancialGraphTop(location){
 }
 
 function createFinancialGraphBottom(location){
-	var sectionLocation = document.getElementById(location);
+	var sectionLocation = document.querySelector(location);
 	var bottomFinGraphs = createDiv('finGraphBottom','row');
 	var costflowGraph = createGraphCard('col s12 l6', 'costflowGraphSection', 'costflowGraphContent', 'Costflow');
 	bottomFinGraphs.appendChild(costflowGraph);
@@ -1653,7 +1699,7 @@ function createTurnoverGraph(location){
 }
 
 function costflowGraph(location){
-	var costFlowData = tableToArray(document.getElementById('costflowTbl'));
+	var costFlowData = tableToArray(document.querySelector('#costflowTbl'));
 	var costFlowGraphData=[];
 	var lengthValue = 0;
 	var propertyKeys=[];
@@ -1676,7 +1722,7 @@ function costflowGraph(location){
 }
 
 function totalCwdToDate(location){
-	totalCwdData = tableToArray(document.getElementById('cwdToDate'));
+	totalCwdData = CwdTableToArray(document.querySelector('#totalCwdTbl'));
 	totalCwdGraphData = [];
 	for(var subbie in totalCwdData){
 		totalCwdGraphData.push({subContractor:totalCwdData[subbie][0],number:totalCwdData[subbie][1]});
@@ -1692,10 +1738,10 @@ function totalCwdToDate(location){
 		resize:true
 	});
 	return totalCwdData;
-
 }
+
 function monthlyCwdToDate(location){
-	monthlyCwdData = tableToArray(document.getElementById('cwdMonthly'));
+	monthlyCwdData = CwdTableToArray(document.querySelector('#monthlyCwdTbl'));
 	monthlyCwdGraphData = [];
 	for(var subbie in monthlyCwdData){
 		monthlyCwdGraphData.push({value:monthlyCwdData[subbie][1], label:monthlyCwdData[subbie][0]});
@@ -1709,21 +1755,20 @@ function monthlyCwdToDate(location){
 
 //CCS & Costs Graph Section - Structure
 function createCcsGraphs(){
-	createCcsGraphTop('ccsCosts');
-	createCssGraphBottom('ccsCosts')
+	createCcsGraphTop('#ccsCosts');
+	createCssGraphBottom('#ccsCosts')
 }
 
 function createCcsGraphTop(location){
-	var sectionLocation = document.getElementById(location);
+	var sectionLocation = document.querySelector(location);
 	var ccsTopGraphSection = createDiv('ccsTopRow','row');
 	var considerateConstructorsGraph = createGraphCard('col s12', 'consConstructorsGraphSection', 'consConstructorsGraphContent', 'Considerate Constructors');
 	ccsTopGraphSection.appendChild(considerateConstructorsGraph);
 	sectionLocation.appendChild(ccsTopGraphSection);
-
 }
 
 function createCssGraphBottom(location){
-	var sectionLocation = document.getElementById(location);
+	var sectionLocation = document.querySelector(location);
 	var ccsBottomGraphSection = createDiv('progressGraphRow','row');
 	var matsSummaryGraph = createGraphCard('col s12 l6', 'matsSummaryGraphSection', 'matsSummaryGraphContent', 'Summary Of Materials Ordered');
 	ccsBottomGraphSection.appendChild(matsSummaryGraph);
@@ -1734,24 +1779,24 @@ function createCssGraphBottom(location){
 
 //CCS & Costs Graphs Section - Graphs
 function copyConsiderateContractorTbl(){
-	var considerateContractorTbl = document.getElementById("considerContractorTbl");
+	var considerateContractorTbl = document.querySelector("#considerContractorTbl");
 	var clone = considerateContractorTbl.cloneNode(true);
 	clone.id="ccsContractorTbl"
-	document.getElementById("considerateConsTbl").appendChild(clone);
+	document.querySelector("#consConstructorsGraphSectionGraph").appendChild(clone);
 }
 
 function considerateContractorsGraph(location){
-	var considerateContractorsData = tableToArray(document.getElementById('ccsContractorTbl'));
+	var considerateContractorsData = CwdTableToArray(document.querySelector('#considerContractorTbl'));
 	var contractorGraphData=[]
 	for(var prop in considerateContractorsData){
-		contractorGraphData.push({x:considerateContractorsData[prop][0], y:considerateContractorsData[prop][1]})
+		contractorGraphData.push({x:considerateContractorsData[prop][0], y:considerateContractorsData[prop][1],z:35})
 	}
 	Morris.Area({
 		element: location,
 		data: contractorGraphData,
 		xkey: 'x',
-		ykeys: ['y'],
-		labels: ['Score'],
+		ykeys: ['y','z'],
+		labels: ['Score','Benchmark'],
 		fillOpacity: 0.5,
 		behaveLikeLine:true,
 		parseTime: false,
@@ -1787,9 +1832,8 @@ function materialsReasonChart(location){
 }
 
 //Sub-Contractor Finance Graph Section - Structure
-
 function createSubConFinGraphs(location){
-	var sectionLocation = document.getElementById(location);
+	var sectionLocation = document.querySelector(location);
 	var subConFinGraphSection = createDiv('subConFinRow','row');
 	var subConFinGraph = createGraphCard('col s12', 'subConFinGraphSection', 'subConFinGraphContent', 'Subcontractors Orders and Variations');
 	subConFinGraphSection.appendChild(subConFinGraph);
@@ -1816,7 +1860,6 @@ function subContractorOrderVariations(location){
 }
 
 //HS Graph Section - Structure
-
 function createHSGraphSection(){
 	createHSGraphTopSection('hsGraphs');
 	createHSGraphBottomSection('hsGraphs');
@@ -2425,7 +2468,7 @@ function createProgressTbl(){
 }
 
 function createConsiderateConstructorsTable(location){
-	var tableLocation = document.getElementById(location)
+	var tableLocation = document.querySelector(location)
 	var considerateConsTable = document.createElement('table');
 	considerateConsTable.setAttribute('id','considerContractorTbl')
 	considerateConsTable.setAttribute('class','striped')
@@ -2443,7 +2486,7 @@ function createConsiderateConstructorsTable(location){
 	}
 	tableHeader.appendChild(headerRow);
 	considerateConsTable.appendChild(tableHeader);
-	var tableLength = result.considerateConstructors.length;
+	var tableLength = result.CCS.length;
 	var tableBody = document.createElement('tbody');
 	for(var j=0;j<tableLength;j++){
 		var bodyRow = document.createElement('tr');
@@ -2452,50 +2495,19 @@ function createConsiderateConstructorsTable(location){
 			var bodyCellInput = document.createElement('input');
 			bodyCellInput.setAttribute('type','text');
 			if(k==0){
-				var fieldID = 'considerateConstructors';
-				var fieldContentSting = result.considerateConstructors[j].Date;
+				var fieldID = 'CCS';
+				var fieldContentSting = result.CCS[j].Date;
 				var fieldContentDate = fieldContentSting.split('/')[1]+'/'+fieldContentSting.split('/')[0]+'/'+ fieldContentSting.split('/')[2];
 				bodyCellInput.setAttribute('class','datepicker');
 				bodyCellInput.setAttribute('id','_datepicker_'+fieldID);
 				bodyCellInput.setAttribute('onChange','constructDate(fieldContentSting,fieldID)');
-				var hiddenInput  = document.createElement('input');
-				hiddenInput.setAttribute('type','hidden');
-				hiddenInput.setAttribute('name',fieldID+'_hour');
-				hiddenInput.setAttribute('value','0');
-				bodyCell.appendChild(hiddenInput);
-				var hiddenInput2  = document.createElement('input');
-				hiddenInput2.setAttribute('type','hidden');
-				hiddenInput2.setAttribute('name',fieldID+'_minute');
-				hiddenInput2.setAttribute('value','0');
-				bodyCell.appendChild(hiddenInput2);
-				var hiddenInput3  = document.createElement('input');
-				hiddenInput3.setAttribute('type','hidden');
-				hiddenInput3.setAttribute('name',fieldID+'_second');
-				hiddenInput3.setAttribute('value','0');
-				bodyCell.appendChild(hiddenInput3);
-				var hiddenInput4  = document.createElement('input');
-				hiddenInput4.setAttribute('type','hidden');
-				hiddenInput4.setAttribute('name',fieldID+'_ampm');
-				hiddenInput4.setAttribute('value','0');
-				bodyCell.appendChild(hiddenInput4);
-				var hiddenInput5  = document.createElement('input');
-				hiddenInput5.setAttribute('type','hidden');
-				hiddenInput5.setAttribute('name',fieldID+'_dirtyFlag');
-				hiddenInput5.setAttribute('value','0');
-				bodyCell.appendChild(hiddenInput5);
-				var hiddenInput6  = document.createElement('input');
-				hiddenInput6.setAttribute('type','hidden');
-				hiddenInput6.setAttribute('name',fieldID);
-				hiddenInput6.setAttribute('id',fieldID);
-				hiddenInput6.setAttribute('value','[LL_FormTag'+fieldID+'/]');
-				bodyCell.appendChild(hiddenInput6);
 				bodyCellInput.setAttribute('value',fieldContentDate);
 				bodyCell.appendChild(bodyCellInput);
 			}else{
 				
 				bodyCellInput.setAttribute('id','considerateConstructorsScore');
 				bodyCellInput.setAttribute('name','considerateConstructorsScore');
-				bodyCellInput.setAttribute('value',result.considerateConstructors[j].Score);
+				bodyCellInput.setAttribute('value',result.CCS[j].Score);
 				bodyCell.appendChild(bodyCellInput);
 			}
 			bodyRow.appendChild(bodyCell);
@@ -2822,95 +2834,115 @@ function createFinancialDataSection(){
 	sectionLocation.appendChild(sectionRow);
 }
 
-function createCWDtoDateTable(){
-	var tableLocation = document.getElementById('totalCwdContent');
-	var monthlyCwdTable = document.createElement('table');
-	monthlyCwdTable.setAttribute('class','striped');
-	var tableHeader = document.createElement('thead');
-	var headerRow = document.createElement('tr');
-	for(var i=0; i<2; i++){
-		var headerCell = document.createElement('th');
-		switch(i){
-			case 0:
-				var cellText = document.createTextNode('Subcontractor');
-				break;
-			case 1:
-				var cellText = document.createTextNode('Total');
-		}
-		headerCell.appendChild(cellText);
-		headerRow.appendChild(headerCell);
-
-	}
-	tableHeader.appendChild(headerRow);
-	monthlyCwdTable.appendChild(tableHeader);
-	var tableBody = document.createElement('tbody');
-	var bodySize = result.CwdTotalData.length;
-	for(var j=0; j<bodySize; j++){
-		var bodyRow = document.createElement('tr');
-		for(var k=0;k<2;k++){
-			var bodyCell = document.createElement('td');
-			switch(k){
-				case 0:
-					var bodyText = document.createTextNode(asciiToChar(result.CwdTotalData[j]['Issued_to']));
-					break;
-				case 1:
-					var bodyText = document.createTextNode(result.CwdTotalData[j]['Total']);;
-					break;
-			}
-			bodyCell.appendChild(bodyText);
-			bodyRow.appendChild(bodyCell);
-		}
-		tableBody.appendChild(bodyRow);
-	}
-	monthlyCwdTable.appendChild(tableBody);
-	tableLocation.appendChild(monthlyCwdTable);
-}
-
-function createMonthlyCWD(){
-	var tableLocation = document.getElementById('monthlyCwdContent');
-	var monthlyCwdTable = document.createElement('table');
-	monthlyCwdTable.setAttribute('class','striped');
-	var tableHeader = document.createElement('thead');
-	var headerRow = document.createElement('tr');
-	for(var i=0; i<2; i++){
-		var headerCell = document.createElement('th');
-		switch(i){
-			case 0:
-				var cellText = document.createTextNode('Subcontractor');
-				break;
-			case 1:
-				var cellText = document.createTextNode('Total');
-		}
-		headerCell.appendChild(cellText);
-		headerRow.appendChild(headerCell);
-
-	}
-	tableHeader.appendChild(headerRow);
-	monthlyCwdTable.appendChild(tableHeader);
-	var tableBody = document.createElement('tbody');
-	var bodySize = result.CwdMonthlyData.length;
-	for(var j=0; j<bodySize; j++){
-		var bodyRow = document.createElement('tr');
-		for(var k=0;k<2;k++){
-			var bodyCell = document.createElement('td');
-			switch(k){
-				case 0:
-					var bodyText = document.createTextNode(asciiToChar(result.CwdMonthlyData[j]['Issued_to']));
-					break;
-				case 1:
-					var bodyText = document.createTextNode(result.CwdMonthlyData[j]['Total']);;
-					break;
-			}
-			bodyCell.appendChild(bodyText);
-			bodyRow.appendChild(bodyCell);
-		}
-		tableBody.appendChild(bodyRow);
-	}
-	monthlyCwdTable.appendChild(tableBody);
-	tableLocation.appendChild(monthlyCwdTable);
-}
 
 //Financial Data Section - create and fill tables
+function createCwdToDateTbl(){
+	var tblLocation = document.querySelector('#totalCwdContent');
+	var totalCWDTbl = document.createElement('table');
+	totalCWDTbl.setAttribute('id','totalCwdTbl');
+	totalCWDTbl.setAttribute('class','striped');
+	var tableHeader=document.createElement('thead');
+	var headerRow = document.createElement('tr');
+	for(var i=0;i<2;i++){
+		var rowCell = document.createElement('th');
+		switch(i){
+			case 0:
+				var cellText = document.createTextNode('Sub-Contractor');
+				break;
+			case 1:
+				var cellText = document.createTextNode('Number');
+				break;
+		}
+		rowCell.appendChild(cellText);
+		headerRow.appendChild(rowCell);
+	}
+	tableHeader.appendChild(headerRow);
+	totalCWDTbl.appendChild(tableHeader)
+	var tableBody = document.createElement('tbody');
+	var tableSize= result.CWDsTotal.length;
+	for(var j=0;j<tableSize;j++){
+		var bodyRow=document.createElement('tr');
+		for(var k=0; k<2;k++){
+			var bodyCell = document.createElement('td');
+			switch(k){
+				case 0:
+					var bodyCellInput = document.createElement('input');
+					bodyCellInput.setAttribute('type','text');
+					bodyCellInput.setAttribute('id','totalCwdSubbie'+(j+1));
+					bodyCellInput.setAttribute('name','totalCwdSubbie'+(j+1));
+					bodyCellInput.value = result.CWDsTotal[j].SubContractor;
+					bodyCell.appendChild(bodyCellInput);
+					break;
+				case 1:
+					var bodyCellInput = document.createElement('input');
+					bodyCellInput.setAttribute('type','text');
+					bodyCellInput.setAttribute('id','totalCwdSubbie'+(j+1)+'Frequency');
+					bodyCellInput.setAttribute('name','totalCwdSubbie'+(j+1)+'Frequency');
+					bodyCellInput.value=result.CWDsTotal[j].Total;
+					bodyCell.appendChild(bodyCellInput);
+					break;
+			}
+			bodyRow.appendChild(bodyCell);
+		}
+		tableBody.appendChild(bodyRow);
+	}
+	totalCWDTbl.appendChild(tableBody);
+	tblLocation.appendChild(totalCWDTbl);
+}
+
+function createMonthlyCwdTbl(){
+	var tblLocation = document.querySelector('#monthlyCwdContent');
+	var monthlyCWDTbl = document.createElement('table');
+	monthlyCWDTbl.setAttribute('id','monthlyCwdTbl');
+	monthlyCWDTbl.setAttribute('class','striped');
+	var tableHeader=document.createElement('thead');
+	var headerRow = document.createElement('tr');
+	for(var i=0;i<2;i++){
+		var rowCell = document.createElement('th');
+		switch(i){
+			case 0:
+				var cellText = document.createTextNode('Sub-Contractor');
+				break;
+			case 1:
+				var cellText = document.createTextNode('Number');
+				break;
+		}
+		rowCell.appendChild(cellText);
+		headerRow.appendChild(rowCell);
+	}
+	tableHeader.appendChild(headerRow);
+	monthlyCWDTbl.appendChild(tableHeader)
+	var tableBody = document.createElement('tbody');
+	var tableSize= result.CWDsMonthly.length;
+	for(var j=0;j<tableSize;j++){
+		var bodyRow=document.createElement('tr');
+		for(var k=0; k<2;k++){
+			var bodyCell = document.createElement('td');
+			switch(k){
+				case 0:
+					var bodyCellInput = document.createElement('input');
+					bodyCellInput.setAttribute('type','text');
+					bodyCellInput.setAttribute('id','totalCwdSubbie'+(j+1));
+					bodyCellInput.setAttribute('name','totalCwdSubbie'+(j+1));
+					bodyCellInput.value = result.CWDsMonthly[j].SubContractor;
+					bodyCell.appendChild(bodyCellInput);
+					break;
+				case 1:
+					var bodyCellInput = document.createElement('input');
+					bodyCellInput.setAttribute('type','text');
+					bodyCellInput.setAttribute('id','totalCwdSubbie'+(j+1)+'Frequency');
+					bodyCellInput.setAttribute('name','totalCwdSubbie'+(j+1)+'Frequency');
+					bodyCellInput.value=result.CWDsMonthly[j].Total;
+					bodyCell.appendChild(bodyCellInput);
+					break;
+			}
+			bodyRow.appendChild(bodyCell);
+		}
+		tableBody.appendChild(bodyRow);
+	}
+	monthlyCWDTbl.appendChild(tableBody);
+	tblLocation.appendChild(monthlyCWDTbl);
+}
 
 function createPredTurnoverTbl(){
 	var predTurnoverTbl = document.createElement('table');
@@ -2980,7 +3012,7 @@ function createPredTurnoverTbl(){
 		tableBody.appendChild(bodyRow);
 	}
 	predTurnoverTbl.appendChild(tableBody);
-	document.getElementById('turnoverContent').appendChild(predTurnoverTbl);
+	document.querySelector('#turnoverContent').appendChild(predTurnoverTbl);
 }
 
 function createCostflowTbl(){
