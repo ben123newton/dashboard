@@ -1823,7 +1823,7 @@ function materialsReasonChart(location){
 	    {label: 'Client Change', value: document.querySelector('#clientChangeValue').value},
 	    {label: 'Theft', value: document.querySelector('#theftValue').value},
 	    {label: 'Waste', value: document.querySelector('#wasteValue').value},
-	    {label: 'Garage', value: document.querySelector('#garageValue').value}
+	    {label: 'Damage', value: document.querySelector('#damageValue').value}
 	  ],
 	  resize:true,
 	  colors:['#B20000','#57C61C','#3232ad','#FFC300']
@@ -2632,7 +2632,7 @@ function createMatsByReason(){
 	 					tblBodyText = document.createTextNode('Waste');
 	 					break;
 	 				case 3:
-	 					tblBodyText = document.createTextNode('Garage');
+	 					tblBodyText = document.createTextNode('Damage');
 	 					break;
 	 			}
 	 			tblBodyCell.appendChild(tblBodyText);
@@ -2659,9 +2659,9 @@ function createMatsByReason(){
 	 					tblBodyCell.appendChild(bodyCellInput);
 	 					break;
 	 				case 3:
-	 					bodyCellInput.setAttribute('id','garageValue');
-	 					bodyCellInput.setAttribute('name','garageValue');
-	 					bodyCellInput.value = result.MaterialOrdersType[0].garage;
+	 					bodyCellInput.setAttribute('id','damageValue');
+	 					bodyCellInput.setAttribute('name','damageValue');
+	 					bodyCellInput.value = result.MaterialOrdersType[0].damage;
 	 					tblBodyCell.appendChild(bodyCellInput);
 	 					break;
 	 			}
