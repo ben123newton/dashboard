@@ -65,6 +65,7 @@ function to_json(workbook) {
 	});
 	hideInput();
 	getProjectMonths();
+	setZoom();
 	createDataStructures();
 	createGraphsStructures();	
 	//getmonthlyCWDTotals();
@@ -72,6 +73,7 @@ function to_json(workbook) {
 	populateTables();
 	createGraphsContent();
 	//createGraphs();
+	//createEnforcementActionTbl()
 	return result;
 }
 
@@ -610,6 +612,14 @@ function hideInput(){
 	inputFields.style.display="none";
 }
 
+
+function setZoom(){
+	var devicePixelRatio = window.devicePixelRatio || 1;
+	dpi_x = document.getElementById('testdiv').offsetWidth * devicePixelRatio;
+	if(dpi_x>96){
+		document.querySelector('body').setAttribute('class','dashboardZoom');
+	}
+}
 function conNum(){con=document.querySelector("#contractNumber").value;}
 
 
@@ -748,7 +758,11 @@ function sortTwoColTable(tableId) {
 
 //traffic light filters
 
-function moreThanZero(figure, location){
+function moreThanZero(location){
+	var figure=document.querySelector(location).value;
+	if(figure==undefined){
+		figure=document.querySelector(location).innerHTML;
+	}
 	if(String(figure).charAt(0)=='£'){
 		var figureLength = figure.length;
 		var numericFigure = figure.substr(2,figureLength);
@@ -898,50 +912,49 @@ function populateTables(){
 	//progress
 	populateProgressTbl();
 	//ProjectKPIs
-	//populateSummaryProjectKpiTbl();
 	populateRecordOfLabourTbl();
-	//copyConsiderateContractorTbl();
-	//tblAccidentType('ByTypeTbl');
-	//tblAccidentTrade('ByTradeTbl');
 	createDaysLostTbl();
 	createAccidentReportTbl();
 	populateAccidentReportTbl();
 	createSummaryContents();
 	populateSummaryKpiTable();
+	//HS
+	createEnforcementActionTbl();
+	createComplainceAuditTbl();
 }
 
 function populateKpiTable(){
 	//Adherence to Prelim Budget
 	document.querySelector('#adherencePctTarget').value = result.projectKPIs.AdherenceTgtPct;
-	document.querySelector('#adherenceTarget').value = result.projectKPIs.AdherenceTarget;
-	document.querySelector('#adherenceActual').value = result.projectKPIs.AdherenceActual;
-	percentageDifference(result.projectKPIs.AdherenceActual,result.projectKPIs.AdherenceTarget,'#adherencePctActual');
+	document.querySelector('#adherenceTarget').value = '£'+ addCommas(result.projectKPIs.AdherenceTarget);
+	document.querySelector('#adherenceActual').value = '£'+addCommas(result.projectKPIs.AdherenceActual);
+	percentageDifference(parseInt(result.projectKPIs.AdherenceActual),parseInt(result.projectKPIs.AdherenceTarget),'#adherencePctActual');
 	calculateVariance(document.querySelector('#adherencePctActual').value,result.projectKPIs.AdherenceTgtPct, '#adherencePctVariance');
 	calculateVariance(result.projectKPIs.AdherenceActual, result.projectKPIs.AdherenceTarget, '#adherenceVariance' );
 	//Monthly Predictability of Cash Flow
 	document.querySelector('#monthlyCashflowPctTarget').value = result.projectKPIs.MonthlyCashFlowPredTgtPct;
-	document.querySelector('#monthlyCashflowTarget').value = result.valueInformation.QtrTurnOverMonthForeCast;//same as forecastMTurnover
-	document.querySelector('#monthlyCashflowActual').value = result.valueInformation.MonthlyValue;//same as valMTurnover
+	document.querySelector('#monthlyCashflowTarget').value = '£'+addCommas(result.valueInformation.QtrTurnOverMonthForeCast);//same as forecastMTurnover
+	document.querySelector('#monthlyCashflowActual').value = '£'+addCommas(result.valueInformation.MonthlyValue);//same as valMTurnover
 	calculateVariance(result.valueInformation.MonthlyValue, result.valueInformation.QtrTurnOverMonthForeCast, '#monthlyCashflowVariance' );
 	percentageDifference(result.valueInformation.MonthlyValue,result.valueInformation.QtrTurnOverMonthForeCast,'#monthlyCashflowPctActual')
 	calculatePercentageVariance(document.querySelector('#monthlyCashflowPctActual').value, result.projectKPIs.MonthlyCashFlowPredTgtPct, '#monthlyCashflowPctVariance' );
 	//Quarterly Predictability of Cash Flow
 	document.querySelector('#qtrCashflowPctTarget').value = result.projectKPIs.QtrCashFlowPredTgtPct;
-	document.querySelector('#qtrCashflowTarget').value = result.valueInformation.QtrTurnOverCumForeCast;//same as forecastMTurnover
-	document.querySelector('#qtrCashflowActual').value = result.valueInformation.QtrTurnOverCumActual;//same as valMTurnover
+	document.querySelector('#qtrCashflowTarget').value = '£'+addCommas(result.valueInformation.QtrTurnOverCumForeCast);//same as forecastMTurnover
+	document.querySelector('#qtrCashflowActual').value = '£'+addCommas(result.valueInformation.QtrTurnOverCumActual);//same as valMTurnover
 	calculateVariance(result.valueInformation.QtrTurnOverCumActual, result.valueInformation.QtrTurnOverCumForeCast, '#qtrCashflowVariance' );
 	percentageDifference(result.valueInformation.QtrTurnOverCumActual,result.valueInformation.QtrTurnOverCumForeCast,'#qtrCashflowPctActual')
 	calculatePercentageVariance(document.querySelector('#qtrCashflowPctActual').value, result.projectKPIs.QtrCashFlowPredTgtPct, '#qtrCashflowPctVariance' );
 	//Non-Recoverable Works
 	document.querySelector('#nonRecWorksPctTarget').value = result.projectKPIs.NonRecWorksTgtPct;
 	document.querySelector('#nonRecWorksPctActual').value = ((result.projectKPIs.NonRecWorksActPct)*100).toFixed(0);
-	document.querySelector('#nonRecWorksTarget').value = '0';
-	document.querySelector('#nonRecWorksActual').value = result.projectKPIs.NonRecoverableWorks;
+	document.querySelector('#nonRecWorksTarget').value = '£0';
+	document.querySelector('#nonRecWorksActual').value = '£'+addCommas(result.projectKPIs.NonRecoverableWorks);
 	calculateVariance(result.projectKPIs.NonRecoverableWorks, document.querySelector('#nonRecWorksTarget').value, '#nonRecWorksVariance');
 	calculatePercentageVariance(document.querySelector('#nonRecWorksPctActual').value, result.projectKPIs.NonRecWorksTgtPct, '#nonRecWorksPctVariance' );
 	//Predicability of Programme
-	document.querySelector('#predOfProgramTarget').value = 100;
-	document.querySelector('#predOfProgramActual').value = result.projectKPIs.PredOfProgrammeAct;
+	document.querySelector('#predOfProgramTarget').value = '£'+100;
+	document.querySelector('#predOfProgramActual').value = '£'+addCommas(result.projectKPIs.PredOfProgrammeAct);
 	calculatePercentageVariance(result.projectKPIs.PredOfProgrammeAct,document.querySelector('#predOfProgramTarget').value,  '#predOfProgramVariance' );
 	//HS Audit Score
 	document.querySelector('#HSAuditPctTarget').value = result.projectKPIs.HAuditScoreTgtPct;
@@ -979,56 +992,63 @@ function populateSummaryKpiTable(){
 	//Adherence to Prelim Budget
 	document.querySelector('#adherence_Tgt').innerHTML = document.querySelector('#adherencePctTarget').value;
 	document.querySelector('#adherence_Act').innerHTML = document.querySelector('#adherencePctActual').value;
-	document.querySelector('#adherence_Var').innerHTML = document.querySelector('#adherencePctVariance').value;;
+	document.querySelector('#adherence_Var').innerHTML = document.querySelector('#adherencePctVariance').value
+	moreThanZero('#adherence_Var');
+	//document.querySelector().innerHTML = ;
 	//Monthly Predictability of Cash Flow
 	document.querySelector('#monthlyCashflow_Tgt').innerHTML = document.querySelector('#monthlyCashflowPctTarget').value; 
 	document.querySelector('#monthlyCashflow_Act').innerHTML = document.querySelector('#monthlyCashflowPctActual').value;
 	document.querySelector('#monthlyCashflow_Var').innerHTML = document.querySelector('#monthlyCashflowPctVariance').value;
+	moreThanZero('#monthlyCashflow_Var');
 	//Quarterly Predictability of Cash Flow
 	document.querySelector('#qtrCashflow_Tgt').innerHTML = document.querySelector('#qtrCashflowPctTarget').value;
 	document.querySelector('#qtrCashflow_Act').innerHTML = document.querySelector('#qtrCashflowVariance' ).value;
-	document.querySelector('#qtrCashflow_Var').innerHTML = document.querySelector('#qtrCashflowPctVariance').value;
+	document.querySelector('#qtrCashflow_Var').innerHTML = document.querySelector('#qtrCashflowPctVariance').value
+	moreThanZero('#qtrCashflow_Var');
 	//Non-Recoverable Works
 	document.querySelector('#nonRecWorks_Tgt').innerHTML = document.querySelector('#nonRecWorksPctTarget').value;
 	document.querySelector('#nonRecWorks_Act').innerHTML = document.querySelector('#nonRecWorksPctActual').value;
-	document.querySelector('#nonRecWorks_Var').innerHTML = document.querySelector('#nonRecWorksPctVariance').value;
+	document.querySelector('#nonRecWorks_Var').innerHTML = document.querySelector('#nonRecWorksPctVariance').value,
+	moreThanZero('#nonRecWorks_Var');
 	//Predicability of Programme
 	document.querySelector('#predOfProgram_Tgt').innerHTML = document.querySelector('#predOfProgramTarget').value;
 	document.querySelector('#predOfProgram_Act').innerHTML = document.querySelector('#predOfProgramActual').value;
-	document.querySelector('#predOfProgram_Var').innerHTML = document.querySelector('#predOfProgramVariance').value;
+	document.querySelector('#predOfProgram_Var').innerHTML = document.querySelector('#predOfProgramVariance').value,
+	moreThanZero('#predOfProgram_Var');
 	//HS Audit Score
 	document.querySelector('#HSAudit_Tgt').innerHTML = document.querySelector('#HSAuditPctTarget').value;
 	document.querySelector('#HSAudit_Act').innerHTML = document.querySelector('#HSAuditPctActual').value;
 	document.querySelector('#HSAudit_Var').innerHTML = document.querySelector('#HSAuditPctVariance').value;
-
+	moreThanZero('#HSAudit_Var');
 	//Considerate Constructor
 	document.querySelector('#considerateConstructor_Tgt').innerHTML = document.querySelector('#considerateConstructorTarget').value;
 	document.querySelector('#considerateConstructor_Act').innerHTML = document.querySelector('#considerateConstructorActual').value;
 	document.querySelector('#considerateConstructor_Var').innerHTML = document.querySelector('#considerateConstructorPctVariance').value;
-
+	moreThanZero('#considerateConstructor_Var')
 	//HS Accident Incident Rate
 	document.querySelector('#HSAccidentRate_Tgt').innerHTML = document.querySelector('#HSAccidentRatePctTarget').value;
 	document.querySelector('#HSAccidentRate_Act').innerHTML = document.querySelector('#HSAccidentRatePctActual').value;
 	document.querySelector('#HSAccidentRate_Var').innerHTML = document.querySelector('#HSAccidentRatePctVariance').value;
-	
+	moreThanZero('#HSAccidentRate_Var');
 	//Monthly Usage Water
 	document.querySelector('#water100k_Tgt').innerHTML = document.querySelector('#pctRecycledPctTarget').value;
 	document.querySelector('#water100k_Act').innerHTML = document.querySelector('#pctRecycledPctActual').value;
 	document.querySelector('#water100k_Var').innerHTML = document.querySelector('#pctRecycledPctVariance').value;
-
+	moreThanZero('#water100k_Var')
 	//Monthly Usage Energy
 	document.querySelector('#energy100k_Tgt').innerHTML = document.querySelector('#energy100kTarget').value;
 	document.querySelector('#energy100k_Act').innerHTML = document.querySelector('#energy100kActual').value;
-	
+	moreThanZero('#energy100k_Var')
 	//Monthly Waste Skip
 	document.querySelector('#pctSkipWaste_Tgt').innerHTML = document.querySelector('#pctRecycledPctTarget').value;
 	document.querySelector('#pctSkipWaste_Act').innerHTML = document.querySelector('#pctRecycledPctActual').value;
 	document.querySelector('#pctSkipWaste_Var').innerHTML = document.querySelector('#pctRecycledPctVariance').value;
-	
+	moreThanZero('#pctSkipWaste_Var');
 	//Monthly Waste per 100k
 	document.querySelector('#waste100k_Tgt').innerHTML = document.querySelector('#waste100kTarget').value;
 	document.querySelector('#waste100k_Act').innerHTML = document.querySelector('#waste100kActual').value;
 	document.querySelector('#waste100k_Var').innerHTML = document.querySelector('#waste100kVariance').value;
+	moreThanZero('#waste100k_Var');
 }
 
 function populateProgressTbl(){
@@ -1042,7 +1062,8 @@ function populateProgressTbl(){
 						document.querySelector('#'+key+'Date').value=key;
 						break;
 					case 1:
-						document.querySelector('#'+key+'Weeks').value = result.progress[key]
+						document.querySelector('#'+key+'Weeks').value = result.progress[key];
+						moreThanZero('#'+key+'Weeks');
 						break;
 				}
 			}
@@ -1055,8 +1076,9 @@ function populateProgressTbl(){
 //calculation functions
 function calculateVariance(fig1, fig2, targetField){
 	var difference = (parseFloat(fig1.replace(/,/g, '')) - parseFloat(fig2.replace(/,/g, ''))).toFixed(0);
-	var numericVariance = difference;
-	moreThanZero(document.querySelector(targetField).value = numericVariance, targetField);
+	var numericVariance =addCommas(difference);
+	document.querySelector(targetField).value = '£'+numericVariance
+	moreThanZero(targetField);
 }
 
 function calculatePercentageVariance(fig1, fig2, targetField){
@@ -1066,13 +1088,14 @@ function calculatePercentageVariance(fig1, fig2, targetField){
 		var difference = (parseFloat(fig1.replace(/,/g, '')) - parseFloat(fig2.replace(/,/g, '')));
 		var variance = ((difference/fig2)*100).toFixed(1);
 		var numericVariance = parseFloat(variance);
-		moreThanZero(document.querySelector(targetField).value = numericVariance, targetField);
+		document.querySelector(targetField).value = numericVariance;
+		moreThanZero(targetField);
 	}
 }
 
 function percentageDifference(actualFig, targetFig, percentageField){
 	var actualDifference = ((Number(actualFig)/Number(targetFig))*100).toFixed(0);
-	document.querySelector(percentageField).value=actualDifference; 
+	document.querySelector(percentageField).value=addCommas(parseInt(actualDifference))+'%'; 
 }
 
 //summary section - structure
@@ -1449,7 +1472,8 @@ function populateOverheadContributionTbl(){
 					dataRef = 'Gross'+ tblRows[i];
 					fieldID='#'+tblRows[i].toLowerCase()+'Gross';
 					if(dataRef=='GrossTotal'){
-						moreThanZero(document.querySelector(fieldID).value = overheadData[dataRef],fieldID);
+						document.querySelector(fieldID).value = overheadData[dataRef];
+						moreThanZero(fieldID);
 					}else{
 						document.querySelector(fieldID).value=overheadData[dataRef];
 					}
@@ -1458,7 +1482,8 @@ function populateOverheadContributionTbl(){
 					dataRef ='Movement'+ tblRows[i];
 					fieldID='#'+tblRows[i].toLowerCase()+'Movement';
 					if(dataRef=='MovementTotal'){
-						moreThanZero(document.querySelector(fieldID).value = overheadData[dataRef],fieldID);
+						document.querySelector(fieldID).value = overheadData[dataRef];
+						moreThanZero(fieldID);
 					}else{
 						document.querySelector(fieldID).value=overheadData[dataRef];
 					}
@@ -1877,8 +1902,22 @@ function createHSGraphTopSection(location){
 function createHSGraphBottomSection(location){
 	var sectionLocation = document.querySelector(location);
 	var HSBottomGraphSection = createDiv('HSGraphBottomRow','row');
-	var HSDataTables = createDataCard('col s12 l4','HsDataTableSection','HsDataTableContent','');
-	HSBottomGraphSection.appendChild(HSDataTables);
+	var hsDataTables = createDiv('hsComplianceTables','col s12 l4');
+	var enforcementActionsCard = createDiv('enforcementActions','card col s6 l12');
+	var enforcementActionsContent = createDiv('enforcementActionsTbl','card-content');
+	var enforcementActionsTitle = createTitle('h5','Enforcement Actions Notices');
+	enforcementActionsContent.appendChild(enforcementActionsTitle);
+	enforcementActionsCard.appendChild(enforcementActionsContent);
+	hsDataTables.appendChild(enforcementActionsCard);
+	var complianceAuditCard = createDiv('complianceAudit','card col s6 l12');
+	var complianceAuditContent = createDiv('complianceAuditTbl','card-content');
+	var complianceAuditTitle = createTitle('h5','Monthly Compliance Audit Scores');
+	complianceAuditContent.appendChild(complianceAuditTitle);
+	complianceAuditCard.appendChild(complianceAuditContent);
+	hsDataTables.appendChild(complianceAuditCard);
+	HSBottomGraphSection.appendChild(hsDataTables);
+	//var complianceAudit = createDataCard('col s12 l4','HsDataTableSection','HsDataTableContent','');
+	//HSBottomGraphSection.appendChild(complianceAudit);
 	//var bottomGraphs = createMultiGraphCard('col s12 l8', 'HSGraph', 2, 'HSGraph', ['By Trade','By Type']);
 	var accidentByTradeGraph = createGraphCard('col s12 l4', 'accidentByTradeGraphSection', 'accidentByTradeGraphContent', 'By Trade');
 	HSBottomGraphSection.appendChild(accidentByTradeGraph);
@@ -1889,8 +1928,9 @@ function createHSGraphBottomSection(location){
 
 //HS Graph Section
 function createEnforcementActionTbl(){
-	var tableLocation = document.querySelector('#enforcementActionTbl');
-	var enforementTbl = document.createElement('table');
+	var tableLocation = document.querySelector('#enforcementActionsTbl');
+	var enforcementTbl = document.createElement('table');
+	enforcementTbl.setAttribute('class','striped');
 	var tableHeader = document.createElement('thead');
 	var headerRow = document.createElement('tr');
 	for(var i =0;i<2;i++){
@@ -1902,28 +1942,112 @@ function createEnforcementActionTbl(){
 		headerRow.appendChild(headerCell);
 	}
 	tableHeader.appendChild(headerRow);
+	enforcementTbl.appendChild(tableHeader);
 	var tableBody = document.createElement('tbody');
 	for(var j = 0;j<2;j++){
 		var bodyRow = document.createElement('tr');
 		for(var k = 0; k<2;k++){
 			var bodyRowCell = document.createElement('td')
 			var bodyRowCellText;
-			if(k=0){
-				switch(i){
+			if(k==0){
+				switch(j){
 					case 0:
+							bodyRowCell.setAttribute('id','hsEnforcementAction');
 							bodyRowCellText = document.createTextNode('HSE Enforcement Action');
 							bodyRowCell.appendChild(bodyRowCellText);
 							break;
 					case 1:
-							bodyRowCellText = document.createTextNode('Higgins Enforcement Action');
+							bodyRowCell.setAttribute('id','companyEnforcementAction');
+							bodyRowCellText = document.createTextNode('Company Enforcement Action');
 							bodyRowCell.appendChild(bodyRowCellText);
 							break;
 				}
+			}else{
+				var tableInput = document.createElement('input');
+				switch(j){
+					case 0:
+							tableInput.setAttribute('id','hsEnforcementActionInput');
+							tableInput.setAttribute('name','hsEnforcementActionInput');
+							bodyRowCell.appendChild(tableInput);
+							break;
+					case 1:
+							tableInput.setAttribute('id','companyEnforcementActionInput');
+							tableInput.setAttribute('name','companyEnforcementActionInput');
+							bodyRowCell.appendChild(tableInput);
+							break;
+				}
 			}
+			bodyRow.appendChild(bodyRowCell);
 		}
+		tableBody.appendChild(bodyRow);
 	}
+	enforcementTbl.appendChild(tableBody);
+	tableLocation.appendChild(enforcementTbl)
 }
 
+function createComplainceAuditTbl(){
+	var tableLocation = document.querySelector('#complianceAuditTbl');
+	var complianceTbl = document.createElement('table');
+	complianceTbl.setAttribute('class','striped');
+	var tableHeader = document.createElement('thead');
+	var headerRow = document.createElement('tr');
+	for(var i =0;i<2;i++){
+		var headerCell = document.createElement('th');
+		if(i==1){
+			var headerCellText = document.createTextNode('Number');
+			headerCell.appendChild(headerCellText);
+		}
+		headerRow.appendChild(headerCell);
+	}
+	tableHeader.appendChild(headerRow);
+	complianceTbl.appendChild(tableHeader);
+	var tableBody = document.createElement('tbody');
+	for(var j = 0;j<3;j++){
+		var bodyRow = document.createElement('tr');
+		for(var k = 0; k<2;k++){
+			var bodyRowCell = document.createElement('td')
+			var bodyRowCellText;
+			if(k==0){
+				switch(j){
+					case 0:
+							bodyRowCell.setAttribute('id','major');
+							bodyRowCellText = document.createTextNode('Major');
+							break;
+					case 1:
+							bodyRowCell.setAttribute('id','minor');
+							bodyRowCellText = document.createTextNode('Minor');
+							break;
+					case 2:
+							bodyRowCell.setAttribute('id','pctCompliance');
+							bodyRowCellText = document.createTextNode('%Compliance');
+							break;
+				}
+				bodyRowCell.appendChild(bodyRowCellText);
+			}else{
+				var tableInput = document.createElement('input');
+				switch(j){
+					case 0:
+							tableInput.setAttribute('id','majorInput');
+							tableInput.setAttribute('name','majorInput');
+							break;
+					case 1:
+							tableInput.setAttribute('id','minorInput');
+							tableInput.setAttribute('name','minorInput');
+							break;
+					case 2:
+							tableInput.setAttribute('id','pctComplianceInput');
+							tableInput.setAttribute('name','pctComplianceInput');
+							break;
+				}
+				bodyRowCell.appendChild(tableInput);
+			}
+			bodyRow.appendChild(bodyRowCell);
+		}
+		tableBody.appendChild(bodyRow);
+	}
+	complianceTbl.appendChild(tableBody);
+	tableLocation.appendChild(complianceTbl)
+}
 //HS Graph Section
 function tradeAccidentGraph(location){
 	accidentTradeData = tableToArray(document.querySelector('#accidentsTrade'));
@@ -2001,41 +2125,6 @@ function daysLostGraph(location){
 	});
 }
 
-function createEnforcementActionTbl(){
-	var tableLocation = document.querySelector('#enforcementActionTbl');
-	var enforementTbl = document.createElement('table');
-	var tableHeader = document.createElement('thead');
-	var headerRow = document.createElement('tr');
-	for(var i =0;i<2;i++){
-		var headerCell = document.createElement('th');
-		if(i==1){
-			var headerCellText = document.createTextNode('Number');
-			headerCell.appendChild(headerCellText);
-		}
-		headerRow.appendChild(headerCell);
-	}
-	tableHeader.appendChild(headerRow);
-	var tableBody = document.createElement('tbody');
-	for(var j = 0;j<2;j++){
-		var bodyRow = document.createElement('tr');
-		for(var k = 0; k<2;k++){
-			var bodyRowCell = document.createElement('td')
-			var bodyRowCellText;
-			if(k=0){
-				switch(i){
-					case 0:
-							bodyRowCellText = document.createTextNode('HSE Enforcement Action');
-							bodyRowCell.appendChild(bodyRowCellText);
-							break;
-					case 1:
-							bodyRowCellText = document.createTextNode('Higgins Enforcement Action');
-							bodyRowCell.appendChild(bodyRowCellText);
-							break;
-				}
-			}
-		}
-	}
-}
 
 //TimeValue - structure
 function createTimeStats(location){
