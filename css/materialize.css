@@ -9091,6 +9091,11 @@ input[type=range]::-ms-thumb {
 }
 
 /* custom queries */
+
+.flex.innerflex{
+    -ms-flex: 1;  /* IE 10 */    
+    flex: 1;
+} 
 .dashboard{
   background-color:#f5f6f8;
 }

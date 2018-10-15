@@ -1,34 +1,33 @@
-	
-var X = XLSX;
-var result = {};
-var con;
-var weeksCompleted;
-var projectMonths;
-var pageList=[];
+		
+const X = XLSX;
+let result = {};
+let con;
+let weeksCompleted;
+let projectMonths;
 window.setfmt = setfmt;
-var xlf = document.getElementById('xlf');
-var global_wb;
+const xlf = document.getElementById('xlf');
+let global_wb;
 
 if(xlf.addEventListener) xlf.addEventListener('change', handleFile, false);
 
 //Excel Import Functions - DO NOT CHANGE!
-function fixdata(data) {
-	var o = "", l = 0, w = 10240;
+const fixdata = data=> {
+	let o = "", l = 0, w = 10240;
 	for(; l<data.byteLength/w; ++l) o+=String.fromCharCode.apply(null,new Uint8Array(data.slice(l*w,l*w+w)));
 	o+=String.fromCharCode.apply(null, new Uint8Array(data.slice(l*w)));
 	return o;
 }
 
-function to_json(workbook) {
+const to_json = workbook=> {
 	workbook.SheetNames.forEach(function(sheetName) {
-		var roa = X.utils.sheet_to_json(workbook.Sheets[sheetName]);
-		var startPoint;
+		const roa = X.utils.sheet_to_json(workbook.Sheets[sheetName]);
+		let startPoint;
 		if(roa.length >= 0){
 			if (sheetName=="considerateConstructors" ||sheetName=="SubConFinData" || sheetName=="HSData" || sheetName=="monthlyKPI"|| sheetName=="NewRecordOfLabour"|| sheetName=="financialData"|| sheetName=="TradeAccidents"|| sheetName=="AccidentReport" || sheetName=="MaterialOrdersCategories" || sheetName=="MaterialOrdersType"|| sheetName=="CCS"|| sheetName=="CWDsTotal"|| sheetName=="CWDsMonthly" ){
-				var subConData=[];
-				var totalSubConData=roa;
-				for(var j=0;j<totalSubConData.length;j++){
-					var arrayConNumber =totalSubConData[j].ContractNumber; 
+				let subConData=[];
+				const totalSubConData=roa;
+				for(let j=0;j<totalSubConData.length;j++){
+					const arrayConNumber =totalSubConData[j].ContractNumber; 
 					if(arrayConNumber===con){
 						subConData.push(totalSubConData[j]);
 					}
@@ -53,7 +52,7 @@ function to_json(workbook) {
 				result[sheetName]=subConData;
 			}
 			else{
-				for(var i=0;i<roa.length;i++){
+				for(let i=0;i<roa.length;i++){
 					if(roa[i].ContractNumber===con)
 						{
 							result[sheetName] = roa[i];
@@ -77,7 +76,7 @@ function to_json(workbook) {
 	return result;
 }
 
-function createDataStructures(){
+const createDataStructures = ()=>{
 	createSummarySections();
 	createProjectKpiSection();
 	createProgressSection('#progress');
@@ -86,7 +85,7 @@ function createDataStructures(){
 	createHSDataSection('#hsData');
 }
 
-function createGraphsStructures(){
+const createGraphsStructures = ()=>{
 	createProgressGraphs();
 	createFinancialGraphs();
 	createCcsGraphs();
@@ -94,7 +93,7 @@ function createGraphsStructures(){
 	createHSGraphSection();
 }
 
-function createGraphsContent(){
+const createGraphsContent = ()=>{
 	//Summary
 	progressGraph('summaryProgressGraph');
 	HSMonthlyAuditGraph('hsGraphGraph');
@@ -109,15 +108,12 @@ function createGraphsContent(){
 	costflowGraph('costflowGraphSectionGraph');
 	totalCwdToDate('cwdGraphSectionGraph');
 	monthlyCwdToDate('monthlyCwdGraphSectionGraph');
-	
 	//Sub-Contractor Finance Graphs
 	subContractorOrderVariations('subConFinGraphSectionGraph');
-
 	//CCS & Costs Graphs
 	considerateContractorsGraph('consConstructorsGraphSectionGraph');
 	materialsOrderedChart('matsSummaryGraphSectionGraph');
 	materialsReasonChart('matsReplacementGraphSectionGraph');
-	
 	//HS Graphs
 	HSMonthlyAuditGraph('monthlyAuditGraphSectionGraph');
 	daysLostGraph('accidentsGraphGraphSectionGraph');
@@ -125,29 +121,28 @@ function createGraphsContent(){
 	typeAccidentGraph('accidentByTypeGraphSectionGraph');
 }
 
-function createSummaryContents(){
+const createSummaryContents =()=>{
 	createProjectKPITbl();
 }
 
-function process_wb(wb) {
+const process_wb=wb=> {
 	global_wb = wb;
-	var output = "";
+	let output = "";
 	output = JSON.stringify(to_json(wb), 2, 2);
 }
 
-function setfmt() {if(global_wb) process_wb(global_wb); }
+var setfmt=()=> {if(global_wb) process_wb(global_wb); }
 
 
 function handleFile(e) {
-	var files = e.target.files;
-	var f = files[0];
+	const files = e.target.files;
+	const f = files[0];
 	{
-		var reader = new FileReader();
-		//var name = f.name;
+		const reader = new FileReader();
 		reader.onload = function(e) {
-			var data = e.target.result;
-			var wb;
-			var arr = fixdata(data);
+			const data = e.target.result;
+			let wb;
+			const arr = fixdata(data);
 			wb = X.read(btoa(arr), {type: 'base64'});
 			process_wb(wb);
 		};
@@ -156,14 +151,14 @@ function handleFile(e) {
 }
 
 //Lookup functions
-function getmonthlyCWDTotals(){
+const getmonthlyCWDTotals = ()=>{
 }
 
-function getCWDTotals(){
+const getCWDTotals = ()=>{
 }
 
-function getRecordOfLabourDay(i){
-	var dayOfWeek;
+const getRecordOfLabourDay = i=>{
+	let dayOfWeek;
 	switch(i){
 		case 1:
 			dayOfWeek = 'Monday';
@@ -190,64 +185,54 @@ function getRecordOfLabourDay(i){
 	return dayOfWeek;
 }
 
-function getTradeFigures(){
+const getTradeFigures = ()=>{
 	
 }
 
-function getTypeFigures(){
+const getTypeFigures = ()=>{
 	
 }
 
-function getCurrentYear(){
-	var d = new Date();
-	var thisYear = d.getFullYear();
+const getCurrentYear = ()=>{
+	const d = new Date();
+	const thisYear = d.getFullYear();
 	return thisYear;
 }
 
-function getCurrenMonth(){
-	var d = new Date();
-	var monthNum = d.getMonth()+1;
+const getCurrenMonth = ()=>{
+	const d = new Date();
+	const monthNum = d.getMonth()+1;
 	return monthNum;
 }
 
-function getContractNumber(){
-	var conNumber = con.substring(1,5);
+const getContractNumber = ()=>{
+	const conNumber = con.substring(1,5);
 	return conNumber
 }
 
-function getAccidentReport(){	
+const getAccidentReport = ()=>{	
 }
 
-function constructDate(fieldContents, fieldID) {
-    var str = fieldContents;
-    var seperator = str.indexOf(",");
-    var year = str.substring((seperator+2), (seperator+6));
-    var date = "D/"+year;
-   	var month = getMonth(str, seperator);
-    date += "/"+month;
-    day = getDay(str);
-    date += "/"+day+":0:0:0";
+const constructDate = (fieldContents, fieldID)=> {
+    const str = fieldContents;
+    const seperator = str.indexOf(",");
+    const year = str.substring((seperator+2), (seperator+6));
+    const day = getDay(str);
+    const month = getMonth(str, seperator);
+    const date = "D/"+year+"/"+month+"/"+day+":0:0:0";
     document.getElementById(fieldID).value = date;
 }
 
-function getMonth(str, comma){
-	var Str = str
-	var writtenMonth="";
-	var endOfMonth = comma
-	if(Str.charAt(1)==" "){
-    	writtenMonth=Str.substring(2,endOfMonth);
-    	var monthNumber = getMonthNumber(writtenMonth);
-    	return monthNumber;
-    }
-    else{
-    	writtenMonth=Str.substring(3,endOfMonth);
-    	var monthNumber = getMonthNumber(writtenMonth);
-    	return monthNumber;
-    }
+const getMonth = (str, comma)=>{
+	const Str = str
+	const endOfMonth = comma
+	const writtenMonth=(Str.charAt(1)==" ")?Str.substring(2,endOfMonth):Str.substring(3,endOfMonth);
+	const monthNumber = getMonthNumber(writtenMonth);
+	return monthNumber;
 }
 
-function getMonthNumber(writtenMonth){
-	var monthNum;
+const getMonthNumber = writtenMonth=>{
+	let monthNum;
 	switch(writtenMonth){
 		case "January":
 			monthNum = 1;
@@ -288,8 +273,8 @@ function getMonthNumber(writtenMonth){
 	}
 }
 
-function getMonthName(monthNumber){
-	var writtenMonth;
+const getMonthName = monthNumber=>{
+	let writtenMonth;
 	switch(monthNumber){
 		case "01":
 			writtenMonth = "Jan";
@@ -331,24 +316,20 @@ function getMonthName(monthNumber){
 	return writtenMonth;
 }
 
-function getDay(givenDate){
-	var definedDate = givenDate;
-	if(definedDate.charAt(1)==" "){
-		return definedDate.charAt(0);
-	}
-	else{
-		return definedDate.substring(0,2);
-	}
+const getDay = givenDate=>{
+	const definedDate = givenDate;
+	var day = (definedDate.charAt(1)==" ")? definedDate.charAt(0):definedDate.substring(0,2);
+	return day;
 }
 
-function getTypeCategory(type){
-	var typeCategory;
-	var userType=type.toLowerCase();
-	var typeSplit = userType.indexOf('/');
+const getTypeCategory = type=>{
+	let typeCategory;
+	let userType=type.toLowerCase();
+	const typeSplit = userType.indexOf('/');
 	if(typeSplit!==-1){
 		userType = userType.substr(0,typeSplit);
 	}
-	var typesCategories={
+	let typesCategories={
 		'abdomen':function(){typeCategory='Abdomen';},
 		'ankle':function(){typeCategory='Legs';},
 		'arm':function(){typeCategory='Arms';},
@@ -399,17 +380,17 @@ function getTypeCategory(type){
 	return typeCategory;
 }
 
-function getTradeCategory(trade){
-	var tradeName = trade.toLowerCase();
-	var tradeCategory;
-	var tradeFieldIdLookup={
+const getTradeCategory = trade=>{
+	const tradeName = trade.toLowerCase();
+	let tradeCategory;
+	let tradeFieldIdLookup={
 		'asbestosremoval':function(){tradeCategory='AsbestosRemoval';},
 		'brickwork':function(){tradeCategory='Brickwork';},
 		'carpenter':function(){tradeCategory='Carpentry';},
 		'carpentry':function(){tradeCategory='Carpentry';},
 		'cladding':function(){tradeCategory='Cladding';},
 		'cleaning':function(){tradeCategory='Cleaning';},
-		'decorator':function(){tradeCategory='PaintingandDecoration';},
+		'decorator':function(){tradeCategory='PaintingAndDecoration';},
 		'demolition':function(){tradeCategory='Demolition';},
 		'electrical':function(){tradeCategory='Electrical';},
 		'electrician':function(){tradeCategory='Electrical';},
@@ -433,8 +414,8 @@ function getTradeCategory(trade){
 		'mechanic':function(){tradeCategory='Mechanical';},
 		'mechanical':function(){tradeCategory='Mechanical';},
 		'metalwork':function(){tradeCategory='Metalwork';},
-		'paintinganddecoration':function(){tradeCategory='PaintingandDecoration';},
-		'painter':function(){tradeCategory='PaintingandDecoration';},
+		'paintinganddecoration':function(){tradeCategory='PaintingAndDecoration';},
+		'painter':function(){tradeCategory='PaintingAndDecoration';},
 		'projdir':function(){tradeCategory='Management';},
 		'pestcontrol':function(){tradeCategory='PestControl';},
 		'piling':function(){tradeCategory='Piling';},
@@ -460,10 +441,10 @@ function getTradeCategory(trade){
 	return tradeCategory;
 }
 
-function getTradeFieldID(trade){
-	var tradeName =trade.toLowerCase(); 
-	var fieldID;
-	var tradeFieldIdLookup={
+const getTradeFieldID = trade=>{
+	const tradeName =trade.toLowerCase(); 
+	let fieldID;
+	const tradeFieldIdLookup={
 		'asbestosremoval':function(){fieldID='AsbestosRemovalValue';},
 		'brickwork':function(){fieldID='brickworkValue';},
 		'carpentry':function(){fieldID='carpentryValue';},
@@ -486,7 +467,7 @@ function getTradeFieldID(trade){
 		'mastic':function(){fieldID='masticValue';},
 		'mechanical':function(){fieldID='mechanicalValue';},
 		'metalwork':function(){fieldID='metalworkValue';},
-		'paintinganddecoration':function(){fieldID='PaintingandDecorationValue';},
+		'paintinganddecoration':function(){fieldID='PaintingAndDecorationValue';},
 		'pestcontrol':function(){fieldID='pestControlValue';},
 		'piling':function(){fieldID='pilingValue';},
 		'plastering':function(){fieldID='plasteringValue';},
@@ -504,10 +485,10 @@ function getTradeFieldID(trade){
 	return fieldID;
 }
 
-function getTypeFieldID(type){
-	var typeName =getTypeCategory(type); 
-	var fieldID;
-	var typeFieldIdLookup={
+const getTypeFieldID = type=>{
+	const typeName =getTypeCategory(type); 
+	let fieldID;
+	const typeFieldIdLookup={
 		'Abdomen':function(){fieldID='abdomenValue';},
 		'Arms':function(){fieldID='armsValue';},
 		'Back':function(){fieldID='backValue';},
@@ -532,28 +513,31 @@ function getTypeFieldID(type){
 }
 
 //create card functions
-function createDataCard(containerClass, containerID, cardContentID, Title){
-	var container = createDiv(containerID+'Section', containerClass);
-	var card = createDiv(containerID+'Card','card');
-	var title = createTitle('h5',Title);
-	var content = createDiv(cardContentID, 'card-content');
+const createDataCard = (containerClass, containerID, cardContentID, Title)=>{
+	const container = createDiv(containerID+'Section', containerClass);
+	const card = createDiv(containerID+'Card','card');
+	const title = createTitle('h5',Title);
+	const content = createDiv(cardContentID, 'card-content');
 	content.appendChild(title);
 	card.appendChild(content);
 	container.appendChild(card);
 	return container;
 }
 
-function createMultiDataCard(containerClass, id, numOfItems, Title, subItemTitles){
-	var container = createDiv(id+'Section', containerClass);
-	var card = createDiv(id+'Card','card');
-	var sectionSize = 12/numOfItems;
-	var title = createTitle('h5',Title);
-	var content = createDiv(id+'Content', 'card-content row');
-	if(title =""){content.appendChild(title)};
-	for(var i =0; i<numOfItems;i++){
-		var innerSection = createDiv(subItemTitles[i].replace(/\s/g, '')+'Tbl','col s12 l'+sectionSize);
-		var innerSectionTitle = createTitle('h5',subItemTitles[i]);
-		innerSection.appendChild(innerSectionTitle);
+const createMultiDataCard = (containerClass, id, numOfItems, Title, subItemTitles)=>{
+	const container = createDiv(id+'Section', containerClass);
+	const card = createDiv(id+'Card','card');
+	const sectionSize = 12/numOfItems;
+	const title = createTitle('h5',Title);
+	const content = createDiv(id+'Content', 'card-content row');
+	if(title ==""){content.appendChild(title)};
+	for(let i = 0;i<numOfItems;i++){
+		const innerSectionTitle = createTitle('h5',subItemTitles[i]);
+		innerSectionTitle.setAttribute('class','col s12 l'+sectionSize);
+		content.appendChild(innerSectionTitle);
+	}
+	for(let j =0; j<numOfItems;j++){
+		const innerSection = createDiv(subItemTitles[j].replace(/\s/g, '')+'Tbl','col s12 l'+sectionSize);
 		content.appendChild(innerSection);
 	}
 	card.appendChild(content);
@@ -561,12 +545,12 @@ function createMultiDataCard(containerClass, id, numOfItems, Title, subItemTitle
 	return container;
 }
 
-function createGraphCard(containerClass, containerID, cardContentID, Title){
-	var container = createDiv(containerID+'Section', containerClass);
-	var card = createDiv(containerID+'Card','card');
-	var title = createTitle('h5',Title);
-	var content = createDiv(cardContentID, 'card-content');
-	var graphDiv = createDiv(containerID+'Graph');
+const createGraphCard = (containerClass, containerID, cardContentID, Title)=>{
+	const container = createDiv(containerID+'Section', containerClass);
+	const card = createDiv(containerID+'Card','card');
+	const title = createTitle('h5',Title);
+	const content = createDiv(cardContentID, 'card-content');
+	const graphDiv = createDiv(containerID+'Graph');
 	content.appendChild(title);
 	content.appendChild(graphDiv);
 	card.appendChild(content);
@@ -574,16 +558,16 @@ function createGraphCard(containerClass, containerID, cardContentID, Title){
 	return container;
 }
 
-function createMultiGraphCard(containerClass, id, numOfItems, graphIds, subItemTitles){
-	var container = createDiv(id+'Section', containerClass);
-	var card = createDiv(id+'Card','card');
-	var sectionSize = 12/numOfItems;
-	var content = createDiv(id+'Content', 'card-content row');
-	for (var i=0;i<numOfItems;i++){
-		var graphDiv = createDiv(graphIds[i]+'Graph');
+const createMultiGraphCard = (containerClass, id, numOfItems, graphIds, subItemTitles)=>{
+	const container = createDiv(id+'Section', containerClass);
+	const card = createDiv(id+'Card','card');
+	const sectionSize = 12/numOfItems;
+	const content = createDiv(id+'Content', 'card-content row');
+	for (let i=0;i<numOfItems;i++){
+		const graphDiv = createDiv(graphIds[i]+'Graph');
 		graphDiv.setAttribute('class','col s12 l'+sectionSize);
 		if(subItemTitles[i]!=""){
-			var graphTitle = createTitle('h5',subItemTitles[i]);
+			const graphTitle = createTitle('h5',subItemTitles[i]);
 			graphDiv.appendChild(graphTitle);
 		}
 		content.appendChild(graphDiv);
@@ -595,38 +579,34 @@ function createMultiGraphCard(containerClass, id, numOfItems, graphIds, subItemT
 
 //General Functions
 
-function hideSections(sectionName){
-	var section = ['inputData','summary-page', 'progressGraphs','financialGraph','subcontractorGraphs','hsGraphs','progress', 'ccsCosts','subContractorData','financialData','hsData','projectKPIs','timeValueGraphs'];
-	for (var i=0;i<section.length;i++){
-		if(sectionName!=section[i]){
-			document.querySelector('#'+section[i]).style.display = "none";
-		}else{
-			document.querySelector('#'+section[i]).style.display = "block";
-		}
+const hideSections = sectionName=>{
+	const section = ['inputData','summary-page', 'progressGraphs','financialGraph','subcontractorGraphs','hsGraphs','progress', 'ccsCosts','subContractorData','financialData','hsData','projectKPIs','timeValueGraphs'];
+	for (let i=0;i<section.length;i++){
+		(sectionName!=section[i])? document.querySelector('#'+section[i]).style.display = "none":document.querySelector('#'+section[i]).style.display = "block";
 	}
 	document.body.scrollTop = 0;
 }
 
-function hideInput(){
-	var inputFields = document.querySelector("#inputData");
+const hideInput = ()=>{
+	const inputFields = document.querySelector("#inputData");
 	inputFields.style.display="none";
 }
 
-
-function setZoom(){
-	var devicePixelRatio = window.devicePixelRatio || 1;
+const setZoom = ()=>{
+	const devicePixelRatio = window.devicePixelRatio || 1;
 	dpi_x = document.getElementById('testdiv').offsetWidth * devicePixelRatio;
 	if(dpi_x>96){
 		document.querySelector('body').setAttribute('class','dashboardZoom');
 	}
 }
-function conNum(){con=document.querySelector("#contractNumber").value;}
+
+const conNum = ()=>{con=document.querySelector("#contractNumber").value;}
 
 
-function addCommas(intNum){return (intNum + '').replace(/(\d)(?=(\d{3})+$)/g, '$1,');}
+const addCommas = intNum=>{return (intNum + '').replace(/(\d)(?=(\d{3})+$)/g, '$1,');}
 
-function asciiToChar(textToConvert){
-	var name = textToConvert;
+const asciiToChar = textToConvert=>{
+	let name = textToConvert;
 	name = name.replace(/%20/g,' ');
 	name = name.replace(/%26/g,'&');
 	name = name.replace(/%27/g,'\'');
@@ -640,46 +620,38 @@ function asciiToChar(textToConvert){
 	return name
 }
 
-
-function tableToArray(table){
-	var tableArray=[];
-	var rows = Array.from(table.rows);
+const tableToArray = table=>{
+	let tableArray=[];
+	let rows = Array.from(table.rows);
 	rows.shift();
-	var inputs = table.getElementsByTagName( 'input' ); 
-	var cells;
-	var t;
-	var cellId = 0;
-	for(var i=0; i<rows.length;i++){
-		cells=Array.from(rows[i].cells);
+	const inputs = table.getElementsByTagName( 'input' ); 
+	let t;
+	let cellId = 0;
+	for(let i=0; i<rows.length;i++){
+		const cells=Array.from(rows[i].cells);
 		t=[];
-		for(var j=0;j<cells.length;j++){
-			if(j!=0){
-				var cellContents = inputs[cellId].value; 
-				t.push(cellContents);
-				cellId++;
-			}else{
-				var cellContents = cells[j].textContent;
-				t.push(cellContents);
-			}
+		for(let j=0;j<cells.length;j++){
+			const cellContents=(j==0)?cells[j].textContent:inputs[cellId].value;
+			t.push(cellContents);
+			if(j!=0){cellId++;}
 		}
 		tableArray.push(t)
 	}
 	return tableArray;
 }
 
-function CwdTableToArray(table){
-	var tableArray=[];
-	var rows = Array.from(table.rows);
+const CwdTableToArray = table=>{
+	let tableArray=[];
+	let rows = Array.from(table.rows);
 	rows.shift();
-	var inputs = table.querySelectorAll('input'); 
-	var cells;
-	var t;
-	var cellId = 0;
-	for(var i=0; i<rows.length;i++){
-		cells=Array.from(rows[i].cells);
+	const inputs = table.querySelectorAll('input'); 
+	let t;
+	let cellId = 0;
+	for(let i=0; i<rows.length;i++){
+		const cells=Array.from(rows[i].cells);
 		t=[];
-		for(var j=0;j<cells.length;j++){
-			var cellContents = inputs[cellId].value; 
+		for(let j=0;j<cells.length;j++){
+			const cellContents = inputs[cellId].value; 
 			t.push(cellContents);
 			cellId++;
 		}
@@ -688,31 +660,26 @@ function CwdTableToArray(table){
 	return tableArray;
 }
 
-function considerateConstractorsAverage(location){
-	var table = tableToArray(document.querySelector('#considerContractorTbl'));
-	var rowNum= table.length;
-	var scoreTotal=0;
-	var scoreAverage;
-	for(var i=0;i<rowNum;i++){
+const considerateConstractorsAverage = location=>{
+	const table = tableToArray(document.querySelector('#considerContractorTbl'));
+	const rowNum= table.length;
+	let scoreTotal=0;
+	for(let i=0;i<rowNum;i++){
 		scoreTotal+=parseInt(table[i][1]);
 	}
-	scoreAverage=(scoreTotal/rowNum).toFixed(0);
-	if(isNaN(scoreAverage) || scoreAverage<1){
-		document.querySelector(location).value='';
-	}else{
-		document.querySelector(location).value = scoreAverage;
-	}
+	const scoreAverage=(scoreTotal/rowNum).toFixed(0);
+	(isNaN(scoreAverage) || scoreAverage<1)?document.querySelector(location).value='':document.querySelector(location).value = scoreAverage;
 }
 
-function createTitle(titleSize, titleText){
-	var titleElement = document.createElement(titleSize);
-	var titleElementText = document.createTextNode(titleText);
+const createTitle = (titleSize, titleText)=>{
+	const titleElement = document.createElement(titleSize);
+	const titleElementText = document.createTextNode(titleText);
 	titleElement.appendChild(titleElementText);
 	return titleElement;
 }
 
-function createDiv(divId,divClass){
-	var divElement = document.createElement('div');
+const createDiv = (divId,divClass)=>{
+	const divElement = document.createElement('div');
 	divElement.setAttribute('id',divId);
 	if(divClass!= undefined){
 		divElement.setAttribute('class',divClass);
@@ -720,30 +687,81 @@ function createDiv(divId,divClass){
 	return divElement;
 }
 
-function formatDate(datetag, rowName)
-{
-	var dateFields = document.getElementsByClassName(rowName);
-	var dateTime = datetag;
-	var dateDay= dateTime.split("/")[1];
-	var dateMonth= dateTime.split("/")[0];
-	var dateYear = dateTime.split("/")[2];
-	for(var i=0; i<dateFields.length; i++){
+const createTwoColBody = (tblSize,fieldIds,constFieldName, colTitle, staticFirstField)=>{
+	const twoColTable = document.createElement('table');
+	const tableHeader=document.createElement('thead');
+	const headerRow = document.createElement('tr');
+	for(let i=0;i<2;i++){
+		const rowCell = document.createElement('th');
+		const cellText = (i==0)?document.createTextNode(colTitle[i]):document.createTextNode(colTitle[i]);
+		rowCell.appendChild(cellText);
+		headerRow.appendChild(rowCell);
+	}
+	tableHeader.appendChild(headerRow);
+	twoColTable.appendChild(tableHeader);
+	const tableBody = document.createElement('tbody');
+	const tableSize= tblSize;
+	for(let i=0;i<tableSize;i++){
+		const bodyRow=document.createElement('tr');
+		for(let k=0; k<2;k++){
+			const bodyCell = document.createElement('td');
+			const currFieldId = (typeof(fieldIds)=="string")?fieldIds:fieldIds[i];
+			const fieldId = (constFieldName==true)?currFieldId+(i+1):currFieldId;
+			const bodyCellId = (k==0)?fieldId:fieldId+'Value';
+			if(staticFirstField==true&&k==0){
+				bodyCell.setAttribute('id',bodyCellId);
+				bodyCell.setAttribute('name',bodyCellId);
+			}else{
+				const bodyCellInput = document.createElement('input');
+				bodyCellInput.setAttribute('type','text');
+				bodyCellInput.setAttribute('id',bodyCellId);
+				bodyCellInput.setAttribute('name',bodyCellId);
+				bodyCell.appendChild(bodyCellInput);
+			}
+			bodyRow.appendChild(bodyCell);
+		}
+		tableBody.appendChild(bodyRow);
+	}
+	twoColTable.appendChild(tableBody);
+	return twoColTable;
+}
 
+const formatDate = (datetag, rowName)=>{
+	const dateFields = document.getElementsByClassName(rowName);
+	const dateTime = datetag;
+	const dateDay= dateTime.split("/")[1];
+	const dateMonth= dateTime.split("/")[0];
+	const dateYear = dateTime.split("/")[2];
+	for(let i=0; i<dateFields.length; i++){
 			dateFields[i].innerHTML= dateDay+"/"+ dateMonth +"/"+ dateYear;
 	}
 }
 
-function sortTwoColTable(tableId) {
-  var table, rows, switching, i, x, y, shouldSwitch;
-  table = document.querySelector(tableId);
-  switching = true;
+const numberformatter  = (val, isFinancial)=>{
+	 const value = isFinancial==true?setCurrency(formatNum(addCommas(parseFloat(val)))):formatNum(addCommas(parseFloat(val)));
+	 return value;
+}
+
+const formatNum = (val) => {
+    const formattedValue = value < 0 ? '(' + output.replace('-', '') + ')' : output;
+    return formattedValue;
+}
+
+const setCurrency = val =>{
+	const currencyValue = val.chartAt(0)='('?val.substr(0,1)+'£'+val.substr(1,val.length):'£'+val;
+}
+
+const sortTwoColTable = (tableId)=>{ 
+  const table = document.querySelector(tableId);
+  let shouldSwitch, i;
+  let switching = true;
   while (switching) {
     switching = false;
-    rows = table.rows;
-    for (i = 1; i < (rows.length - 1); i++) {
+    const rows = table.rows;
+    for(i = 1; i < (rows.length - 1); i++) {
       shouldSwitch = false;
-      rowOne = rows[i].getElementsByTagName("td")[0].getElementsByTagName("input")[0].value;
-      rowTwo = rows[i +1].getElementsByTagName("td")[0].getElementsByTagName("input")[0].value;
+      const rowOne = rows[i].getElementsByTagName("td")[0].getElementsByTagName("input")[0].value;
+      const rowTwo = rows[i +1].getElementsByTagName("td")[0].getElementsByTagName("input")[0].value;
       if (rowOne.toLowerCase() > rowTwo.toLowerCase()) {
         shouldSwitch = true;
         break;
@@ -757,126 +775,75 @@ function sortTwoColTable(tableId) {
 }
 
 //traffic light filters
-
-function moreThanZero(location){
-	var figure=document.querySelector(location).value;
-	if(figure==undefined){
-		figure=document.querySelector(location).innerHTML;
-	}
-	if(String(figure).charAt(0)=='£'){
-		var figureLength = figure.length;
-		var numericFigure = figure.substr(2,figureLength);
-	}else{
-		var numericFigure = figure;
-	}
-	if(parseInt(numericFigure)>0){
-		document.querySelector(location).setAttribute('class','green-text center-align');
-	}
-	else if(parseInt(numericFigure)<0){
-		document.querySelector(location).setAttribute('class','red-text center-align');
-	}else{
-		document.querySelector(location).setAttribute('class','orange-text center-align');
-	}
+const moreThanZero = location=>{
+	const figure=(document.querySelector(location).value==undefined)?document.querySelector(location).innerHTML:document.querySelector(location).value;
+	const figureLength = figure.length;
+	const fieldClass = (String(figure).charAt(0)=='(')?'red-text center-align':
+					   (String(figure).charAt(1)=='0')?'orange-text center-align':
+					   'green-text center-align';
+	document.querySelector(location).setAttribute('class',fieldClass);
 }
 
-function lessThanZero(figure, location){
-	if(figure.charAt(0)=='£'){
-		var figureLength = figure.length;
-		var numericFigure = figure.substr(2,figureLength);
-	}else{
-		var numericFigure = figure;
-	}
-	if(parseInt(numericFigure)>0){
-		document.querySelector(location).setAttribute('class','red-text center-align');
-	}
-	else if(parseInt(numericFigure)<0){
-		document.querySelector(location).setAttribute('class','green-text center-align');
-	}else{
-		document.querySelector(location).setAttribute('class','orange-text center-align');
-	}
+const lessThanZero = (figure, location)=>{
+	const figureLength = figure.length;
+	const numericFigure = (figure.charAt(0)=='£')?figure.substr(2,figureLength):figure;
+	const fieldClass = parseInt(numericFigure)>0?'red-text center-align':
+					   parseInt(numericFigure)<0?'green-text center-align':
+					   'orange-text center-align';
+	document.querySelector(location).setAttribute('class',fieldClass);
 }
 
-function lessThanZero2Colours(figure, location){
-	if(figure.charAt(0)=='£'){
-		var figureLength = figure.length;
-		var numericFigure = figure.substr(2,figureLength);
-	}else{
-		var numericFigure = figure;
-	}
-	if(parseInt(numericFigure)>0){
-		document.querySelector(location).setAttribute('class','red-text center-align');
-	}else{
-		document.querySelector(location).setAttribute('class','green-text center-align');
-	}
+const lessThanZero2Colours = (figure, location)=>{
+	const figureLength = figure.length;
+	const numericFigure = (figure.charAt(0)=='£')?figure.substr(2,figureLength):figure;
+	const fieldClass=parseInt(numericFigure)>0?'red-text center-align':'green-text center-align'
+	document.querySelector(location).setAttribute('class',fieldClass);
 }
 
-function moreThanOnePct(figure, location){
-	if(figure.charAt(0)=='£'){
-		var figureLength = figure.length;
-		var numericFigure = figure.substr(2,figureLength);
-	}else{
-		var numericFigure = figure;
-	}
-	if(parseInt(numericFigure)>0.99){
-		document.querySelector(location).setAttribute('class','red-text center-align');
-	}
-	else{
-		document.querySelector(location).setAttribute('class','green-text center-align');
-	}
+const moreThanOnePct = (figure, location)=>{
+	const figureLength = figure.length;
+	const numericFigure = (figure.charAt(0)=='£')?figure.substr(2,figureLength):figure;
+	const fieldClass =(parseInt(numericFigure)>0.99)?'red-txt center-align':'green-text center-align'
+	document.querySelector(location).setAttribute('class',fieldClass);
 }
 
-function targetComparison(projectKpiFigure, monthlyKpiFigure, location){
-	var projectKpi = projectKpiFigure
+const targetComparison = (projectKpiFigure, monthlyKpiFigure, location)=>{
+	let projectKpi = projectKpiFigure
 	if(projectKpi==''){projectKpi='0'};
-	if(parseInt(monthlyKpiFigure)>parseInt(projectKpi)){
-		document.querySelector(location).setAttribute('class','red-text center-align');
-	}else{
-		document.querySelector(location).setAttribute('class','green-text center-align');
-	}
+	const fieldClass =(parseInt(monthlyKpiFigure)>parseInt(projectKpi))?'red-txt center-align':'green-text center-align'
+	document.querySelector(location).setAttribute('class',fieldClass);
 }
 
-function progressTrafficLight(figure, location){
-	var progressFigure= parseInt(figure);
-	if(progressFigure < -2){
-		document.querySelector(location).setAttribute('class','red-text center-align');
-	}else if(progressFigure>=0){
-		document.querySelector(location).setAttribute('class','green-text center-align');
-	}else{
-		document.querySelector(location).setAttribute('class','orange-text center-align');
-	}
+const progressTrafficLight = (figure, location)=>{
+	const progressFigure= parseInt(figure);
+	const fieldClass = parseInt(numericFigure)<-2?'green-text center-align':
+					   parseInt(numericFigure)>=0?'red-text center-align':
+					   'orange-text center-align';
+	document.querySelector(location).setAttribute('class',fieldClass);
 }
 
 //Populating tables
-function findConsiderateConstructorVariance(){
-	var considerateConstructorScore = document.querySelector('#considerateConstructorActual').value-document.querySelector('#considerateConstructorTarget').value;
-	if(isNaN(considerateConstructorScore)){
-		return '';
-	}
-	else{
-		return considerateConstructorScore;
-	}
+const findConsiderateConstructorVariance = ()=>{
+	const considerateConstructorScore = document.querySelector('#considerateConstructorActual').value-document.querySelector('#considerateConstructorTarget').value;
+	return isNaN(considerateConstructorScore)?'':considerateConstructorScore;
 }
 
-function findPercentage(value,totalOf){
-	if(isNaN(value)){
-		return '';
-	}else{
-		return ((value/totalOf)*100);
-	}
+const findPercentage = (value,totalOf)=>{
+	return isNaN(value)? '': ((value/totalOf)*100);
 }
 
-function getLastMonthlyKpiItem(){
-	monthlyKPIdata = result.monthlyKPI;
-	var indexOfLastItem = result.monthlyKPI.length;
+const getLastMonthlyKpiItem = ()=>{
+	const monthlyKPIdata = result.monthlyKPI;
+	const indexOfLastItem = result.monthlyKPI.length;
 	return indexOfLastItem;
 }
 
-function getLastTurnoverItem(){
+const getLastTurnoverItem = ()=>{
 	turnoverData = result.Turnover
 }
 
-function populateTables(){
-	weeksCompleted = parseInt(result.timeValue.WeeksCompleted);
+const populateTables = ()=>{
+	const weeksCompleted = parseInt(result.timeValue.WeeksCompleted);
 	tblAccidentType('#ByTypeTbl');
 	tblAccidentTrade('#ByTradeTbl');
 	//Import CWD and Record Of Labour Information
@@ -892,7 +859,6 @@ function populateTables(){
 	createProgressTbl();
 	createCwdToDateTbl();
 	createMonthlyCwdTbl();
-	sortTwoColTable('#monthlyCwdTbl');
 	createPredTurnoverTbl();
 	createCostflowTbl();
 	createMonthlyKPITbl();
@@ -911,6 +877,9 @@ function populateTables(){
 	
 	//progress
 	populateProgressTbl();
+	fillCwdTbl(result.CWDsTotal,'#totalCwdSubbie');
+	fillCwdTbl(result.CWDsMonthly,'#monthlyCwdSubbie');
+	sortTwoColTable('#monthlyCwdTbl');
 	//ProjectKPIs
 	populateRecordOfLabourTbl();
 	createDaysLostTbl();
@@ -923,38 +892,38 @@ function populateTables(){
 	createComplainceAuditTbl();
 }
 
-function populateKpiTable(){
+const populateKpiTable = ()=>{
 	//Adherence to Prelim Budget
 	document.querySelector('#adherencePctTarget').value = result.projectKPIs.AdherenceTgtPct;
-	document.querySelector('#adherenceTarget').value = '£'+ addCommas(result.projectKPIs.AdherenceTarget);
-	document.querySelector('#adherenceActual').value = '£'+addCommas(result.projectKPIs.AdherenceActual);
+	document.querySelector('#adherenceTarget').value = addCommas(result.projectKPIs.AdherenceTarget);
+	document.querySelector('#adherenceActual').value = addCommas(result.projectKPIs.AdherenceActual);
 	percentageDifference(parseInt(result.projectKPIs.AdherenceActual),parseInt(result.projectKPIs.AdherenceTarget),'#adherencePctActual');
 	calculateVariance(document.querySelector('#adherencePctActual').value,result.projectKPIs.AdherenceTgtPct, '#adherencePctVariance');
 	calculateVariance(result.projectKPIs.AdherenceActual, result.projectKPIs.AdherenceTarget, '#adherenceVariance' );
 	//Monthly Predictability of Cash Flow
 	document.querySelector('#monthlyCashflowPctTarget').value = result.projectKPIs.MonthlyCashFlowPredTgtPct;
-	document.querySelector('#monthlyCashflowTarget').value = '£'+addCommas(result.valueInformation.QtrTurnOverMonthForeCast);//same as forecastMTurnover
-	document.querySelector('#monthlyCashflowActual').value = '£'+addCommas(result.valueInformation.MonthlyValue);//same as valMTurnover
-	calculateVariance(result.valueInformation.MonthlyValue, result.valueInformation.QtrTurnOverMonthForeCast, '#monthlyCashflowVariance' );
-	percentageDifference(result.valueInformation.MonthlyValue,result.valueInformation.QtrTurnOverMonthForeCast,'#monthlyCashflowPctActual')
+	document.querySelector('#monthlyCashflowTarget').value = addCommas(result.valueInformation.MonthlyForecastTurnover);//same as forecastMTurnover
+	document.querySelector('#monthlyCashflowActual').value = addCommas(result.valueInformation.ValInMonthTurnover);//same as valMTurnover
+	calculateVariance(result.valueInformation.ValInMonthTurnover, result.valueInformation.MonthlyForecastTurnover, '#monthlyCashflowVariance' );
+	percentageDifference(result.valueInformation.ValInMonthTurnover,result.valueInformation.MonthlyForecastTurnover,'#monthlyCashflowPctActual')
 	calculatePercentageVariance(document.querySelector('#monthlyCashflowPctActual').value, result.projectKPIs.MonthlyCashFlowPredTgtPct, '#monthlyCashflowPctVariance' );
 	//Quarterly Predictability of Cash Flow
 	document.querySelector('#qtrCashflowPctTarget').value = result.projectKPIs.QtrCashFlowPredTgtPct;
-	document.querySelector('#qtrCashflowTarget').value = '£'+addCommas(result.valueInformation.QtrTurnOverCumForeCast);//same as forecastMTurnover
-	document.querySelector('#qtrCashflowActual').value = '£'+addCommas(result.valueInformation.QtrTurnOverCumActual);//same as valMTurnover
-	calculateVariance(result.valueInformation.QtrTurnOverCumActual, result.valueInformation.QtrTurnOverCumForeCast, '#qtrCashflowVariance' );
-	percentageDifference(result.valueInformation.QtrTurnOverCumActual,result.valueInformation.QtrTurnOverCumForeCast,'#qtrCashflowPctActual')
+	document.querySelector('#qtrCashflowTarget').value = addCommas(result.valueInformation.ForecastForQuarterTurnover);//same as forecastMTurnover
+	document.querySelector('#qtrCashflowActual').value = addCommas(result.valueInformation.ValInQuarterTurnover);//same as valMTurnover
+	calculateVariance(result.valueInformation.ValInQuarterTurnover, result.valueInformation.ForecastForQuarterTurnover, '#qtrCashflowVariance' );
+	percentageDifference(result.valueInformation.ValInQuarterTurnover,result.valueInformation.ForecastForQuarterTurnover,'#qtrCashflowPctActual')
 	calculatePercentageVariance(document.querySelector('#qtrCashflowPctActual').value, result.projectKPIs.QtrCashFlowPredTgtPct, '#qtrCashflowPctVariance' );
 	//Non-Recoverable Works
 	document.querySelector('#nonRecWorksPctTarget').value = result.projectKPIs.NonRecWorksTgtPct;
 	document.querySelector('#nonRecWorksPctActual').value = ((result.projectKPIs.NonRecWorksActPct)*100).toFixed(0);
 	document.querySelector('#nonRecWorksTarget').value = '£0';
-	document.querySelector('#nonRecWorksActual').value = '£'+addCommas(result.projectKPIs.NonRecoverableWorks);
+	document.querySelector('#nonRecWorksActual').value = addCommas(result.projectKPIs.NonRecoverableWorks);
 	calculateVariance(result.projectKPIs.NonRecoverableWorks, document.querySelector('#nonRecWorksTarget').value, '#nonRecWorksVariance');
 	calculatePercentageVariance(document.querySelector('#nonRecWorksPctActual').value, result.projectKPIs.NonRecWorksTgtPct, '#nonRecWorksPctVariance' );
 	//Predicability of Programme
-	document.querySelector('#predOfProgramTarget').value = '£'+100;
-	document.querySelector('#predOfProgramActual').value = '£'+addCommas(result.projectKPIs.PredOfProgrammeAct);
+	document.querySelector('#predOfProgramTarget').value = 100;
+	document.querySelector('#predOfProgramActual').value = addCommas(result.projectKPIs.PredOfProgrammeAct);
 	calculatePercentageVariance(result.projectKPIs.PredOfProgrammeAct,document.querySelector('#predOfProgramTarget').value,  '#predOfProgramVariance' );
 	//HS Audit Score
 	document.querySelector('#HSAuditPctTarget').value = result.projectKPIs.HAuditScoreTgtPct;
@@ -988,7 +957,7 @@ function populateKpiTable(){
 	//document.constructDate('#energy100kAct').innerHTML = document.constructDate('#emitFromEnergyKgCo2Per100k_'+projectMonths.length).innerHTML;
 }
 
-function populateSummaryKpiTable(){
+const populateSummaryKpiTable = ()=>{
 	//Adherence to Prelim Budget
 	document.querySelector('#adherence_Tgt').innerHTML = document.querySelector('#adherencePctTarget').value;
 	document.querySelector('#adherence_Act').innerHTML = document.querySelector('#adherencePctActual').value;
@@ -1002,7 +971,7 @@ function populateSummaryKpiTable(){
 	moreThanZero('#monthlyCashflow_Var');
 	//Quarterly Predictability of Cash Flow
 	document.querySelector('#qtrCashflow_Tgt').innerHTML = document.querySelector('#qtrCashflowPctTarget').value;
-	document.querySelector('#qtrCashflow_Act').innerHTML = document.querySelector('#qtrCashflowVariance' ).value;
+	document.querySelector('#qtrCashflow_Act').innerHTML = document.querySelector('#qtrCashflowPctActual' ).value;
 	document.querySelector('#qtrCashflow_Var').innerHTML = document.querySelector('#qtrCashflowPctVariance').value
 	moreThanZero('#qtrCashflow_Var');
 	//Non-Recoverable Works
@@ -1051,21 +1020,16 @@ function populateSummaryKpiTable(){
 	moreThanZero('#waste100k_Var');
 }
 
-function populateProgressTbl(){
-	var progressInfo = result.progress;
-	var index=1;
+const populateProgressTbl = ()=>{
+	const progressInfo = result.progress;
+	let index=1;
 	for(var key in progressInfo){
 		if(key!='ContractNumber'){
-			for(var i=0;i<2;i++){
-				switch(i){
-					case 0:
-						document.querySelector('#'+key+'Date').value=key;
-						break;
-					case 1:
-						document.querySelector('#'+key+'Weeks').value = result.progress[key];
-						moreThanZero('#'+key+'Weeks');
-						break;
-				}
+			for(let i=0;i<2;i++){
+				const fieldID=(i==0)?'#'+key:'#'+key+'Value';
+				const fieldValue = (i==0)?key:result.progress[key];
+				document.querySelector(fieldID).value = fieldValue;
+				if(i==1){moreThanZero(fieldID)};
 			}
 			index++;
 		}
@@ -1074,123 +1038,113 @@ function populateProgressTbl(){
 
 
 //calculation functions
-function calculateVariance(fig1, fig2, targetField){
-	var difference = (parseFloat(fig1.replace(/,/g, '')) - parseFloat(fig2.replace(/,/g, ''))).toFixed(0);
-	var numericVariance =addCommas(difference);
-	document.querySelector(targetField).value = '£'+numericVariance
+const calculateVariance = (fig1, fig2, targetField)=>{
+	const difference = (parseFloat(fig1.replace(/,/g, '')) - parseFloat(fig2.replace(/,/g, ''))).toFixed(0);
+	const numericVariance =formatNum(difference,true);
+	document.querySelector(targetField).value = numericVariance
 	moreThanZero(targetField);
 }
 
-function calculatePercentageVariance(fig1, fig2, targetField){
-	if(isNaN(fig1)||fig1==''||isNaN(fig2)||fig2==''){
+const calculatePercentageVariance = (fig1, fig2, targetField)=>{
+	const actualPercentage  = parseFloat(fig1);
+	const targetPercentage = parseFloat(fig2);
+	if(isNaN(actualPercentage)||actualPercentage==''||isNaN(targetPercentage)||targetPercentage==''){
 		document.querySelector(targetField).value='';
 	}else{
-		var difference = (parseFloat(fig1.replace(/,/g, '')) - parseFloat(fig2.replace(/,/g, '')));
-		var variance = ((difference/fig2)*100).toFixed(1);
-		var numericVariance = parseFloat(variance);
+		const difference = actualPercentage - targetPercentage;
+		const variance = ((difference/targetPercentage)*100).toFixed(1);
+		const numericVariance = parseFloat(variance);
 		document.querySelector(targetField).value = numericVariance;
 		moreThanZero(targetField);
 	}
 }
 
-function percentageDifference(actualFig, targetFig, percentageField){
-	var actualDifference = ((Number(actualFig)/Number(targetFig))*100).toFixed(0);
+const percentageDifference = (actualFig, targetFig, percentageField)=>{
+	const actualDifference = ((Number(actualFig)/Number(targetFig))*100).toFixed(0);
 	document.querySelector(percentageField).value=addCommas(parseInt(actualDifference))+'%'; 
 }
 
 //summary section - structure
 
-function createSummarySections(){
+const createSummarySections = ()=>{
 	createTopSummaryRow('#summary-page');
 	createMiddleSummaryRow('#summary-page');
 	createBottomSummaryRow('#summary-page');
 }
 
-function createTopSummaryRow(location){
-	var rowLocation = document.querySelector(location);
-	var rowContents = createDiv('topRow', 'row');
-	var summaryProgress = createGraphCard('col s12 l6', 'summaryProgress', 'summaryProgressContnet', 'Progress');
+const createTopSummaryRow = location=>{
+	const rowLocation = document.querySelector(location);
+	const rowContents = createDiv('topRow', 'row');
+	const summaryProgress = createGraphCard('col s12 l6', 'summaryProgress', 'summaryProgressContnet', 'Progress');
 	rowContents.appendChild(summaryProgress);
-	var leftDiv= createMultiDataCard('col s12 l6', 'financial', 2, 'Financial', ['Value Information','Summary of Overhead Contribution']);
+	const leftDiv= createMultiDataCard('col s12 l6', 'financial', 2, 'Financial', ['Value Information','Summary of Overhead Contribution']);
 	rowContents.appendChild(leftDiv);
 
 	rowLocation.appendChild(rowContents);
 }
 
-function createMiddleSummaryRow(location){
-	var rowLocation = document.querySelector(location);
-	var rowContents = createDiv('middleRow','row');
-	var hsGraph = createGraphCard('col s12 l6', 'hsGraph', 'hsGraphSection', 'Health and Safety');
+const createMiddleSummaryRow = location=>{
+	const rowLocation = document.querySelector(location);
+	const rowContents = createDiv('middleRow','row');
+	const hsGraph = createGraphCard('col s12 l6', 'hsGraph', 'hsGraphSection', 'Health and Safety');
 	rowContents.appendChild(hsGraph);
-	var projectKpiTable = createDataCard('col s12 l6', 'summaryProjectKpi', 'summaryProjectKpi', 'Project KPIs');
+	const projectKpiTable = createDataCard('col s12 l6', 'summaryProjectKpi', 'summaryProjectKpi', 'Project KPIs');
 	rowContents.appendChild(projectKpiTable);
 	rowLocation.appendChild(rowContents);
 }
 
-function createBottomSummaryRow(location){
-	var rowLocation = document.querySelector(location);
-	var rowContents = createDiv('bottomRow','row');
-	var timeValueData = createDataCard('col s12 l6', 'completionDate', 'completionTable', 'CompletionDates');
+const createBottomSummaryRow = location=>{
+	const rowLocation = document.querySelector(location);
+	const rowContents = createDiv('bottomRow','row');
+	const timeValueData = createDataCard('col s12 l6', 'completionDate', 'completionTable', 'CompletionDates');
 	rowContents.appendChild(timeValueData);
-	var timeGraph = createGraphCard('col s6', 'timeGraph', 'timeGraphSection', 'Time');
+	const timeGraph = createGraphCard('col s6', 'timeGraph', 'timeGraphSection', 'Time');
 	rowContents.appendChild(timeGraph);
-	var valueGraph = createGraphCard('col s6', 'valueGraph', 'valueeGraphSection', 'Value');
+	const valueGraph = createGraphCard('col s6', 'valueGraph', 'valueeGraphSection', 'Value');
 	rowContents.appendChild(valueGraph);
 	rowLocation.appendChild(rowContents);
 }
 
 //summary section - create tables
 
-function createValuationInfoTbl(){
-	var tableLocation = document.querySelector('#ValueInformationTbl')
-	var valInfoTable = document.createElement('table');
+const createValuationInfoTbl = ()=>{
+	const tableLocation = document.querySelector('#ValueInformationTbl')
+	const valInfoTable = document.createElement('table');
 	valInfoTable.setAttribute('class','striped')
 
-	var tableHeader = document.createElement('thead');
-	var HeaderRow = document.createElement('tr');
-	for(var i=0;i<3;i++){
-		var rowCell = document.createElement('th');
+	const tableHeader = document.createElement('thead');
+	const HeaderRow = document.createElement('tr');
+	for(let i=0;i<3;i++){
+		const rowCell = document.createElement('th');
 		rowCell.setAttribute('class','center-align');
-		if(i==1){
-			var rowCellText = document.createTextNode('Turnover');
-			rowCell.appendChild(rowCellText);
-		}else if(i==2){
-			var rowCellText = document.createTextNode('Margin');
+		const rowCellText=(i==1)?document.createTextNode('Turnover'):document.createTextNode('Margin');
+		if(i>0){
 			rowCell.appendChild(rowCellText);
 		}
 		HeaderRow.appendChild(rowCell);
 	}
 	tableHeader.appendChild(HeaderRow);
 	valInfoTable.appendChild(tableHeader);
-	var valInfoRowIds=['val','monthlyVal','monthlyForecast','monthlyVariance','qtrValue','qtrForecast','qtrVariance'];
-	var valInfoRows=['Valuation to Date','Value in Month', 'Forecast for Month', 'Variance','Value in Quarter','Forecast for Quarter','Variance'];
-	var tableBody = document.createElement('tbody');
-	for(var i=0; i<valInfoRows.length;i++){
-		var bodyRow = document.createElement('tr');
-		var fieldID=valInfoRowIds[i];
-		for(var j=0;j<3;j++){
+	const valInfoRowIds=['val','monthlyVal','monthlyForecast','monthlyVariance','qtrValue','qtrForecast','qtrVariance'];
+	const valInfoRows=['Valuation to Date','Value in Month', 'Forecast for Month', 'Variance','Value in Quarter','Forecast for Quarter','Variance'];
+	const tableBody = document.createElement('tbody');
+	for(let i=0; i<valInfoRows.length;i++){
+		const bodyRow = document.createElement('tr');
+		for(let j=0;j<3;j++){
+			const bodyCell=(j==0)?document.createElement('th'):document.createElement('td');
 			switch(j){
 				case 0:
-					var bodyCell = document.createElement('th');
-					var bodyCellText = document.createTextNode(valInfoRows[i]);
+					const bodyCellText = document.createTextNode(valInfoRows[i]);
 					bodyCell.appendChild(bodyCellText);
 					break;
 				case 1:
-					var bodyCell = document.createElement('td');
-					var bodyCellInput = document.createElement('input');
-					bodyCellInput.setAttribute('class','center-align');
-					bodyCellInput.setAttribute('type','text');
-					bodyCellInput.setAttribute('id',fieldID+'Turnover'); 
-					bodyCellInput.setAttribute('name',fieldID+'Turnover');
-					bodyCell.appendChild(bodyCellInput);
-					break;
 				case 2:
-					var bodyCell = document.createElement('td');
-					var bodyCellInput = document.createElement('input');
+					const bodyCellInput = document.createElement('input');
+					const fieldID=(j==1)?valInfoRowIds[i]+'Turnover':valInfoRowIds[i]+'Margin';
 					bodyCellInput.setAttribute('class','center-align');
 					bodyCellInput.setAttribute('type','text');
-					bodyCellInput.setAttribute('id',fieldID+'Margin'); 
-					bodyCellInput.setAttribute('name',fieldID+'Margin');
+					bodyCellInput.setAttribute('id',fieldID); 
+					bodyCellInput.setAttribute('name',fieldID);
 					bodyCell.appendChild(bodyCellInput);
 					break;
 			}
@@ -1202,66 +1156,42 @@ function createValuationInfoTbl(){
 	tableLocation.appendChild(valInfoTable);
 }
 
-function createOverheardContributionTbl(){
-	var overheadContributionTblLoc = document.querySelector('#SummaryofOverheadContributionTbl');
-	var overheadContributionTbl = document.createElement('table');
+const createOverheardContributionTbl = ()=>{
+	const overheadContributionTblLoc = document.querySelector('#SummaryofOverheadContributionTbl');
+	const overheadContributionTbl = document.createElement('table');
 	overheadContributionTbl.setAttribute('class','striped responsive');
-	var tblHeader = document.createElement('thead');
-	var tblHeaderRow = document.createElement('tr');
-	var tblRows=["SubContractors", "Materials", "Consultants", "Stats", "Preliminaries", "Others", "OHP", "Total"];
-	for(var i = 0;i<3;i++){
-		var tblHeaderRowCell = document.createElement('th');
+	const tblHeader = document.createElement('thead');
+	const tblHeaderRow = document.createElement('tr');
+	const tblRows=["SubContractors", "Materials", "Consultants", "Stats", "Preliminaries", "Others", "OHP", "Total"];
+	for(let i = 0;i<3;i++){
+		const tblHeaderRowCell = document.createElement('th');
 		tblHeaderRowCell.setAttribute('class','center-align');
-		var tblHeaderRowCellText;
-		switch(i){
-			case 0:
-				break;
-			case 1:
-				tblHeaderRowCellText = document.createTextNode('Gross');
-				tblHeaderRowCell.appendChild(tblHeaderRowCellText);
-				break;
-			case 2:
-				tblHeaderRowCellText = document.createTextNode('Movement');
-				tblHeaderRowCell.appendChild(tblHeaderRowCellText);
-				break;
-		}
+		const tblHeaderRowCellText=(i==1)?document.createTextNode('Gross'):document.createTextNode('Movement');
+		if(i>0){tblHeaderRowCell.appendChild(tblHeaderRowCellText)};
 		tblHeaderRow.appendChild(tblHeaderRowCell);
 	}
 	tblHeader.appendChild(tblHeaderRow)
 	overheadContributionTbl.appendChild(tblHeader);
-	var tblBody = document.createElement('tbody');
-	var rowNum = tblRows.length;
-	for (var i=0; i<rowNum; i++){
-		var tblBodyRow = document.createElement('tr');
-		for(var k=0; k<rowNum; k++){
-			var tblBodyRowCell;
-			var tblBodyRowCellText;
-			var fieldID=tblRows[i].toLowerCase();
+	const tblBody = document.createElement('tbody');
+	const rowNum = tblRows.length;
+	for (let i=0; i<rowNum; i++){
+		const tblBodyRow = document.createElement('tr');
+		for(let k=0; k<rowNum; k++){
+			const tblBodyRowCell =(k==0)?document.createElement('th'):document.createElement('td');
 			switch(k){
 				case 0:
-					tblBodyRowCell = document.createElement('th');
-					tblBodyRowCellText = document.createTextNode(tblRows[i]);
+					const tblBodyRowCellText = document.createTextNode(tblRows[i]);
 					tblBodyRowCell.appendChild(tblBodyRowCellText);
 					tblBodyRow.appendChild(tblBodyRowCell);
 					break;
 				case 1:
-					tblBodyRowCell = document.createElement('td');
-					var bodyRowInput = document.createElement('input');
-					bodyRowInput.setAttribute('class','center-align');
-					bodyRowInput.setAttribute('type','text');
-					bodyRowInput.setAttribute('id',fieldID + 'Gross');
-					bodyRowInput.setAttribute('name',fieldID + 'Gross');
-					tblBodyRowCell.appendChild(bodyRowInput);
-					tblBodyRow.appendChild(tblBodyRowCell);
-					break;
 				case 2:
-					tblBodyRowCell = document.createElement('td');
-					var bodyRowInput = document.createElement('input');
+					const bodyRowInput = document.createElement('input');
+					const fieldID=(k==1)?tblRows[i].toLowerCase()+'Gross':tblRows[i].toLowerCase()+'Movement';
 					bodyRowInput.setAttribute('class','center-align');
 					bodyRowInput.setAttribute('type','text');
-					bodyRowInput.setAttribute('id',fieldID + 'Movement');
-					bodyRowInput.setAttribute('name',fieldID + 'Movement');
-					tblBodyRowCell.setAttribute('class','center-align');
+					bodyRowInput.setAttribute('id',fieldID);
+					bodyRowInput.setAttribute('name',fieldID);
 					tblBodyRowCell.appendChild(bodyRowInput);
 					tblBodyRow.appendChild(tblBodyRowCell);
 					break;
@@ -1273,123 +1203,71 @@ function createOverheardContributionTbl(){
 	overheadContributionTblLoc.appendChild(overheadContributionTbl);
 }
 
-function createProjectKPITbl(){
-	var projectKpiTblLoc = document.querySelector('#summaryProjectKpi');
-	var projectKpiTbl = document.createElement('table');
+const createProjectKPITbl = ()=>{
+	const projectKpiTblLoc = document.querySelector('#summaryProjectKpi');
+	const projectKpiTbl = document.createElement('table');
 	projectKpiTbl.setAttribute('class','striped');
-	var projectKpiHeader = document.createElement('thead');
-	var projectKpiHeaderNames = ["","","Target","Acutal","Variance",];
-	var kpiHeaderRow = document.createElement('tr');
-	for(var i=0;i<5;i++){
-		var projectKpiHeaderCell = document.createElement("th");
+	const projectKpiHeader = document.createElement('thead');
+	const projectKpiHeaderNames = ["","","Target","Acutal","Variance",];
+	const kpiHeaderRow = document.createElement('tr');
+	for(let i=0;i<5;i++){
+		const projectKpiHeaderCell = document.createElement("th");
 		if(i>0){
-			var projectKpiHeaderText = document.createTextNode(projectKpiHeaderNames[i]);
+			const projectKpiHeaderText = document.createTextNode(projectKpiHeaderNames[i]);
 			projectKpiHeaderCell.appendChild(projectKpiHeaderText);
 		}
 		kpiHeaderRow.appendChild(projectKpiHeaderCell);
 		projectKpiHeader.appendChild(kpiHeaderRow);
 	}
 	projectKpiTbl.appendChild(projectKpiHeader);
-	var projectKpiBody = document.createElement('tbody')
-	var projectKpiTblRows=["Adherence to Prelim Budget", "Predictability to Cash Flow (month)", "Predictability to Cash Flow (Qtr)", "Non Recoverable Works", "Predictability of Programme", "H&S Audit Score", "H&S Accident Incident Rate", "Considerate Constructor Score", "Monthly Usage", "Energy kgCO2 per 100k", "Monthly Waste", "Waste per £100k Turnover"];
+	const projectKpiBody = document.createElement('tbody')
+	const projectKpiTblRows=["Adherence to Prelim Budget", "Predictability to Cash Flow (month)", "Predictability to Cash Flow (Qtr)", "Non Recoverable Works", "Predictability of Programme", "H&S Audit Score", "H&S Accident Incident Rate", "Considerate Constructor Score", "Monthly Usage", "Energy kgCO2 per 100k", "Monthly Waste", "Waste per £100k Turnover"];
 	
-	var projectKpiTblRowId=["adherence","monthlyCashflow","qtrCashflow","nonRecWorks","predOfProgram","HSAudit","HSAccidentRate","considerateConstructor",	"water100k","energy100k","pctSkipWaste","waste100k"];
-	for (var projectKpiRowNum=0; projectKpiRowNum<projectKpiTblRows.length; projectKpiRowNum++){
-		var projectKpiBodyRow = document.createElement("tr");
-		var cellCount;
-		switch(projectKpiRowNum){
-			case 0:
-			case 1:
-			case 2:
-			case 3:
-			case 4:
-			case 5:
-			case 6:
-			case 7:
-			case 9:
-			case 11:
-				cellCount = 4;
-				break;
-			case 8:
-			case 10:
-				cellCount = 5;
-				break;
-		}
+	const projectKpiTblRowId=["adherence","monthlyCashflow","qtrCashflow","nonRecWorks","predOfProgram","HSAudit","HSAccidentRate","considerateConstructor",	"water100k","energy100k","pctSkipWaste","waste100k"];
+	for (let j=0; j<projectKpiTblRows.length; j++){
+		let fieldId;
+		const projectKpiBodyRow = document.createElement("tr");
+		const cellCount=(j==8 ||j==10)?5:4;
 		if(cellCount==4){
-			if(projectKpiRowNum<=7){
-				for(var projectKpiCellNum=0; projectKpiCellNum<cellCount;projectKpiCellNum++){
-					var projectKpiCellBody = document.createElement("td")
-					switch(projectKpiCellNum){
-						case 0:
-							projectKpiCellBody.setAttribute('colspan','2');
-							projectKpiCellBody.setAttribute('id', projectKpiTblRowId[projectKpiRowNum]+'_Ttl');
-							projectKpiCellBody.innerHTML = projectKpiTblRows[projectKpiRowNum];
-							break;
-						case 1:
-							projectKpiCellBody.setAttribute('id', projectKpiTblRowId[projectKpiRowNum]+'_Tgt');
-							break;
-						case 2:
-							projectKpiCellBody.setAttribute('id', projectKpiTblRowId[projectKpiRowNum]+'_Act');
-							break;
-						case 3:
-							projectKpiCellBody.setAttribute('id', projectKpiTblRowId[projectKpiRowNum]+'_Var');
-							break;
-					}
-					projectKpiBodyRow.appendChild(projectKpiCellBody);
+			for(let k=0; k<cellCount;k++){
+				const projectKpiCellBody = document.createElement("td")
+				fieldId = (k==0)?projectKpiTblRowId[j]+'_Ttl':
+						(k==1)?projectKpiTblRowId[j]+'_Tgt':
+						(k==2)?projectKpiTblRowId[j]+'_Act':
+						projectKpiTblRowId[j]+'_Var';
+				projectKpiCellBody.setAttribute('id', fieldId);
+				if(k==0){
+					if(j<=7){projectKpiCellBody.setAttribute('colspan','2')};
+					projectKpiCellBody.innerHTML = projectKpiTblRows[j];
 				}
-			}else{
-				for(var projectKpiCellNum=0; projectKpiCellNum<cellCount;projectKpiCellNum++){
-					var projectKpiCellBody = document.createElement("td")
-					switch(projectKpiCellNum){
-						case 0:
-							projectKpiCellBody.innerHTML = projectKpiTblRows[projectKpiRowNum];
-							break;
-						case 1:
-							projectKpiCellBody.setAttribute('id', projectKpiTblRowId[projectKpiRowNum]+'_Tgt');
-							break;
-
-						case 2:
-							projectKpiCellBody.setAttribute('id', projectKpiTblRowId[projectKpiRowNum]+'_Act');
-							break;
-
-						case 3:
-							projectKpiCellBody.setAttribute('id', projectKpiTblRowId[projectKpiRowNum]+'_Var');
-							break;
-
-
-
-					}
-					projectKpiBodyRow.appendChild(projectKpiCellBody);
-				}
+				projectKpiBodyRow.appendChild(projectKpiCellBody);
 			}
 		}else{
-			for(var projectKpiCellNum=0; projectKpiCellNum<cellCount;projectKpiCellNum++){
-					var projectKpiCellBody = document.createElement("td")
-					switch(projectKpiCellNum){
-						case 0:
-							projectKpiCellBody.setAttribute('rowspan','2');
-							projectKpiCellBody.innerHTML = projectKpiTblRows[projectKpiRowNum];
-							break;
-						case 1:
-							if(projectKpiRowNum==8 && projectKpiCellNum==1){
-								projectKpiCellBody.innerHTML = "Water m3 per £100k";
-							}else if(projectKpiRowNum==10 && projectKpiCellNum==1){
-								projectKpiCellBody.innerHTML = "Percentage Skip Waste Recycled";
-							}
-							break;
-						case 2:
-							projectKpiCellBody.setAttribute('id', projectKpiTblRowId[projectKpiRowNum]+'_Tgt');
-							break;
-						case 3:
-							projectKpiCellBody.setAttribute('id', projectKpiTblRowId[projectKpiRowNum]+'_Act');
-							break;
-
-						case 4:
-							projectKpiCellBody.setAttribute('id', projectKpiTblRowId[projectKpiRowNum]+'_Var');
-							break;
-					}
-					projectKpiBodyRow.appendChild(projectKpiCellBody);
+			for(let m=0; m<cellCount;m++){
+				const projectKpiCellBody = document.createElement("td")
+				fieldId = (m==2)?projectKpiTblRowId[j]+'_Tgt':
+						(m==3)?projectKpiTblRowId[j]+'_Act':
+						projectKpiTblRowId[j]+'_Var';
+				switch(m){
+					case 0:
+						projectKpiCellBody.setAttribute('rowspan','2');
+						projectKpiCellBody.innerHTML = projectKpiTblRows[m];
+						break;
+					case 1:
+						if(m==8 && projectKpiCellNum==1){
+							projectKpiCellBody.innerHTML = "Water m3 per £100k";
+						}else if(m==10 && projectKpiCellNum==1){
+							projectKpiCellBody.innerHTML = "Percentage Skip Waste Recycled";
+						}
+						break;
+					case 2:
+					case 3:
+					case 4:
+						projectKpiCellBody.setAttribute('id', fieldId);
+						break;
 				}
+				projectKpiBodyRow.appendChild(projectKpiCellBody);
+			}
 		}
 		projectKpiBody.appendChild(projectKpiBodyRow);
 	}
@@ -1397,29 +1275,24 @@ function createProjectKPITbl(){
 	projectKpiTblLoc.appendChild(projectKpiTbl);
 }
 
-function createCompletionDatesTbl(){
-	var tableLocation = document.querySelector('#completionTable');
-	var completionDateTbl = document.createElement('table');
+const createCompletionDatesTbl = ()=>{
+	const tableLocation = document.querySelector('#completionTable');
+	const completionDateTbl = document.createElement('table');
 	completionDateTbl.setAttribute('class','striped');
-	var tableBody = document.createElement('tbody');
-	var row;
-	var rowID;
-	for(var j=0; j<2; j++){
-		var bodyRow = document.createElement('tr');
-		if(j==0){
-			row = 'Contractual End Date';
-		}else{
-			row ='Estimate End Date';
-		}
-		rowID = row.charAt(0).toLowerCase() + row.substr(1).replace(/\s/g, '');
-		for(var k=0;k<2;k++){
-			if(k==0){
-				var bodyCell = document.createElement('td');
-				var bodyCellText = document.createTextNode(row);
+	const tableBody = document.createElement('tbody');
+	for(let i=0; j<2; j++){
+		const bodyRow = document.createElement('tr');
+		const row= (i==0)?'Contractual End Date':'Estimate End Date';
+		const rowID = row.charAt(0).toLowerCase() + row.substr(1).replace(/\s/g, '');
+		for(let j=0;j<2;j++){
+			let bodyCell;
+			if(j==0){
+				bodyCell = document.createElement('td');
+				const bodyCellText = document.createTextNode(row);
 				bodyCell.appendChild(bodyCellText);
 			}else{
-				var bodyCell = document.createElement('td');
-				var bodyCellInput = document.createElement('input');
+				bodyCell = document.createElement('td');
+				const bodyCellInput = document.createElement('input');
 				bodyCellInput.setAttribute('class','center-align');
 				bodyCellInput.setAttribute('id',rowID);
 				bodyCellInput.setAttribute('name', rowID);
@@ -1436,21 +1309,21 @@ function createCompletionDatesTbl(){
 }
 
 //summary section - fill tables
-function populateValuationInfoTbl(){
-	document.querySelector('#valTurnover').value = result.valueInformation.CumulativeValueGross;
-	document.querySelector('#valMargin').value = result.valueInformation.CumulativeProfitGross;
-	document.querySelector('#monthlyValTurnover').value = result.valueInformation.MonthlyValue;
-	document.querySelector('#monthlyValMargin').value = result.valueInformation.MonthlyProfit;
-	document.querySelector('#monthlyForecastTurnover').value = parseInt(result.valueInformation.QtrTurnOverMonthForeCast);
-	document.querySelector('#monthlyForecastMargin').value = result.valueInformation.QtrProfMonthForeCast;
-	calculateVariance(result.valueInformation.MonthlyValue, result.valueInformation.QtrTurnOverMonthForeCast, '#monthlyVarianceTurnover');
-	calculateVariance(result.valueInformation.MonthlyProfit, result.valueInformation.QtrProfMonthForeCast, '#monthlyVarianceMargin');
-	document.querySelector('#qtrValueTurnover').value = result.valueInformation.QtrTurnOverCumActual;
-	document.querySelector('#qtrValueMargin').value = result.valueInformation.QtrProfCumActual;
-	document.querySelector('#qtrForecastTurnover').value = result.valueInformation.QtrTurnOverCumForeCast;
-	document.querySelector('#qtrForecastMargin').value = result.valueInformation.QtrProfCumForecast;
-	calculateVariance(result.valueInformation.QtrTurnOverCumActual, result.valueInformation.QtrTurnOverCumForeCast, '#qtrVarianceTurnover');
-	calculateVariance(result.valueInformation.QtrProfCumActual, result.valueInformation.QtrProfCumForecast, '#qtrVarianceMargin');
+const populateValuationInfoTbl = ()=>{
+	document.querySelector('#valTurnover').value = formatNum(result.valueInformation.ValtoDateTurnover,true);
+	document.querySelector('#valMargin').value = formatNum(result.valueInformation.ValtoDateMargin,true);
+	document.querySelector('#monthlyValTurnover').value = formatNum(result.valueInformation.ValInMonthTurnover,true);
+	document.querySelector('#monthlyValMargin').value = formatNum(result.valueInformation.ValInMonthMargin,true);
+	document.querySelector('#monthlyForecastTurnover').value = formatNum(result.valueInformation.MonthlyForecastTurnover,true);
+	document.querySelector('#monthlyForecastMargin').value = formatNum(result.valueInformation.MonthlyForecastMargin,true);
+	calculateVariance(result.valueInformation.ValInMonthTurnover, result.valueInformation.MonthlyForecastTurnover , '#monthlyVarianceTurnover');
+	calculateVariance(result.valueInformation.ValInMonthMargin, result.valueInformation.MonthlyForecastMargin, '#monthlyVarianceMargin');
+	document.querySelector('#qtrValueTurnover').value = formatNum(result.valueInformation.ValInQuarterTurnover,true);
+	document.querySelector('#qtrValueMargin').value = formatNum(result.valueInformation.ValInQuarterMargin,true);
+	document.querySelector('#qtrForecastTurnover').value = formatNum(result.valueInformation.ForecastForQuarterTurnover,true);
+	document.querySelector('#qtrForecastMargin').value = formatNum(result.valueInformation.ForecastForQuarterMargin,true);
+	calculateVariance(result.valueInformation.ValInQuarterTurnover, result.valueInformation.ForecastForQuarterTurnover, '#qtrVarianceTurnover');
+	calculateVariance(result.valueInformation.ValInQuarterMargin, result.valueInformation.ForecastForQuarterMargin, '#qtrVarianceMargin');
 	document.querySelector('#weeksCompleted').value = weeksCompleted;
 	document.querySelector('#weeksContracted').value = result.timeValue.WeeksContracted;
 	document.querySelector('#timeCompleted').value = result.timeValue.TimeCompleted;
@@ -1459,72 +1332,56 @@ function populateValuationInfoTbl(){
 	document.querySelector('#valueRemaining').value = result.timeValue.ValueRemaining;
 }
 
-function populateOverheadContributionTbl(){
-	var tblRows=['SubContractors', 'Materials', 'Consultants', 'Stats', 'Preliminaries', 'Others', 'OHP', 'Total'];
-	var rowNum = tblRows.length;
-	var overheadData = result.overheadContribution;
-	var fieldID;
-	for(var i=0; i<8; i++){
-		for(var j=0;j<2;j++){
-			var dataRef;
-			switch(j){
-				case 0:
-					dataRef = 'Gross'+ tblRows[i];
-					fieldID='#'+tblRows[i].toLowerCase()+'Gross';
-					if(dataRef=='GrossTotal'){
-						document.querySelector(fieldID).value = overheadData[dataRef];
-						moreThanZero(fieldID);
-					}else{
-						document.querySelector(fieldID).value=overheadData[dataRef];
-					}
-					break;
-				case 1:
-					dataRef ='Movement'+ tblRows[i];
-					fieldID='#'+tblRows[i].toLowerCase()+'Movement';
-					if(dataRef=='MovementTotal'){
-						document.querySelector(fieldID).value = overheadData[dataRef];
-						moreThanZero(fieldID);
-					}else{
-						document.querySelector(fieldID).value=overheadData[dataRef];
-					}
-					break;
+const populateOverheadContributionTbl = ()=>{
+	const tblRows=['SubContractors', 'Materials', 'Consultants', 'Stats', 'Preliminaries', 'Others', 'OHP', 'Total'];
+	const rowNum = tblRows.length;
+	const overheadData = result.overheadContribution;
+	for(let i=0; i<8; i++){
+		for(let j=0;j<2;j++){
+			const dataRef=(j==0)?'Gross'+ tblRows[i]:'Movement'+ tblRows[i];
+			const fieldID=(j==0)?'#'+tblRows[i].toLowerCase()+'Gross':'#'+tblRows[i].toLowerCase()+'Movement';
+			if(dataRef.includes('Total')){
+				document.querySelector(fieldID).value = formatNum(overheadData[dataRef],true);
+				moreThanZero(fieldID);
+			}else{
+				document.querySelector(fieldID).value= formatNum(overheadData[dataRef],true);
 			}
 		}
 	}
 }
 
 //Progress Graphs Section - Structure
-function createProgressGraphs(){
+const createProgressGraphs = ()=>{
 	createProgressGraphTop('#progressGraphs');
 	createProgressGraphBottom('#progressGraphs')
 }
 
-function createProgressGraphTop(location){
-	var sectionLocation = document.querySelector(location);
-	var ProgressGraphSection = createDiv('progressGraphRow','row');
-	var monthlyProgress = createGraphCard('col s12', 'monthProgressSection', 'monthProgressContent', 'Monthly Progress');
+const createProgressGraphTop = location=>{
+	const sectionLocation = document.querySelector(location);
+	const ProgressGraphSection = createDiv('progressGraphRow','row');
+	const monthlyProgress = createGraphCard('col s12', 'monthProgressSection', 'monthProgressContent', 'Monthly Progress');
 	ProgressGraphSection.appendChild(monthlyProgress);
 	sectionLocation.appendChild(ProgressGraphSection);
 }
 
-function createProgressGraphBottom(location){
-	var sectionLocation = document.querySelector(location);
-	var ProgressGraphSection = createDiv('progressGraphRow','row');
-	var weekRecOfLbrGraph = createGraphCard('col s12 l6', 'weeklyRecOfLbrGraphSection', 'weeklyRecOfLbrGraphContent', 'Record Of Labour for Most Recent Week');
+const createProgressGraphBottom = location=>{
+	const sectionLocation = document.querySelector(location);
+	const ProgressGraphSection = createDiv('progressGraphRow','row');
+	const weekRecOfLbrGraph = createGraphCard('col s12 l6', 'weeklyRecOfLbrGraphSection', 'weeklyRecOfLbrGraphContent', 'Record Of Labour for Most Recent Week');
 	ProgressGraphSection.appendChild(weekRecOfLbrGraph);
-	var recOfLbrGraph = createGraphCard('col s12 l6', 'recOfLbrGraphSection', 'recOfLbrGraphContent', 'Record Of Labour Throughout Contract');
+	const recOfLbrGraph = createGraphCard('col s12 l6', 'recOfLbrGraphSection', 'recOfLbrGraphContent', 'Record Of Labour Throughout Contract');
 	ProgressGraphSection.appendChild(recOfLbrGraph);
 	sectionLocation.appendChild(ProgressGraphSection);
 }
 
 
 //Progress Graphs Section
-function progressGraph(chartLocation){
-	var progressData = result.progress;
+const progressGraph = chartLocation=>{
+	const progressData = result.progress;
 	delete progressData.ContractNumber;
-	var graphData=[];
+	let graphData=[];
 	for(var prop in progressData){
-		var progressDate = getProgressDate(prop);
+		const progressDate = getProgressDate(prop);
 		graphData.push({y:progressDate, a:progressData[prop]});
 	}
 	Morris.Area({
@@ -1539,9 +1396,9 @@ function progressGraph(chartLocation){
 	});
 }
 
-function getProgressDate(progressDate){
-	var progressMonth = progressDate.slice(0,3);
-	var progressMonthNumber; 
+const getProgressDate = progressDate=>{
+	const progressMonth = progressDate.slice(0,3);
+	let progressMonthNumber; 
 	switch(progressMonth){
 		case 'Jan':
 			progressMonthNumber='01'
@@ -1580,43 +1437,45 @@ function getProgressDate(progressDate){
 			progressMonthNumber='12'
 			break;
 	}
-	var formattedDate = '20'+progressDate.slice(3,5)+'-'+progressMonthNumber;
+	const formattedDate = '20'+progressDate.slice(3,5)+'-'+progressMonthNumber;
 	return formattedDate;
 }
 
-function getRecordOfLbrFigures(){
-	var recOfLbrTbl = document.querySelector("#recOfLbr");
-	var rowNums = document.querySelector("#recOfLbr").rows.length-1;
-	var cellNum = recOfLbrTbl.rows[rowNums].cells.length;
-	var recordOfLabourFigures = [];
-	for(var i=0;i<cellNum;i++){
+const getRecordOfLbrFigures = ()=>{
+	const recOfLbrTbl = document.querySelector("#recOfLbr");
+	const rowNums = document.querySelector("#recOfLbr").rows.length-2;
+	const cellNum = recOfLbrTbl.rows[rowNums].cells.length;
+	let recordOfLabourFigures = [];
+	for(let i=0;i<cellNum;i++){
 		if(i!=0&&i!=8){
-			var weekDay = getRecordOfLabourDay(i);
+			const weekDay = getRecordOfLabourDay(i);
+			console.log('#week'+(rowNums)+weekDay);
 			recordOfLabourFigures.push(document.querySelector('#week'+(rowNums)+weekDay).value);
 		}
 	}
 	return recordOfLabourFigures;
 }
 
-function getRecordOfLbrTotals(){
-	var recOfLbrTbl = document.querySelector("#recOfLbr");
-	var rowNums = document.querySelector("#recOfLbr").rows.length-1;
-	var cellNum = recOfLbrTbl.rows[rowNums].cells.length;
-	var recordOfLabourTotals = [];
-	for(var i=0;i<rowNums;i++){
+const getRecordOfLbrTotals = ()=>{
+	const recOfLbrTbl = document.querySelector("#recOfLbr");
+	const rowNums = document.querySelector("#recOfLbr").rows.length-1;
+	const cellNum = recOfLbrTbl.rows[rowNums].cells.length;
+	let recordOfLabourTotals = [];
+	for(let i=0;i<rowNums;i++){
 		if(i>1){
-			var fieldID = '#week'+i+'Total';
+			const fieldID = '#week'+result.NewRecordOfLabour[i].WeekNum+'Total';
 			recordOfLabourTotals.push(parseInt(document.querySelector(fieldID).value));
 		}
 	}
 	return recordOfLabourTotals;
 }
 
-function recordOfLabourTotalsGraph(location){
-	var overallRecordOfLabourData = getRecordOfLbrTotals();
-	var recOfLbrTtlGraphData =[]
-	var weekNumber=document.querySelector('#week1WeekNum').value;
+const recordOfLabourTotalsGraph = location=>{
+	const overallRecordOfLabourData = getRecordOfLbrTotals();
+	let recOfLbrTtlGraphData =[]
+	let weekNumber = result.NewRecordOfLabour[0].WeekNum;
 	for(var prop in overallRecordOfLabourData){
+		console.log('Week '+weekNumber+ ', y:'+ overallRecordOfLabourData[prop]);
 		recOfLbrTtlGraphData.push({x: 'Week '+weekNumber, y: overallRecordOfLabourData[prop]});
 		weekNumber++;
 	}
@@ -1634,13 +1493,12 @@ function recordOfLabourTotalsGraph(location){
 	});
 }
 
-function currentWeekRecordOfLabourGraph(location){
-	var recordOfLabourData = getRecordOfLbrFigures();
-	var recOfLbrGraphData =[]
-	var days=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
-	var dayIndex = 0;
+const currentWeekRecordOfLabourGraph = location=>{
+	const recordOfLabourData = getRecordOfLbrFigures();
+	const days=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+	let recOfLbrGraphData =[]
+	let dayIndex = 0;
 	for(var prop in recordOfLabourData){
-
 		recOfLbrGraphData.push({x: days[dayIndex], y: recordOfLabourData[prop]});
 		dayIndex++;
 	}
@@ -1658,44 +1516,43 @@ function currentWeekRecordOfLabourGraph(location){
 }
 
 //Financial Graph Section -structure
-function createFinancialGraphs(){
+const createFinancialGraphs = ()=>{
 	createFinancialGraphTop('#financialGraph');
 	createFinancialGraphBottom('#financialGraph')
 }
 
-function createFinancialGraphTop(location){
-	var sectionLocation = document.querySelector(location);
-	var topFinGraphs = createDiv('finGraphsTop','row');
-	var predictabilityGraph= createGraphCard('col s12 l6', 'predictabilitySection', 'predictabilityContent', 'Predictability (Turnover)');
+const createFinancialGraphTop = location=>{
+	const sectionLocation = document.querySelector(location);
+	const topFinGraphs = createDiv('finGraphsTop','row');
+	const predictabilityGraph= createGraphCard('col s12 l6', 'predictabilitySection', 'predictabilityContent', 'Predictability (Turnover)');
 	topFinGraphs.appendChild(predictabilityGraph);
-	var cwdGraph = createGraphCard('col s12 l6', 'cwdGraphSection', 'cwdGraphContent', 'Contractors Written Direction Total To Date');
+	const cwdGraph = createGraphCard('col s12 l6', 'cwdGraphSection', 'cwdGraphContent', 'Contractors Written Direction Total To Date');
 	topFinGraphs.appendChild(cwdGraph);
 	sectionLocation.appendChild(topFinGraphs);
 }
 
-function createFinancialGraphBottom(location){
-	var sectionLocation = document.querySelector(location);
-	var bottomFinGraphs = createDiv('finGraphBottom','row');
-	var costflowGraph = createGraphCard('col s12 l6', 'costflowGraphSection', 'costflowGraphContent', 'Costflow');
+const createFinancialGraphBottom = location=>{
+	const sectionLocation = document.querySelector(location);
+	const bottomFinGraphs = createDiv('finGraphBottom','row');
+	const costflowGraph = createGraphCard('col s12 l6', 'costflowGraphSection', 'costflowGraphContent', 'Costflow');
 	bottomFinGraphs.appendChild(costflowGraph);
-	var monthlyCwds = createGraphCard('col s12 l6', 'monthlyCwdGraphSection', 'monthlyCwdGraphContent', 'Contractors Written Direction in Month');
+	const monthlyCwds = createGraphCard('col s12 l6', 'monthlyCwdGraphSection', 'monthlyCwdGraphContent', 'Contractors Written Direction in Month');
 	bottomFinGraphs.appendChild(monthlyCwds);
 	sectionLocation.appendChild(bottomFinGraphs);
 }
 
 //Financial Graph Section - Graphs
-function createTurnoverGraph(location){
-	var turnoverData = result.financialData;
-	var turnoverGraphData=[];
-	var lengthValue = 0;
-	var propertyKeys=[];
+const createTurnoverGraph = location=>{
+	const turnoverData = result.financialData;
+	let turnoverGraphData=[];
+	let lengthValue = 0;
+	let propertyKeys=[];
 	for(var i=0;i<turnoverData.length;i++){
 		delete turnoverData[i].ContractNumber;
 		delete turnoverData[i].Column;
 	}
-
 	for(var prop in turnoverData){
-		var tempValue = Object.keys(turnoverData[prop]).length;
+		const tempValue = Object.keys(turnoverData[prop]).length;
 		if(parseInt(prop)>0){
 			if(tempValue<lengthValue){
 				lengthValue=tempValue;
@@ -1705,7 +1562,7 @@ function createTurnoverGraph(location){
 			lengthValue=tempValue;
 		}
 	}
-	for(var j=0;j<lengthValue;j++){
+	for(let j=0;j<lengthValue;j++){
 		turnoverGraphData.push({x:getProgressDate(propertyKeys[j]),val1:turnoverData[0][propertyKeys[j]],val2:turnoverData[1][propertyKeys[j]],val3:turnoverData[2][propertyKeys[j]]});
 	}
 	Morris.Area({
@@ -1722,11 +1579,11 @@ function createTurnoverGraph(location){
 	return turnoverData;
 }
 
-function costflowGraph(location){
-	var costFlowData = tableToArray(document.querySelector('#costflowTbl'));
-	var costFlowGraphData=[];
-	var lengthValue = 0;
-	var propertyKeys=[];
+const costflowGraph = location=>{
+	const costFlowData = tableToArray(document.querySelector('#costflowTbl'));
+	const lengthValue = 0;
+	let costFlowGraphData=[];
+	let propertyKeys=[];
 	for(var a in costFlowData){
 		let costFlowDate = getProgressDate(costFlowData[a][0]);
 		costFlowGraphData.push({x:costFlowDate,val1:costFlowData[a][1],val2:costFlowData[a][2],val3:costFlowData[a][3]});
@@ -1745,9 +1602,9 @@ function costflowGraph(location){
 	return lengthValue;
 }
 
-function totalCwdToDate(location){
-	totalCwdData = CwdTableToArray(document.querySelector('#totalCwdTbl'));
-	totalCwdGraphData = [];
+const totalCwdToDate = location=>{
+	const totalCwdData = CwdTableToArray(document.querySelector('#totalCwdTbl'));
+	let totalCwdGraphData = [];
 	for(var subbie in totalCwdData){
 		totalCwdGraphData.push({subContractor:totalCwdData[subbie][0],number:totalCwdData[subbie][1]});
 	}
@@ -1764,9 +1621,9 @@ function totalCwdToDate(location){
 	return totalCwdData;
 }
 
-function monthlyCwdToDate(location){
-	monthlyCwdData = CwdTableToArray(document.querySelector('#monthlyCwdTbl'));
-	monthlyCwdGraphData = [];
+const monthlyCwdToDate = location=>{
+	const monthlyCwdData = CwdTableToArray(document.querySelector('#monthlyCwdTbl'));
+	let monthlyCwdGraphData = [];
 	for(var subbie in monthlyCwdData){
 		monthlyCwdGraphData.push({value:monthlyCwdData[subbie][1], label:monthlyCwdData[subbie][0]});
 	}
@@ -1778,40 +1635,40 @@ function monthlyCwdToDate(location){
 }
 
 //CCS & Costs Graph Section - Structure
-function createCcsGraphs(){
+const createCcsGraphs = ()=>{
 	createCcsGraphTop('#ccsCosts');
 	createCssGraphBottom('#ccsCosts')
 }
 
-function createCcsGraphTop(location){
-	var sectionLocation = document.querySelector(location);
-	var ccsTopGraphSection = createDiv('ccsTopRow','row');
-	var considerateConstructorsGraph = createGraphCard('col s12', 'consConstructorsGraphSection', 'consConstructorsGraphContent', 'Considerate Constructors');
+const createCcsGraphTop = location=>{
+	const sectionLocation = document.querySelector(location);
+	const ccsTopGraphSection = createDiv('ccsTopRow','row');
+	const considerateConstructorsGraph = createGraphCard('col s12', 'consConstructorsGraphSection', 'consConstructorsGraphContent', 'Considerate Constructors');
 	ccsTopGraphSection.appendChild(considerateConstructorsGraph);
 	sectionLocation.appendChild(ccsTopGraphSection);
 }
 
-function createCssGraphBottom(location){
-	var sectionLocation = document.querySelector(location);
-	var ccsBottomGraphSection = createDiv('progressGraphRow','row');
-	var matsSummaryGraph = createGraphCard('col s12 l6', 'matsSummaryGraphSection', 'matsSummaryGraphContent', 'Summary Of Materials Ordered');
+const createCssGraphBottom = location=>{
+	const sectionLocation = document.querySelector(location);
+	const ccsBottomGraphSection = createDiv('progressGraphRow','row');
+	const matsSummaryGraph = createGraphCard('col s12 l6', 'matsSummaryGraphSection', 'matsSummaryGraphContent', 'Summary Of Materials Ordered');
 	ccsBottomGraphSection.appendChild(matsSummaryGraph);
-	var matsReplacementGraph = createGraphCard('col s12 l6', 'matsReplacementGraphSection', 'matsReplacementContent', 'Reasons for Replacement');
+	const matsReplacementGraph = createGraphCard('col s12 l6', 'matsReplacementGraphSection', 'matsReplacementContent', 'Reasons for Replacement');
 	ccsBottomGraphSection.appendChild(matsReplacementGraph);
 	sectionLocation.appendChild(ccsBottomGraphSection);
 }
 
 //CCS & Costs Graphs Section - Graphs
-function copyConsiderateContractorTbl(){
-	var considerateContractorTbl = document.querySelector("#considerContractorTbl");
-	var clone = considerateContractorTbl.cloneNode(true);
+const copyConsiderateContractorTbl =()=>{
+	const considerateContractorTbl = document.querySelector("#considerContractorTbl");
+	const clone = considerateContractorTbl.cloneNode(true);
 	clone.id="ccsContractorTbl"
 	document.querySelector("#consConstructorsGraphSectionGraph").appendChild(clone);
 }
 
-function considerateContractorsGraph(location){
-	var considerateContractorsData = CwdTableToArray(document.querySelector('#considerContractorTbl'));
-	var contractorGraphData=[]
+const considerateContractorsGraph = location=>{
+	const considerateContractorsData = CwdTableToArray(document.querySelector('#considerContractorTbl'));
+	let contractorGraphData=[]
 	for(var prop in considerateContractorsData){
 		contractorGraphData.push({x:considerateContractorsData[prop][0], y:considerateContractorsData[prop][1],z:35})
 	}
@@ -1828,7 +1685,7 @@ function considerateContractorsGraph(location){
 	});
 }
 
-function materialsOrderedChart(location){
+const materialsOrderedChart = location=>{
 	Morris.Donut({
 	  element: location,
 	  data: [
@@ -1841,7 +1698,7 @@ function materialsOrderedChart(location){
 	});
 }
 
-function materialsReasonChart(location){
+const materialsReasonChart = location=>{
 	Morris.Donut({
 	  element: location,
 	  data: [
@@ -1856,19 +1713,19 @@ function materialsReasonChart(location){
 }
 
 //Sub-Contractor Finance Graph Section - Structure
-function createSubConFinGraphs(location){
-	var sectionLocation = document.querySelector(location);
-	var subConFinGraphSection = createDiv('subConFinRow','row');
-	var subConFinGraph = createGraphCard('col s12', 'subConFinGraphSection', 'subConFinGraphContent', 'Subcontractors Orders and Variations');
+const createSubConFinGraphs = location=>{
+	const sectionLocation = document.querySelector(location);
+	const subConFinGraphSection = createDiv('subConFinRow','row');
+	const subConFinGraph = createGraphCard('col s12', 'subConFinGraphSection', 'subConFinGraphContent', 'Subcontractors Orders and Variations');
 	subConFinGraphSection.appendChild(subConFinGraph);
 	sectionLocation.appendChild(subConFinGraphSection);
 }
 
 //Sub-Contractor Finance Graph Section - Graphs
-function subContractorOrderVariations(location){
-	subbieData = result.SubConFinData.length;
-	subbieGraphData=[];
-	for(var i=0;i<subbieData;i++){
+const subContractorOrderVariations = location=>{
+	const subbieData = result.SubConFinData.length;
+	let subbieGraphData=[];
+	for(let i=0;i<subbieData;i++){
 		subbieGraphData.push({subContractor:result.SubConFinData[i].SubContractorName,NettOrderValue: result.SubConFinData[i].SubContractNettOrderValue,recoverableVar: result.SubConFinData[i].RecoverableVariations,site: result.SubConFinData[i].Site,package: result.SubConFinData[i].Package,designDevelopment:result.SubConFinData[i].DesignDevelopment});
 	}
 	Morris.Bar({
@@ -1884,175 +1741,66 @@ function subContractorOrderVariations(location){
 }
 
 //HS Graph Section - Structure
-function createHSGraphSection(){
+const createHSGraphSection = ()=>{
 	createHSGraphTopSection('#hsGraphs');
 	createHSGraphBottomSection('#hsGraphs');
 }
 
-function createHSGraphTopSection(location){
-	var sectionLocation = document.querySelector(location);
-	var HSTopGraphSection = createDiv('HSGraphTopRow','row');
-	var monthlyAuditGraph = createGraphCard('col s12 l6', 'monthlyAuditGraphSection', 'monthlyAuditGraphContent', 'Health and Safety');
+const createHSGraphTopSection = location=>{
+	const sectionLocation = document.querySelector(location);
+	const HSTopGraphSection = createDiv('HSGraphTopRow','row');
+	const monthlyAuditGraph = createGraphCard('col s12 l6', 'monthlyAuditGraphSection', 'monthlyAuditGraphContent', 'Health and Safety');
 	HSTopGraphSection.appendChild(monthlyAuditGraph);
-	var accidentsGraph = createGraphCard('col s12 l6', 'accidentsGraphGraphSection', 'accidentsGraphContent', 'Number Of Days Lost Due To Accidents');
+	const accidentsGraph = createGraphCard('col s12 l6', 'accidentsGraphGraphSection', 'accidentsGraphContent', 'Number Of Days Lost Due To Accidents');
 	HSTopGraphSection.appendChild(accidentsGraph);
 	sectionLocation.appendChild(HSTopGraphSection);
 }
 
-function createHSGraphBottomSection(location){
-	var sectionLocation = document.querySelector(location);
-	var HSBottomGraphSection = createDiv('HSGraphBottomRow','row');
-	var hsDataTables = createDiv('hsComplianceTables','col s12 l4');
-	var enforcementActionsCard = createDiv('enforcementActions','card col s6 l12');
-	var enforcementActionsContent = createDiv('enforcementActionsTbl','card-content');
-	var enforcementActionsTitle = createTitle('h5','Enforcement Actions Notices');
+const createHSGraphBottomSection = location=>{
+	const sectionLocation = document.querySelector(location);
+	const HSBottomGraphSection = createDiv('HSGraphBottomRow','row');
+	const hsDataTables = createDiv('hsComplianceTables','col s12 l4');
+	const enforcementActionsCard = createDiv('enforcementActions','card col s6 l12');
+	const enforcementActionsContent = createDiv('enforcementActionsTbl','card-content');
+	const enforcementActionsTitle = createTitle('h5','Enforcement Actions Notices');
 	enforcementActionsContent.appendChild(enforcementActionsTitle);
 	enforcementActionsCard.appendChild(enforcementActionsContent);
 	hsDataTables.appendChild(enforcementActionsCard);
-	var complianceAuditCard = createDiv('complianceAudit','card col s6 l12');
-	var complianceAuditContent = createDiv('complianceAuditTbl','card-content');
-	var complianceAuditTitle = createTitle('h5','Monthly Compliance Audit Scores');
+	const complianceAuditCard = createDiv('complianceAudit','card col s6 l12');
+	const complianceAuditContent = createDiv('complianceAuditTbl','card-content');
+	const complianceAuditTitle = createTitle('h5','Monthly Compliance Audit Scores');
 	complianceAuditContent.appendChild(complianceAuditTitle);
 	complianceAuditCard.appendChild(complianceAuditContent);
 	hsDataTables.appendChild(complianceAuditCard);
 	HSBottomGraphSection.appendChild(hsDataTables);
-	//var complianceAudit = createDataCard('col s12 l4','HsDataTableSection','HsDataTableContent','');
-	//HSBottomGraphSection.appendChild(complianceAudit);
-	//var bottomGraphs = createMultiGraphCard('col s12 l8', 'HSGraph', 2, 'HSGraph', ['By Trade','By Type']);
-	var accidentByTradeGraph = createGraphCard('col s12 l4', 'accidentByTradeGraphSection', 'accidentByTradeGraphContent', 'By Trade');
+	const accidentByTradeGraph = createGraphCard('col s12 l4', 'accidentByTradeGraphSection', 'accidentByTradeGraphContent', 'By Trade');
 	HSBottomGraphSection.appendChild(accidentByTradeGraph);
-	var accidentByTypeGraph = createGraphCard('col s12 l4', 'accidentByTypeGraphSection', 'accidentByTypeGraphContent', 'By Type');
+	const accidentByTypeGraph = createGraphCard('col s12 l4', 'accidentByTypeGraphSection', 'accidentByTypeGraphContent', 'By Type');
 	HSBottomGraphSection.appendChild(accidentByTypeGraph);
 	sectionLocation.appendChild(HSBottomGraphSection);
 }
 
 //HS Graph Section
-function createEnforcementActionTbl(){
-	var tableLocation = document.querySelector('#enforcementActionsTbl');
-	var enforcementTbl = document.createElement('table');
+const createEnforcementActionTbl = function(){
+	const tableLocation = document.querySelector('#enforcementActionsTbl');
+	const fieldLabels = ['hseEnforcementAction','companyEnforcementAction']
+	const enforcementTbl = createTwoColBody(2,fieldLabels,false, ['','Number']);
 	enforcementTbl.setAttribute('class','striped');
-	var tableHeader = document.createElement('thead');
-	var headerRow = document.createElement('tr');
-	for(var i =0;i<2;i++){
-		var headerCell = document.createElement('th');
-		if(i==1){
-			var headerCellText = document.createTextNode('Number');
-			headerCell.appendChild(headerCellText);
-		}
-		headerRow.appendChild(headerCell);
-	}
-	tableHeader.appendChild(headerRow);
-	enforcementTbl.appendChild(tableHeader);
-	var tableBody = document.createElement('tbody');
-	for(var j = 0;j<2;j++){
-		var bodyRow = document.createElement('tr');
-		for(var k = 0; k<2;k++){
-			var bodyRowCell = document.createElement('td')
-			var bodyRowCellText;
-			if(k==0){
-				switch(j){
-					case 0:
-							bodyRowCell.setAttribute('id','hsEnforcementAction');
-							bodyRowCellText = document.createTextNode('HSE Enforcement Action');
-							bodyRowCell.appendChild(bodyRowCellText);
-							break;
-					case 1:
-							bodyRowCell.setAttribute('id','companyEnforcementAction');
-							bodyRowCellText = document.createTextNode('Company Enforcement Action');
-							bodyRowCell.appendChild(bodyRowCellText);
-							break;
-				}
-			}else{
-				var tableInput = document.createElement('input');
-				switch(j){
-					case 0:
-							tableInput.setAttribute('id','hsEnforcementActionInput');
-							tableInput.setAttribute('name','hsEnforcementActionInput');
-							bodyRowCell.appendChild(tableInput);
-							break;
-					case 1:
-							tableInput.setAttribute('id','companyEnforcementActionInput');
-							tableInput.setAttribute('name','companyEnforcementActionInput');
-							bodyRowCell.appendChild(tableInput);
-							break;
-				}
-			}
-			bodyRow.appendChild(bodyRowCell);
-		}
-		tableBody.appendChild(bodyRow);
-	}
-	enforcementTbl.appendChild(tableBody);
 	tableLocation.appendChild(enforcementTbl)
 }
 
-function createComplainceAuditTbl(){
-	var tableLocation = document.querySelector('#complianceAuditTbl');
-	var complianceTbl = document.createElement('table');
+const createComplainceAuditTbl = function(){
+	const tableLocation = document.querySelector('#complianceAuditTbl');
+	const fieldLabels = ['major','minor','pctComplance'];
+	const complianceTbl = createTwoColBody(3,fieldLabels,false, ['','Number']);
 	complianceTbl.setAttribute('class','striped');
-	var tableHeader = document.createElement('thead');
-	var headerRow = document.createElement('tr');
-	for(var i =0;i<2;i++){
-		var headerCell = document.createElement('th');
-		if(i==1){
-			var headerCellText = document.createTextNode('Number');
-			headerCell.appendChild(headerCellText);
-		}
-		headerRow.appendChild(headerCell);
-	}
-	tableHeader.appendChild(headerRow);
-	complianceTbl.appendChild(tableHeader);
-	var tableBody = document.createElement('tbody');
-	for(var j = 0;j<3;j++){
-		var bodyRow = document.createElement('tr');
-		for(var k = 0; k<2;k++){
-			var bodyRowCell = document.createElement('td')
-			var bodyRowCellText;
-			if(k==0){
-				switch(j){
-					case 0:
-							bodyRowCell.setAttribute('id','major');
-							bodyRowCellText = document.createTextNode('Major');
-							break;
-					case 1:
-							bodyRowCell.setAttribute('id','minor');
-							bodyRowCellText = document.createTextNode('Minor');
-							break;
-					case 2:
-							bodyRowCell.setAttribute('id','pctCompliance');
-							bodyRowCellText = document.createTextNode('%Compliance');
-							break;
-				}
-				bodyRowCell.appendChild(bodyRowCellText);
-			}else{
-				var tableInput = document.createElement('input');
-				switch(j){
-					case 0:
-							tableInput.setAttribute('id','majorInput');
-							tableInput.setAttribute('name','majorInput');
-							break;
-					case 1:
-							tableInput.setAttribute('id','minorInput');
-							tableInput.setAttribute('name','minorInput');
-							break;
-					case 2:
-							tableInput.setAttribute('id','pctComplianceInput');
-							tableInput.setAttribute('name','pctComplianceInput');
-							break;
-				}
-				bodyRowCell.appendChild(tableInput);
-			}
-			bodyRow.appendChild(bodyRowCell);
-		}
-		tableBody.appendChild(bodyRow);
-	}
-	complianceTbl.appendChild(tableBody);
 	tableLocation.appendChild(complianceTbl)
 }
 //HS Graph Section
-function tradeAccidentGraph(location){
-	accidentTradeData = tableToArray(document.querySelector('#accidentsTrade'));
-	accidentTradeGraphData=[];
-	var count = 0;
+const tradeAccidentGraph = location=>{
+	const accidentTradeData = tableToArray(document.querySelector('#accidentsTrade'));
+	let accidentTradeGraphData=[];
+	let count = 0;
 	for(var trade in accidentTradeData){
 		if(accidentTradeData[trade][1]>0){
 			accidentTradeGraphData.push({value:accidentTradeData[trade][1], label:accidentTradeData[trade][0]});
@@ -2068,10 +1816,10 @@ function tradeAccidentGraph(location){
 	});
 }
 
-function typeAccidentGraph(location){
-	accidentTypeData = tableToArray(document.querySelector('#accidentsType'));
-	accidentTypeGraphData=[];
-	var count = 0;
+const typeAccidentGraph = location=>{
+	const accidentTypeData = tableToArray(document.querySelector('#accidentsType'));
+	let accidentTypeGraphData=[];
+	let count = 0;
 	for(var type in accidentTypeData){
 		if(accidentTypeData[type][1]>0){
 			accidentTypeGraphData.push({value:accidentTypeData[type][1], label:accidentTypeData[type][0]});
@@ -2086,9 +1834,9 @@ function typeAccidentGraph(location){
 	});
 }
 
-function HSMonthlyAuditGraph(location){
-	var auditData = tableToArray(document.querySelector('#monthlyAuditTbl'));
-	var auditGraphData=[]
+const HSMonthlyAuditGraph = location=>{
+	const auditData = tableToArray(document.querySelector('#monthlyAuditTbl'));
+	let auditGraphData=[]
 	for(var prop in auditData){
 		if(auditData[prop][1]!='undefined'){
 			auditGraphData.push({x:auditData[prop][0], a:auditData[prop][1], b:80});
@@ -2107,9 +1855,9 @@ function HSMonthlyAuditGraph(location){
 	});
 }
 
-function daysLostGraph(location){
-	daysLostData = tableToArray(document.querySelector('#daysLostTbl'));
-	daysLostGraphData=[];
+const daysLostGraph = location=>{
+	const daysLostData = tableToArray(document.querySelector('#daysLostTbl'));
+	let daysLostGraphData=[];
 	for(var prop in daysLostData){
 		daysLostGraphData.push({dateYear:daysLostData[prop][0],riddor7days: daysLostData[prop][1],nonRiddorLostTime06Days: daysLostData[prop][2]});
 	}
@@ -2125,97 +1873,66 @@ function daysLostGraph(location){
 	});
 }
 
-
 //TimeValue - structure
-function createTimeStats(location){
-	var sectionLocation = document.querySelector(location);
-	var timeStatsSection = createDiv('timeStats','row');
-	var timeTableContainer = createDataCard('col s12 l6', 'timeTable', 'timeTable', 'Time');
+const createTimeStats = location=>{
+	const sectionLocation = document.querySelector(location);
+	const timeStatsSection = createDiv('timeStats','row');
+	const timeTableContainer = createDataCard('col s12 l6', 'timeTable', 'timeTable', 'Time');
 	timeStatsSection.appendChild(timeTableContainer);
-	var timeChartContainer = createGraphCard('col s12 l6', 'timeChart', 'timeChartContent', 'Time');
+	const timeChartContainer = createGraphCard('col s12 l6', 'timeChart', 'timeChartContent', 'Time');
 	timeStatsSection.appendChild(timeChartContainer);
 	sectionLocation.appendChild(timeStatsSection);
 }
 
-function createValueStats(location){
-	var sectionLocation = document.querySelector(location);
-	var valueStatsSection = createDiv('valueStats','row');
-	var valueTableContainer = createDataCard('col s12 l6', 'valueTable', 'valueTable', 'Value')
+const createValueStats = location=>{
+	const sectionLocation = document.querySelector(location);
+	const valueStatsSection = createDiv('valueStats','row');
+	const valueTableContainer = createDataCard('col s12 l6', 'valueTable', 'valueTable', 'Value')
 	valueStatsSection.appendChild(valueTableContainer);
-	var valueChartContainer = createGraphCard('col s12 l6', 'valueChart', 'valueChartContent', 'Value')
+	const valueChartContainer = createGraphCard('col s12 l6', 'valueChart', 'valueChartContent', 'Value')
 	valueStatsSection.appendChild(valueChartContainer);
 	sectionLocation.appendChild(valueStatsSection);
 }
 
 //timeValue - create tables
-function createTimeTable(){
-	var tableLocation = document.querySelector('#completionTable');
-	var timeTable = document.createElement('table');
+const createTimeTable = ()=>{
+	const tableLocation = document.querySelector('#completionTable');
+	const timeTable = document.createElement('table');
 	timeTable.setAttribute('class','striped');
-	var tableHeader = document.createElement('thead');
-	var headerRow = document.createElement('th');
+	const tableHeader = document.createElement('thead');
+	const headerRow = document.createElement('th');
 	headerRow.setAttribute('colspan','2');
-	var headerTxt = document.createElement('br');
+	const headerTxt = document.createElement('br');
 	headerRow.appendChild(headerTxt);
 	tableHeader.appendChild(headerRow)
 	timeTable.appendChild(tableHeader);
-	var tableBody = document.createElement('tbody');
-	for(var i=0; i<8;i++){
-		var tableRow = document.createElement('tr');
-		var rowHeader = document.createElement('td');
-		var rowContent= document.createElement('td');
-		var rowInput = document.createElement('input')
-		switch(i){
-			case 0:
-				var rowHeaderText=document.createTextNode('Weeks Completed');
-				rowInput.setAttribute('id','weeksCompleted');
-				rowInput.setAttribute('name','weeksCompleted');
-				break;
-			case 1:
-				var rowHeaderText=document.createTextNode('Weeks Contracted');
-				rowInput.setAttribute('type','text');
-				rowInput.setAttribute('id','weeksContracted');
-				rowInput.setAttribute('name','weeksContracted');
-				break;
-			case 2:
-				var rowHeaderText=document.createTextNode('Time Completed %');
-				rowInput.setAttribute('type','text');
-				rowInput.setAttribute('id','timeCompleted');
-				rowInput.setAttribute('name','timeCompleted');
-				break;
-			case 3:
-				var rowHeaderText=document.createTextNode('Time Remaining %');
-				rowInput.setAttribute('type','text');
-				rowInput.setAttribute('id','timeRemaining');
-				rowInput.setAttribute('name','timeRemaining');
-				break;
-			case 4:
-				var rowHeaderText=document.createTextNode('Value Completed');
-				rowInput.setAttribute('type','text');
-				rowInput.setAttribute('id','valueCompleted');
-				rowInput.setAttribute('name','valueCompleted');
-				break;
-			case 5:
-				var rowHeaderText=document.createTextNode('Value Remaining');
-				rowInput.setAttribute('type','text');
-				rowInput.setAttribute('id','valueRemaining');
-				rowInput.setAttribute('name','valueRemaining');
-				break;
-			case 6:
-				var rowHeaderText=document.createTextNode('Contractual End Date');
-				rowInput.setAttribute('type','text');
-				rowInput.setAttribute('id','contractualEndDate');
-				rowInput.setAttribute('name','contractualEndDate');
-				rowInput.setAttribute('value',result.timeValue.ConCompDate);
-				break;
-			case 7:
-				var rowHeaderText=document.createTextNode('Estimated End Date');
-				rowInput.setAttribute('type','text');
-				rowInput.setAttribute('id','estimateEndDate');
-				rowInput.setAttribute('name','estimateEndDate');
-				rowInput.setAttribute('value',result.timeValue.EstCompDate);
-				break;
-		}
+	const tableBody = document.createElement('tbody');
+	for(let i=0; i<8;i++){
+		const tableRow = document.createElement('tr');
+		const rowHeader = document.createElement('td');
+		const rowContent= document.createElement('td');
+		const rowInput = document.createElement('input');
+		const rowHeaderText = (i==0)?document.createTextNode('Weeks Completed'):
+							(i==1)?document.createTextNode('Weeks Contracted'):
+							(i==2)?document.createTextNode('Time Completed %'):
+							(i==3)?document.createTextNode('Time Remaining %'):
+							(i==4)?document.createTextNode('Value Completed'):
+							(i==5)?document.createTextNode('Value Remaining'):
+							(i==6)?document.createTextNode('Contractual End Date'):
+							document.createTextNode('Estimated End Date');
+		const rowCellId = (i==0)?'weeksCompleted':
+						(i==1)?'weeksContracted':
+						(i==2)?'timeCompleted':
+						(i==3)?'timeRemaining':
+						(i==4)?'valueCompleted':
+						(i==5)?'valueRemaining':
+						(i==6)?'contractualEndDate':
+						'estimatedEndDate';
+		rowInput.setAttribute('id',rowCellId);
+		rowInput.setAttribute('name',rowCellId);
+		if(i>0){rowInput.setAttribute('type','text')};
+		if(i==6){rowInput.setAttribute('value',result.timeValue.ConCompDate)};
+		if(i==7){rowInput.setAttribute('value',result.timeValue.EstCompDate);}
 		rowHeader.appendChild(rowHeaderText);
 		rowContent.appendChild(rowInput);
 		tableRow.appendChild(rowHeader);
@@ -2226,34 +1943,24 @@ function createTimeTable(){
 	tableLocation.appendChild(timeTable);
 }
 
-function createValueTable(){
-	var tableLocation = document.querySelector('#completionTable');
-	var valueTable = document.createElement('table');
+const createValueTable = ()=>{
+	const tableLocation = document.querySelector('#completionTable');
+	const valueTable = document.createElement('table');
 	valueTable.setAttribute('class','striped');
-	var tableHeader = document.createElement('thead');
-	var tableBody = document.createElement('tbody');
-	for(var i=0; i<2;i++){
-		var tableRow = document.createElement('tr');
-		var rowHeader = document.createElement('td');
-		var rowContent= document.createElement('td');
-		var rowInput = document.createElement('input');
+	const tableHeader = document.createElement('thead');
+	const tableBody = document.createElement('tbody');
+	for(let i=0; i<2;i++){
+		const tableRow = document.createElement('tr');
+		const rowHeader = document.createElement('td');
+		const rowContent= document.createElement('td');
+		const rowInput = document.createElement('input');
 		rowInput.setAttribute('type','text');
-		switch(i){
-			case 0:
-				var rowHeaderText=document.createTextNode('Value Completed');
-				rowInput.setAttribute('id','valueCompleted');
-				rowInput.setAttribute('name','valueCompleted');
-				rowContent.appendChild(rowInput);
-				rowHeader.appendChild(rowHeaderText);
-				break;
-			case 1:
-				var rowHeaderText=document.createTextNode('Value Remaining');
-				rowInput.setAttribute('id','valueRemaining');
-				rowInput.setAttribute('name','valueRemaining');
-				rowContent.appendChild(rowInput);
-				rowHeader.appendChild(rowHeaderText);
-				break;
-		}
+		const rowHeaderText=(i==0)?document.createTextNode('Value Completed'):document.createTextNode('Value Remaining');
+		const fieldId = (i==0)?'valueCompleted':'valueRemaining';
+		rowInput.setAttribute('id',fieldId);
+		rowInput.setAttribute('name',fieldId);
+		rowContent.appendChild(rowInput);
+		rowHeader.appendChild(rowHeaderText);
 		tableRow.appendChild(rowHeader);
 		tableRow.appendChild(rowContent);
 		tableBody.appendChild(tableRow);
@@ -2265,9 +1972,9 @@ function createValueTable(){
 
 //timeValue - create graphs
 
-function createTimeChart(chartLocation){
-	var completedTime = document.querySelector('#timeCompleted').value;
-	var timeRemaining = document.querySelector('#timeRemaining').value;
+const createTimeChart = chartLocation=>{
+	const completedTime = document.querySelector('#timeCompleted').value;
+	const timeRemaining = document.querySelector('#timeRemaining').value;
 	Morris.Donut({
 	  element: chartLocation,
 	  data: [
@@ -2279,11 +1986,11 @@ function createTimeChart(chartLocation){
 	});
 }
 
-function createValueChart(chartLocation){
-	var completedValueData = document.querySelector('#valueCompleted').value;
-	var remainingValueData = document.querySelector('#valueRemaining').value;
+const createValueChart = chartLocation=>{
+	const completedValueData = document.querySelector('#valueCompleted').value;
+	const remainingValueData = document.querySelector('#valueRemaining').value;
 	
-	var valueGraph = Morris.Donut({
+	const valueGraph = Morris.Donut({
 	  element: chartLocation,
 	  data: [
 	    {label: "Value Completed", value: completedValueData},
@@ -2295,28 +2002,28 @@ function createValueChart(chartLocation){
 }
 //Project KPI - Structure
 
-function createProjectKpiSection(){
-	var rowLocation = document.querySelector('#projectKPIs');
-	var projectKpiRow = createDiv('projectKPIsRow','row');
-	var projectKPIcontainer =createDataCard('col s12 l5', 'projectKPI', 'KpiTable', 'Project KPI\'s')
+const createProjectKpiSection = ()=>{
+	const rowLocation = document.querySelector('#projectKPIs');
+	const projectKpiRow = createDiv('projectKPIsRow','row');
+	const projectKPIcontainer =createDataCard('col s12 l5', 'projectKPI', 'KpiTable', 'Project KPI\'s')
 	projectKpiRow.appendChild(projectKPIcontainer);
-	var monthlyKPIcontainer = createDataCard('col s12 l7', 'monthlyKPI', 'monthlyKpiTable', 'Monthly KPI\'s records');
+	const monthlyKPIcontainer = createDataCard('col s12 l7', 'monthlyKPI', 'monthlyKpiTable', 'Monthly KPI\'s records');
 	projectKpiRow.appendChild(monthlyKPIcontainer);
 	rowLocation.appendChild(projectKpiRow);
 }
 
 //Project KPI - create tables
-function createKpiCatTbl(){
-	var tblLocation = document.querySelector("#KpiTable");
-	var kpiHTMLtable = document.createElement('table');
+const createKpiCatTbl = ()=>{
+	const tblLocation = document.querySelector("#KpiTable");
+	const kpiHTMLtable = document.createElement('table');
 	kpiHTMLtable.setAttribute('class','striped');
-	var kpiHeader = document.createElement('thead');
-	var kpiHeaderNames = ["","Target","Actual","Variance",]
-	var headerRow = document.createElement("tr");
-	for(var i=0;i<2;i++){
-		for(var j=0;j<kpiHeaderNames.length;j++){
-			var kpiHeaderCell = document.createElement("th");
-			var kpiHeaderText = document.createTextNode(kpiHeaderNames[j]);
+	const kpiHeader = document.createElement('thead');
+	const kpiHeaderNames = ["","Target","Actual","Variance",]
+	const headerRow = document.createElement("tr");
+	for(let i=0;i<2;i++){
+		for(let j=0;j<kpiHeaderNames.length;j++){
+			const kpiHeaderCell = document.createElement("th");
+			const kpiHeaderText = document.createTextNode(kpiHeaderNames[j]);
 			kpiHeaderCell.setAttribute('class','center-align');
 			kpiHeaderCell.appendChild(kpiHeaderText);
 			headerRow.appendChild(kpiHeaderCell);
@@ -2324,59 +2031,33 @@ function createKpiCatTbl(){
 	}
 	kpiHeader.appendChild(headerRow)
 	kpiHTMLtable.appendChild(kpiHeader);
-	var kpiBody = document.createElement('tbody');
-	var tblRows=['Adherence to Prelim Budget', 'Predictability to Cash Flow (month)', 'Predictability to Cash Flow (Qtr)', 'Non Recoverable Works', 'Predictability of Programme', 'H&S Audit Score', 'H&S Accident Incident Rate', 'Considerate Constructor Score', 'Waste', 'Percentage Recycled', 'Waste per £100k', 'Water m3 per £100k', 'Energy KG CO2 per £100k'];
-	var tblRowId=['adherence','monthlyCashflow','qtrCashflow','nonRecWorks','predOfProgram','HSAudit','HSAccidentRate','considerateConstructor','','pctRecycled','waste100k','water100k','energy100k'];
-	for (var i=0; i<tblRows.length; i++){
-		var bodyRow = document.createElement('tr');
-		var cellRef = tblRowId[i];
+	const kpiBody = document.createElement('tbody');
+	const tblRows=['Adherence to Prelim Budget', 'Predictability to Cash Flow (month)', 'Predictability to Cash Flow (Qtr)', 'Non Recoverable Works', 'Predictability of Programme', 'H&S Audit Score', 'H&S Accident Incident Rate', 'Considerate Constructor Score', 'Waste', 'Percentage Recycled', 'Waste per £100k', 'Water m3 per £100k', 'Energy KG CO2 per £100k'];
+	const tblRowId=['adherence','monthlyCashflow','qtrCashflow','nonRecWorks','predOfProgram','HSAudit','HSAccidentRate','considerateConstructor','','pctRecycled','waste100k','water100k','energy100k'];
+	for (let i=0; i<tblRows.length; i++){
+		const bodyRow = document.createElement('tr');
 		if(tblRows[i]=='Waste'){
-			var bodyCell = document.createElement('td');
+			const bodyCell = document.createElement('td');
 			bodyCell.setAttribute('colspan','8');
 			bodyCell.innerHTML = 'Waste';
 			bodyRow.appendChild(bodyCell);
 		}else{
-			for(var j=0; j<8;j++){
-				var bodyCell = document.createElement('td');
+			for(let j=0; j<8;j++){
+				const cellRef = (j==1)?tblRowId[i]+'PctTarget':
+								(j==2)?tblRowId[i]+'PctActual':
+								(j==3)?tblRowId[i]+'PctVariance':
+								(j==5)?tblRowId[i]+'Target':
+								(j==6)?tblRowId[i]+'Actual':
+								tblRowId[i]+'Variance';
+				const bodyCell = document.createElement('td');
+				const bodyCellInput = document.createElement('input');
 				if(j>0){
-					var bodyCellInput = document.createElement('input');
 					bodyCellInput.setAttribute('type','text');
-				}
-				switch(j){
-					case 0:
-						var bodyRowText = document.createTextNode(tblRows[i]);
-						bodyCell.appendChild(bodyRowText);
-						break;
-					case 1: 
-						bodyCellInput.setAttribute('id',cellRef+'PctTarget');
-						bodyCellInput.setAttribute('name',cellRef+'PctTarget');
+					if(j!=4){
+						bodyCellInput.setAttribute('id',cellRef);
+						bodyCellInput.setAttribute('name',cellRef);
 						bodyCell.appendChild(bodyCellInput);
-						break;
-					case 2: 
-						bodyCellInput.setAttribute('id',cellRef+'PctActual');
-						bodyCellInput.setAttribute('name',cellRef+'PctActual');
-						bodyCell.appendChild(bodyCellInput);
-						break;
-					case 3: 
-						bodyCellInput.setAttribute('id',cellRef+'PctVariance');
-						bodyCellInput.setAttribute('name',cellRef+'PctVariance');
-						bodyCell.appendChild(bodyCellInput);
-						break;
-					case 5: 
-						bodyCellInput.setAttribute('id',cellRef+'Target');
-						bodyCellInput.setAttribute('name',cellRef+'Target');
-						bodyCell.appendChild(bodyCellInput);
-						break;
-					case 6: 
-						bodyCellInput.setAttribute('id',cellRef+'Actual');
-						bodyCellInput.setAttribute('name',cellRef+'Actual');
-						bodyCell.appendChild(bodyCellInput);
-						break;
-					case 7: 
-						bodyCellInput.setAttribute('id',cellRef+'Variance');
-						bodyCellInput.setAttribute('name',cellRef+'Variance');
-						bodyCell.appendChild(bodyCellInput);
-						break;
+					}
 				}
 				bodyRow.appendChild(bodyCell);
 			}
@@ -2387,17 +2068,17 @@ function createKpiCatTbl(){
 	tblLocation.appendChild(kpiHTMLtable);	
 }
 
-function createMonthlyKPITbl(){
-	var monthlyKpiTblLoc = document.querySelector('#monthlyKpiTable');
-	var monthlyKpiTbl = document.createElement('table');
+const createMonthlyKPITbl = ()=>{
+	const monthlyKpiTblLoc = document.querySelector('#monthlyKpiTable');
+	const monthlyKpiTbl = document.createElement('table');
 	monthlyKpiTbl.setAttribute('class','striped responsive');
-	var tblHeaders=['Date','Total Skip waste m3','Total Cart Away Waste m3','% All Skip Waste Recycled','Water m3','Emissions from Diesel KG CO2','Emissions from Electricity KG CO2','Total Emissions KG CO2','Waste per £100k m3','Emissions from Energy KG CO2 per 100KG','Water m3 per £100k','Actual T.O'];
-	var headerLength = tblHeaders.length;
-	var tblHeader = document.createElement('thead');
-	var tblHeaderRow = document.createElement('tr');
-	for(var i = 0;i<headerLength;i++){
-		var tblHeaderRowCellText;
-		var tblHeaderRowCell = document.createElement('th');
+	const tblHeaders=['Date','Total Skip waste m3','Total Cart Away Waste m3','% All Skip Waste Recycled','Water m3','Emissions from Diesel KG CO2','Emissions from Electricity KG CO2','Total Emissions KG CO2','Waste per £100k m3','Emissions from Energy KG CO2 per 100KG','Water m3 per £100k','Actual T.O'];
+	const headerLength = tblHeaders.length;
+	const tblHeader = document.createElement('thead');
+	const tblHeaderRow = document.createElement('tr');
+	for(let i = 0;i<headerLength;i++){
+		let tblHeaderRowCellText;
+		const tblHeaderRowCell = document.createElement('th');
 		tblHeaderRowCellText = document.createTextNode(tblHeaders[i]);
 		tblHeaderRowCell.setAttribute('class','center-align');
 		tblHeaderRowCell.appendChild(tblHeaderRowCellText);
@@ -2405,23 +2086,22 @@ function createMonthlyKPITbl(){
 	}
 	tblHeader.appendChild(tblHeaderRow)
 	monthlyKpiTbl.appendChild(tblHeader);
-	var lastItem = getLastMonthlyKpiItem(); 
-	var tblBody = document.createElement('tbody');
-	var tblColIds=['date','TtlSkipWasteM3','totalCartAwayWastem3','pctAllSkipWasteCycled','waterm3','emitFromDieselKgCo2','EmitFromElectrictyKgCo2','TotalEmitKgCo2','Wasteper100kM3','emitfromEnergyKgCo2per100kg','waterm3Per100k','actualTo'];
-	for(var j=0; j<lastItem;j++){
-		var tblBodyRow = document.createElement('tr');
-		for(var k=0; k<headerLength; k++){
-			var tblBodyRowCell;
-			var tblBodyRowCellText;
-			var fieldID=tblColIds[k]+(j+1);
-			tblBodyRowCell = document.createElement('td');
+	const lastItem = getLastMonthlyKpiItem(); 
+	const tblBody = document.createElement('tbody');
+	const tblColIds=['date','TtlSkipWasteM3','totalCartAwayWastem3','pctAllSkipWasteCycled','waterm3','emitFromDieselKgCo2','EmitFromElectrictyKgCo2','TotalEmitKgCo2','Wasteper100kM3','emitfromEnergyKgCo2per100kg','waterm3Per100k','actualTo'];
+	for(let j=0; j<lastItem;j++){
+		const tblBodyRow = document.createElement('tr');
+		for(let k=0; k<headerLength; k++){
+			let tblBodyRowCellText;
+			const fieldID=tblColIds[k]+(j+1);
+			const tblBodyRowCell = document.createElement('td');
 			if (k==0){
 				tblBodyRowCellText = document.createTextNode(result.monthlyKPI[j].Date);
 				tblBodyRowCell.appendChild(tblBodyRowCellText);
 				tblBodyRowCell.setAttribute('id',fieldID);
 				tblBodyRow.appendChild(tblBodyRowCell);
 			}else{
-				var bodyCellInput = document.createElement('input');
+				const bodyCellInput = document.createElement('input');
 				bodyCellInput.setAttribute('type','text');
 				bodyCellInput.setAttribute('id',fieldID);
 				bodyCellInput.setAttribute('name',fieldID);
@@ -2437,15 +2117,15 @@ function createMonthlyKPITbl(){
 
 //Project KPI - fill tables
 
-function populateMonthlyKpiTbl(){
-	var tblColIds=['date','TtlSkipWasteM3','totalCartAwayWastem3','pctAllSkipWasteCycled','waterm3','emitFromDieselKgCo2','EmitFromElectrictyKgCo2','TotalEmitKgCo2','Wasteper100kM3','emitfromEnergyKgCo2per100kg','waterm3Per100k','actualTo'];
-	var rowLength = tblColIds.length;
-	var kpiData=result.monthlyKPI;
-	var rowNum = kpiData.length;	
+const populateMonthlyKpiTbl = ()=>{
+	const tblColIds=['date','TtlSkipWasteM3','totalCartAwayWastem3','pctAllSkipWasteCycled','waterm3','emitFromDieselKgCo2','EmitFromElectrictyKgCo2','TotalEmitKgCo2','Wasteper100kM3','emitfromEnergyKgCo2per100kg','waterm3Per100k','actualTo'];
+	const rowLength = tblColIds.length;
+	const kpiData=result.monthlyKPI;
+	const rowNum = kpiData.length;	
 	for(var Prop in kpiData){
-		var tblRowIndex = 0;
+		let tblRowIndex = 0;
 		for(var innerProp in kpiData[Prop]){
-			var fieldID='#'+tblColIds[tblRowIndex]+(parseInt(Prop)+1);
+			const fieldID='#'+tblColIds[tblRowIndex]+(parseInt(Prop)+1);
 			if(innerProp!='ContractNumber'){
 				document.querySelector(fieldID).value = kpiData[Prop][innerProp];
 				if(innerProp=='Wstper100kM3'||innerProp=='emitFromEnergyKgCo2Per100k'||innerProp=='waterM3Per100k'){
@@ -2468,29 +2148,26 @@ function populateMonthlyKpiTbl(){
 }
 
 //Progress Data Section - Structure
-function createProgressSection(location){
-	var sectionLocation = document.querySelector(location);
-	var section = createDiv('progressSection','row');
-	var leftColumn = createDataCard('col s12 l3', 'progressTbl', 'progressTblContent', 'Progress')
+const createProgressSection = location=>{
+	const sectionLocation = document.querySelector(location);
+	const section = createDiv('progressSection','row');
+	const leftColumn = createDataCard('col s12 l3', 'progressTbl', 'progressTblContent', 'Progress')
 	section.appendChild(leftColumn);
-	var midColumn = createDiv('midColumn','col s12 l3');
-	var midLeftFirstCard = createDiv('considerateConsContainer','card col s6 l12');
-	var midLeftFirstContent = createDiv('considerateContractorsTbl','card-content');
-	var midLeftFirstTitle = createTitle('h5','Considerate Constructors');
-	var breakelement = document.createElement('br')
+	const midColumn = createDiv('midColumn','col s12 l3');
+	const midLeftFirstCard = createDiv('considerateConsContainer','card col s6 l12');
+	const midLeftFirstContent = createDiv('considerateContractorsTbl','card-content');
+	const midLeftFirstTitle = createTitle('h5','Considerate Constructors');
+	const breakelement = document.createElement('br')
 	midLeftFirstContent.appendChild(midLeftFirstTitle);
 	midLeftFirstCard.appendChild(midLeftFirstContent);
 	midColumn.appendChild(midLeftFirstCard);
-	var midSecondCard = createDiv('materials','card col s6 l12');
-	var midSecondContent = createDiv('materialsTables','card-content');
-	var midSecondMainTitle = createTitle('h5','Material Controls');
-	var midSecondSubTitleA = document.createTextNode('Summary of Materials Ordered By Category:');
-	var midSecondSubTitleB = document.createTextNode('Summary of Replacement Ordered by Reason:');
-	var matsByCatsDiv = createDiv('matsByCats');
-	var matsByReasonDiv = createDiv('matsbyReason');
-
-
-
+	const midSecondCard = createDiv('materials','card col s6 l12');
+	const midSecondContent = createDiv('materialsTables','card-content');
+	const midSecondMainTitle = createTitle('h5','Material Controls');
+	const midSecondSubTitleA = document.createTextNode('Summary of Materials Ordered By Category:');
+	const midSecondSubTitleB = document.createTextNode('Summary of Replacement Ordered by Reason:');
+	const matsByCatsDiv = createDiv('matsByCats');
+	const matsByReasonDiv = createDiv('matsbyReason');
 	midSecondContent.appendChild(midSecondMainTitle);
 	midSecondContent.appendChild(breakelement);
 	midSecondContent.appendChild(midSecondSubTitleA);
@@ -2501,91 +2178,47 @@ function createProgressSection(location){
 	midSecondCard.appendChild(midSecondContent);
 	midColumn.appendChild(midSecondCard);
 	section.appendChild(midColumn);
-	var rightColumn = createDataCard('col s12 l6', 'recordOfLabour', 'recordOfLabourContent', 'Record Of Labour');
+	const rightColumn = createDataCard('col s12 l6', 'recordOfLabour', 'recordOfLabourContent', 'Record Of Labour');
 	section.appendChild(rightColumn);
 	sectionLocation.appendChild(section);
 }
 
 //Progress Data Section - Create Tables
-function createProgressTbl(){
-	var tableLocation = document.querySelector('#progressTblContent');
-	var progressTable = document.createElement('table');
+const createProgressTbl = ()=>{
+	const tableLocation = document.querySelector('#progressTblContent');
+	const tableLength = projectMonths.length;
+	const progressTable = createTwoColBody(tableLength,projectMonths,false, ['Month','Progress'])
 	progressTable.setAttribute('class','striped');
-	var progressHeader = document.createElement('thead');
-	var headerRow = document.createElement('tr');
-	for(var i = 0; i<2;i++){
-		var headerCell = document.createElement('th');
-		if(i==0){
-			var headerCellText = document.createTextNode('Month');
-		}else{
-			var headerRowCell = document.createTextNode('Progress');
-		}
-		headerCell.appendChild(headerCellText);
-		headerRow.appendChild(headerCell)
-	}
-	progressHeader.appendChild(headerRow);
-
-	var progressBody = document.createElement('tbody');	
-	var tableLength = projectMonths.length; 
-	for(var j=0;j<tableLength;j++){
-		var bodyRow = document.createElement('tr');
-		for(var k=0;k<2;k++){
-			var bodyCell = document.createElement('td');
-			var bodyCellInput = document.createElement('input');
-			bodyCellInput.setAttribute('type','text');
-			if(projectMonths[i]!= '___rowNum__'){
-				switch(k){
-					case 0:
-						bodyCellInput.setAttribute('id',projectMonths[j]+'Date');
-						bodyCellInput.setAttribute('name',projectMonths[j]+'Date');
-						bodyCell.appendChild(bodyCellInput);
-						break;
-					case 1:
-						bodyCellInput.setAttribute('id',projectMonths[j]+'Weeks');
-						bodyCellInput.setAttribute('name',projectMonths[j]+'Weeks');
-						bodyCell.appendChild(bodyCellInput);
-						break;
-				}
-			}
-			bodyRow.appendChild(bodyCell);
-		}
-		progressBody.appendChild(bodyRow);
-	}
-	progressTable.appendChild(progressBody);
 	tableLocation.appendChild(progressTable);
 }
 
-function createConsiderateConstructorsTable(location){
-	var tableLocation = document.querySelector(location)
-	var considerateConsTable = document.createElement('table');
+const createConsiderateConstructorsTable = location=>{
+	const tableLocation = document.querySelector(location)
+	const considerateConsTable = document.createElement('table');
 	considerateConsTable.setAttribute('id','considerContractorTbl')
 	considerateConsTable.setAttribute('class','striped')
-	var tableHeader = document.createElement('thead');
-	var headerRow = document.createElement('tr');
-	for(var i=0;i<2;i++){
-		var column = document.createElement('th');
-		if(i==0){
-			var colTitle = document.createTextNode('Date');
-		}else{
-			var colTitle = document.createTextNode('Score');
-		}
+	const tableHeader = document.createElement('thead');
+	const headerRow = document.createElement('tr');
+	for(let i=0;i<2;i++){
+		const column = document.createElement('th');
+		const colTitle = (i==0)? document.createTextNode('Date'):document.createTextNode('Score');
 		column.appendChild(colTitle);
 		headerRow.appendChild(column);
 	}
 	tableHeader.appendChild(headerRow);
 	considerateConsTable.appendChild(tableHeader);
-	var tableLength = result.CCS.length;
-	var tableBody = document.createElement('tbody');
-	for(var j=0;j<tableLength;j++){
-		var bodyRow = document.createElement('tr');
-		for(var k=0;k<2;k++){
-			var bodyCell = document.createElement('td');
-			var bodyCellInput = document.createElement('input');
+	const tableLength = result.CCS.length;
+	const tableBody = document.createElement('tbody');
+	for(let j=0;j<tableLength;j++){
+		const bodyRow = document.createElement('tr');
+		for(let k=0;k<2;k++){
+			const bodyCell = document.createElement('td');
+			const bodyCellInput = document.createElement('input');
 			bodyCellInput.setAttribute('type','text');
 			if(k==0){
-				var fieldID = 'CCS';
-				var fieldContentSting = result.CCS[j].Date;
-				var fieldContentDate = fieldContentSting.split('/')[1]+'/'+fieldContentSting.split('/')[0]+'/'+ fieldContentSting.split('/')[2];
+				const fieldID = 'CCS';
+				const fieldContentSting = result.CCS[j].Date;
+				const fieldContentDate = fieldContentSting.split('/')[1]+'/'+fieldContentSting.split('/')[0]+'/'+ fieldContentSting.split('/')[2];
 				bodyCellInput.setAttribute('class','datepicker');
 				bodyCellInput.setAttribute('id','_datepicker_'+fieldID);
 				bodyCellInput.setAttribute('onChange','constructDate(fieldContentSting,fieldID)');
@@ -2606,199 +2239,65 @@ function createConsiderateConstructorsTable(location){
 	tableLocation.appendChild(considerateConsTable);
 }
 
-function createMatsByCats(){
-	 var tblLocation = document.querySelector('#matsByCats');
-	 var matsByCatsTbl = document.createElement('table');
+const createMatsByCats = ()=>{
+	 const tblLocation = document.querySelector('#matsByCats');
+	 const tblLength = Object.keys(result.MaterialOrdersCategories[0]).length-1;
+	 const fieldLabels = ['partSite','wholeSite','replacement']
+	 const matsByCatsTbl = createTwoColBody(tblLength,fieldLabels,false, ['Category','Number'], true);
 	 matsByCatsTbl.setAttribute('class','striped');
 	 matsByCatsTbl.setAttribute('id','materialsByCat');
-	 var tblHeader = document.createElement('thead');
-	 var tblHeaderRow = document.createElement('tr');
-	 for(var i=0; i<2; i++){
-	 	var tblHeaderCell = document.createElement('th');
-	 	var tblHeaderCellTxt;
-	 	switch(i){
-	 		case 0:
-	 			tblHeaderCellTxt = document.createTextNode('Category');
-	 			break;
-	 		case 1:
-	 			tblHeaderCellTxt = document.createTextNode('Number');
-	 			break;
-	 	}
-	 	tblHeaderCell.appendChild(tblHeaderCellTxt);
-	 	tblHeaderRow.appendChild(tblHeaderCell);
-	 }
-	 tblHeader.appendChild(tblHeaderRow);
-	 matsByCatsTbl.appendChild(tblHeader);
-	 var tblBody = document.createElement('tbody');
-	 for(var j=0; j<3; j++){
-	 	var tblBodyRow = document.createElement('tr');
-	 	for(var k=0;k<2;k++){
-	 		var tblBodyCell = document.createElement('td');
-	 		var tblBodyText;
-	 		if(k==0){
-	 			switch(j){
-	 				case 0:
-	 					tblBodyText = document.createTextNode('Part Site');
-	 					break;
-	 				case 1:
-	 					tblBodyText = document.createTextNode('Whole Site');
-	 					break;
-	 				case 2:
-	 					tblBodyText = document.createTextNode('Replacement');
-	 					break;
-	 			}
-	 			tblBodyCell.appendChild(tblBodyText);
-	 		}else{
-	 			var bodyCellInput = document.createElement('input');
-	 			bodyCellInput.setAttribute('type','text');
-	 			switch(j){
-	 				case 0:
-	 					bodyCellInput.setAttribute('id','partSiteValue');
-	 					bodyCellInput.setAttribute('name','partSiteValue');
-	 					bodyCellInput.value = result.MaterialOrdersCategories[0].partSite;
-	 					tblBodyCell.appendChild(bodyCellInput);
-	 					break;
-	 				case 1:
-	 					bodyCellInput.setAttribute('id','wholeSiteValue');
-	 					bodyCellInput.setAttribute('name','wholeSiteValue');
-	 					bodyCellInput.value = result.MaterialOrdersCategories[0].wholeSite;
-	 					tblBodyCell.appendChild(bodyCellInput);
-	 					break;
-	 				case 2:
-	 					bodyCellInput.setAttribute('id','replacementValue');
-	 					bodyCellInput.setAttribute('name','replacementValue');
-	 					bodyCellInput.value = result.MaterialOrdersCategories[0].replacement;
-	 					tblBodyCell.appendChild(bodyCellInput);
-	 					break;
-	 			}
-	 		}
-	 		tblBodyRow.appendChild(tblBodyCell);
-	 	}
-	 	tblBody.appendChild(tblBodyRow);
-	 }
-	 matsByCatsTbl.appendChild(tblBody);
 	 tblLocation.appendChild(matsByCatsTbl);
+	 fillCwdTbl2(result.MaterialOrdersCategories)
 }
 
-function createMatsByReason(){
-	 var tblLocation = document.querySelector('#matsbyReason');
-	 var matsByReasonTbl = document.createElement('table');
+const createMatsByReason = ()=>{
+	 const tblLocation = document.querySelector('#matsbyReason');
+	 const tblLength = Object.keys(result.MaterialOrdersType[0]).length-1;
+	 const fieldLabels = ['clientChange','theft','waste','damage'];
+	 const matsByReasonTbl = createTwoColBody(tblLength,fieldLabels,false, ['Reason','Number'],true);
 	 matsByReasonTbl.setAttribute('class','striped');
 	 matsByReasonTbl.setAttribute('id','replacementsByReason');
-	 var tblHeader = document.createElement('thead');
-	 var tblHeaderRow = document.createElement('tr');
-	 for(var i=0; i<2; i++){
-	 	var tblHeaderCell = document.createElement('th');
-	 	var tblHeaderCellTxt;
-	 	switch(i){
-	 		case 0:
-	 			tblHeaderCellTxt = document.createTextNode('Reason');
-	 			break;
-	 		case 1:
-	 			tblHeaderCellTxt = document.createTextNode('Number');
-	 			break;
-	 	}
-	 	tblHeaderCell.appendChild(tblHeaderCellTxt);
-	 	tblHeaderRow.appendChild(tblHeaderCell);
-	 }
-	 tblHeader.appendChild(tblHeaderRow);
-	 matsByReasonTbl.appendChild(tblHeader);
-	 var tblBody = document.createElement('tbody');
-	 for(var j=0; j<4; j++){
-	 	var tblBodyRow = document.createElement('tr');
-	 	for(var k=0;k<2;k++){
-	 		var tblBodyCell = document.createElement('td');
-	 		var tblBodyText;
-	 		if(k==0){
-	 			switch(j){
-	 				case 0:
-	 					tblBodyText = document.createTextNode('Client Change');
-	 					break;
-	 				case 1:
-	 					tblBodyText = document.createTextNode('Theft');
-	 					break;
-	 				case 2:
-	 					tblBodyText = document.createTextNode('Waste');
-	 					break;
-	 				case 3:
-	 					tblBodyText = document.createTextNode('Damage');
-	 					break;
-	 			}
-	 			tblBodyCell.appendChild(tblBodyText);
-	 		}else{
-	 			var bodyCellInput = document.createElement('input');
-	 			bodyCellInput.setAttribute('type','number');
-	 			switch(j){
-	 				case 0:
-	 					bodyCellInput.setAttribute('id','clientChangeValue');
-	 					bodyCellInput.setAttribute('name','clientChangeValue');
-	 					bodyCellInput.value = result.MaterialOrdersType[0].clientChange;
-	 					tblBodyCell.appendChild(bodyCellInput);
-	 					break;
-	 				case 1:
-	 					bodyCellInput.setAttribute('id','theftValue');
-	 					bodyCellInput.setAttribute('name','theftValue');
-	 					bodyCellInput.value = result.MaterialOrdersType[0].theft;
-	 					tblBodyCell.appendChild(bodyCellInput);
-	 					break;
-	 				case 2:
-	 					bodyCellInput.setAttribute('id','wasteValue');
-	 					bodyCellInput.setAttribute('name','wasteValue');
-	 					bodyCellInput.value = result.MaterialOrdersType[0].waste;
-	 					tblBodyCell.appendChild(bodyCellInput);
-	 					break;
-	 				case 3:
-	 					bodyCellInput.setAttribute('id','damageValue');
-	 					bodyCellInput.setAttribute('name','damageValue');
-	 					bodyCellInput.value = result.MaterialOrdersType[0].damage;
-	 					tblBodyCell.appendChild(bodyCellInput);
-	 					break;
-	 			}
-	 		}
-	 		tblBodyRow.appendChild(tblBodyCell);
-	 	}
-	 	tblBody.appendChild(tblBodyRow);
-	 }
-	 matsByReasonTbl.appendChild(tblBody);
 	 tblLocation.appendChild(matsByReasonTbl);
+	 fillCwdTbl2(result.MaterialOrdersType);
 }
 
-function createRecordOfLabourTable(){
-	var labourTable = document.createElement('table'); 
+const createRecordOfLabourTable = ()=>{
+	const labourTable = document.createElement('table'); 
 	labourTable.setAttribute('id','recOfLbr');
 	labourTable.setAttribute('class','striped');
-	var tableHeader = document.createElement('thead');
-	var headerRow = document.createElement('tr');
-	for(var i = 0;i<9;i++){
-		var headerCell = document.createElement('th');
+	const tableHeader = document.createElement('thead');
+	const headerRow = document.createElement('tr');
+	for(let i = 0;i<9;i++){
+		const headerCell = document.createElement('th');
 		headerCell.setAttribute('class','center-align');
+		let headerCellText;
 		switch(i){
 			case 0:
-				var headerCellText = document.createTextNode('Week');
+				headerCellText = document.createTextNode('Week');
 				break;
 			case 1:
-				var headerCellText = document.createTextNode('Mon');
+				headerCellText = document.createTextNode('Mon');
 				break;
 			case 2:
-				var headerCellText = document.createTextNode('Tues');
+				headerCellText = document.createTextNode('Tues');
 				break;
 			case 3:
-				var headerCellText = document.createTextNode('Wed');
+				headerCellText = document.createTextNode('Wed');
 				break;
 			case 4:
-				var headerCellText = document.createTextNode('Thurs');
+				headerCellText = document.createTextNode('Thurs');
 				break;
 			case 5:
-				var headerCellText = document.createTextNode('Fri');
+				headerCellText = document.createTextNode('Fri');
 				break;
 			case 6:
-				var headerCellText = document.createTextNode('Sat');
+				headerCellText = document.createTextNode('Sat');
 				break;
 			case 7:
-				var headerCellText = document.createTextNode('Sun');
+				headerCellText = document.createTextNode('Sun');
 				break;
 			case 8:
-				var headerCellText = document.createTextNode('Total');
+				headerCellText = document.createTextNode('Total');
 				break;
 		}
 		headerCell.appendChild(headerCellText);
@@ -2807,25 +2306,25 @@ function createRecordOfLabourTable(){
 	tableHeader.appendChild(headerRow);
 	labourTable.appendChild(tableHeader);
 
-	var tableBody = document.createElement('tbody');
-	var numberOfRows =result.NewRecordOfLabour.length;
-	for(var i=0;i<numberOfRows; i++){
-		var bodyRow = recordOfLabourRows(i);
+	const tableBody = document.createElement('tbody');
+	const numberOfRows =result.NewRecordOfLabour.length;
+	for(let i=0;i<numberOfRows; i++){
+		const bodyRow = recordOfLabourRows(i);
 		tableBody.appendChild(bodyRow);
 	}
 	labourTable.appendChild(tableBody);
 	document.querySelector("#recordOfLabourContent").appendChild(labourTable);
 }
 
-function recordOfLabourRows(weekNumber){
-	var rowOfFields=document.createElement('tr');
-	var weekNumber = weekNumber+1;
-	for(var i=0;i<9;i++){
-		var singleField = document.createElement('td');
-		var fieldInput = document.createElement('input');
+const recordOfLabourRows = weekNumber=>{
+	const rowOfFields=document.createElement('tr');
+	const currentWeekNumber = result.NewRecordOfLabour[weekNumber].WeekNum;
+	for(let i=0;i<9;i++){
+		const singleField = document.createElement('td');
+		const fieldInput = document.createElement('input');
 		fieldInput.setAttribute('type','text');
-		var cellId = recordOfLabourCell(i)
-		var fieldID = 'week'+weekNumber+cellId;
+		const cellId = recordOfLabourCell(i)
+		const fieldID = 'week'+currentWeekNumber	+cellId;
 		fieldInput.setAttribute('id',fieldID);
 		fieldInput.setAttribute('name',fieldID);
 		singleField.appendChild(fieldInput);
@@ -2834,8 +2333,8 @@ function recordOfLabourRows(weekNumber){
 	return rowOfFields;
 }
 
-function recordOfLabourCell(cellNumber){
-	var cellId;
+const recordOfLabourCell = cellNumber=>{
+	let cellId;
 	switch(cellNumber){
 		case 0:
 			cellId='WeekNum';
@@ -2868,17 +2367,21 @@ function recordOfLabourCell(cellNumber){
 	return cellId
 }
 
-function populateRecordOfLabourTbl(){
-	var numberOfRows = result.NewRecordOfLabour.length;
-	for(var i=0;i<numberOfRows;i++){
+const populateRecordOfLabourTbl = ()=>{
+	const numberOfRows = result.NewRecordOfLabour.length;
+	for(let i=0;i<numberOfRows;i++){
+		console.log(i)
 		setRecordOfLabourRows(i);
 	}	
 }
 
-function setRecordOfLabourRows(weekNumber){
-	var totalLabour =0;
+const setRecordOfLabourRows = weekNumber=>{
+	let totalLabour =0;
+	let fieldId;
+	let weekNum;
 	for(var prop in result.NewRecordOfLabour[weekNumber]){
-		var fieldId = '#week'+(weekNumber+1)+prop;
+		weekNum = result.NewRecordOfLabour[weekNumber].WeekNum;
+		fieldId = '#week'+(weekNum)+prop;
 		if(prop != 'ContractNumber'){
 			if(prop != 'WeekNum'){
 				totalLabour =  totalLabour + parseInt(result.NewRecordOfLabour[weekNumber][prop]);
@@ -2886,19 +2389,18 @@ function setRecordOfLabourRows(weekNumber){
 			document.querySelector(fieldId).value = result.NewRecordOfLabour[weekNumber][prop];
 		}
 	}
-	var fieldId = '#week'+(weekNumber+1)+'Total';
+	fieldId = '#week'+weekNum+'Total';
 	document.querySelector(fieldId).value =totalLabour;
 }
 
 //Financial Data Section - Structure
-
-function createfinancialData(){
-	var location = document.querySelector('#finacialData');
-	var row = createDiv('financialDataRow','row');
-	var monthlyCWD = createDataCard('col s12 l2', 'totalCWD', 'totalCWDCardContent', 'CWD To Date');
-	var totalCWD = createDataCard('col s12 l2', 'monthlyCWD', 'monthlyCWDCardContent', 'CWD In Month');
-	var turnover = createDataCard('col s12 l4', 'turnover', 'turnoverCardContent', 'Predicatability (Turnover)');
-	var costflow = createDataCard('col s12 l4', 'costflow', 'costflowCardContent', 'Costflow');
+const createfinancialData = ()=>{
+	const location = document.querySelector('#finacialData');
+	const row = createDiv('financialDataRow','row');
+	const monthlyCWD = createDataCard('col s12 l2', 'totalCWD', 'totalCWDCardContent', 'CWD To Date');
+	const totalCWD = createDataCard('col s12 l2', 'monthlyCWD', 'monthlyCWDCardContent', 'CWD In Month');
+	const turnover = createDataCard('col s12 l4', 'turnover', 'turnoverCardContent', 'Predicatability (Turnover)');
+	const costflow = createDataCard('col s12 l4', 'costflow', 'costflowCardContent', 'Costflow');
 	row.appendChild(monthlyCWD);
 	row.appendChild(totalCWD);
 	row.appendChild(turnover);
@@ -2907,14 +2409,13 @@ function createfinancialData(){
 }
 
 //Financial Data Section - create tables
-
-function createFinancialDataSection(){
-	var sectionLocation = document.querySelector('#financialData');
-	var sectionRow = createDiv('financialRow','row');
-	var CwdToDate = createDataCard('col s12 l2', 'totalCWD', 'totalCwdContent', 'CWD To Date');
-	var monthlyCwds = createDataCard('col s12 l2', 'monthlyCWD', 'monthlyCwdContent', 'CWD In Month');
-	var turnover = createDataCard('col s12 l4', 'turnover', 'turnoverContent', 'Predictability (Turnover)');
-	var costflow = createDataCard('col s12 l4', 'costflow', 'costflowContent', 'Costflow');
+const createFinancialDataSection = ()=>{
+	const sectionLocation = document.querySelector('#financialData');
+	const sectionRow = createDiv('financialRow','row');
+	const CwdToDate = createDataCard('col s12 l2', 'totalCWD', 'totalCwdContent', 'CWD To Date');
+	const monthlyCwds = createDataCard('col s12 l2', 'monthlyCWD', 'monthlyCwdContent', 'CWD In Month');
+	const turnover = createDataCard('col s12 l4', 'turnover', 'turnoverContent', 'Predictability (Turnover)');
+	const costflow = createDataCard('col s12 l4', 'costflow', 'costflowContent', 'Costflow');
 	sectionRow.appendChild(CwdToDate);
 	sectionRow.appendChild(monthlyCwds);
 	sectionRow.appendChild(turnover);
@@ -2922,178 +2423,89 @@ function createFinancialDataSection(){
 	sectionLocation.appendChild(sectionRow);
 }
 
-
 //Financial Data Section - create and fill tables
-function createCwdToDateTbl(){
-	var tblLocation = document.querySelector('#totalCwdContent');
-	var totalCWDTbl = document.createElement('table');
+const createCwdToDateTbl = ()=>{
+	const tblLocation = document.querySelector('#totalCwdContent');
+	const tableSize= result.CWDsTotal.length;
+	const totalCWDTbl = createTwoColBody(tableSize,'totalCwdSubbie',true,['Sub-Contractor','Number']);
 	totalCWDTbl.setAttribute('id','totalCwdTbl');
 	totalCWDTbl.setAttribute('class','striped');
-	var tableHeader=document.createElement('thead');
-	var headerRow = document.createElement('tr');
-	for(var i=0;i<2;i++){
-		var rowCell = document.createElement('th');
-		switch(i){
-			case 0:
-				var cellText = document.createTextNode('Sub-Contractor');
-				break;
-			case 1:
-				var cellText = document.createTextNode('Number');
-				break;
-		}
-		rowCell.appendChild(cellText);
-		headerRow.appendChild(rowCell);
-	}
-	tableHeader.appendChild(headerRow);
-	totalCWDTbl.appendChild(tableHeader)
-	var tableBody = document.createElement('tbody');
-	var tableSize= result.CWDsTotal.length;
-	for(var j=0;j<tableSize;j++){
-		var bodyRow=document.createElement('tr');
-		for(var k=0; k<2;k++){
-			var bodyCell = document.createElement('td');
-			switch(k){
-				case 0:
-					var bodyCellInput = document.createElement('input');
-					bodyCellInput.setAttribute('type','text');
-					bodyCellInput.setAttribute('id','totalCwdSubbie'+(j+1));
-					bodyCellInput.setAttribute('name','totalCwdSubbie'+(j+1));
-					bodyCellInput.value = result.CWDsTotal[j].SubContractor;
-					bodyCell.appendChild(bodyCellInput);
-					break;
-				case 1:
-					var bodyCellInput = document.createElement('input');
-					bodyCellInput.setAttribute('type','text');
-					bodyCellInput.setAttribute('id','totalCwdSubbie'+(j+1)+'Frequency');
-					bodyCellInput.setAttribute('name','totalCwdSubbie'+(j+1)+'Frequency');
-					bodyCellInput.value=result.CWDsTotal[j].Total;
-					bodyCell.appendChild(bodyCellInput);
-					break;
-			}
-			bodyRow.appendChild(bodyCell);
-		}
-		tableBody.appendChild(bodyRow);
-	}
-	totalCWDTbl.appendChild(tableBody);
 	tblLocation.appendChild(totalCWDTbl);
 }
 
-function createMonthlyCwdTbl(){
-	var tblLocation = document.querySelector('#monthlyCwdContent');
-	var monthlyCWDTbl = document.createElement('table');
+const fillCwdTbl=(tblData, cell)=>{
+	const tableSize= tblData.length;
+	for(let i=0;i<tableSize;i++){
+		for(let j=0;j<2;j++){
+			const cellId = (j==0)?cell+(i+1):cell+(i+1)+'Value';
+			const cellValue = (j==0)?tblData[i].SubContractor:tblData[i].Total;
+			document.querySelector(cellId).value=cellValue;
+		}
+	}
+}
+
+const fillCwdTbl2= tblData =>{
+	for(var prop in tblData){
+		for(var innerProp in tblData[prop]){
+			if(innerProp!='ContractNumber'){
+				for(let i=0;i<2;i++){
+					const cellId = (i==0)?'#'+innerProp:'#'+innerProp+'Value';
+					const cellValue = (i==0)?innerProp:tblData[prop][innerProp];
+					(i==0)?fillStaticField(cellId,cellValue):document.querySelector(cellId).value = cellValue;
+				}
+			}
+		}
+	}
+}
+
+const createMonthlyCwdTbl = ()=>{
+	const tblLocation = document.querySelector('#monthlyCwdContent');
+	const tableSize= result.CWDsMonthly.length;
+	const monthlyCWDTbl = createTwoColBody(tableSize,'monthlyCwdSubbie',true,['Sub-Contractor','Number']);
 	monthlyCWDTbl.setAttribute('id','monthlyCwdTbl');
 	monthlyCWDTbl.setAttribute('class','striped');
-	var tableHeader=document.createElement('thead');
-	var headerRow = document.createElement('tr');
-	for(var i=0;i<2;i++){
-		var rowCell = document.createElement('th');
-		switch(i){
-			case 0:
-				var cellText = document.createTextNode('Sub-Contractor');
-				break;
-			case 1:
-				var cellText = document.createTextNode('Number');
-				break;
-		}
-		rowCell.appendChild(cellText);
-		headerRow.appendChild(rowCell);
-	}
-	tableHeader.appendChild(headerRow);
-	monthlyCWDTbl.appendChild(tableHeader)
-	var tableBody = document.createElement('tbody');
-	var tableSize= result.CWDsMonthly.length;
-	for(var j=0;j<tableSize;j++){
-		var bodyRow=document.createElement('tr');
-		for(var k=0; k<2;k++){
-			var bodyCell = document.createElement('td');
-			switch(k){
-				case 0:
-					var bodyCellInput = document.createElement('input');
-					bodyCellInput.setAttribute('type','text');
-					bodyCellInput.setAttribute('id','totalCwdSubbie'+(j+1));
-					bodyCellInput.setAttribute('name','totalCwdSubbie'+(j+1));
-					bodyCellInput.value = result.CWDsMonthly[j].SubContractor;
-					bodyCell.appendChild(bodyCellInput);
-					break;
-				case 1:
-					var bodyCellInput = document.createElement('input');
-					bodyCellInput.setAttribute('type','text');
-					bodyCellInput.setAttribute('id','totalCwdSubbie'+(j+1)+'Frequency');
-					bodyCellInput.setAttribute('name','totalCwdSubbie'+(j+1)+'Frequency');
-					bodyCellInput.value=result.CWDsMonthly[j].Total;
-					bodyCell.appendChild(bodyCellInput);
-					break;
-			}
-			bodyRow.appendChild(bodyCell);
-		}
-		tableBody.appendChild(bodyRow);
-	}
-	monthlyCWDTbl.appendChild(tableBody);
 	tblLocation.appendChild(monthlyCWDTbl);
 }
 
-function createPredTurnoverTbl(){
-	var predTurnoverTbl = document.createElement('table');
+
+const createPredTurnoverTbl = ()=>{
+	const predTurnoverTbl = document.createElement('table');
 	predTurnoverTbl.setAttribute('id','predTurnoverTbl');
 	predTurnoverTbl.setAttribute('class','striped');
-	var tableHeader = document.createElement('thead');
-	var headerRow = document.createElement('tr');
-	for(var i=0;i<4;i++){
-		var rowCell = document.createElement('th');
-		switch(i){
-			case 0:
-				var cellText=document.createTextNode('Month');
-				break;
-			case 1:
-				var cellText=document.createTextNode('Original Cum T.O');
-				break;
-			case 2:
-				var cellText=document.createTextNode('Current Cum T.O');
-				break;
-			case 3:
-				var cellText=document.createTextNode('Actual Cum T.O');
-				break;
-		}
+	const tableHeader = document.createElement('thead');
+	const headerRow = document.createElement('tr');
+	for(let i=0;i<4;i++){
+		const rowCell = document.createElement('th');
+		const cellText = (i==0)?document.createTextNode('Month'):
+							(i==1)?document.createTextNode('Original Cum T.O'):
+							(i==2)?document.createTextNode('Current Cum T.O'):
+							document.createTextNode('Actual Cum T.O');
 		rowCell.appendChild(cellText);
 		headerRow.appendChild(rowCell);
 	}
 	tableHeader.appendChild(headerRow);
 	predTurnoverTbl.appendChild(tableHeader)
-	var tableBody = document.createElement('tbody');
-	var listOfMonths = projectMonths.length;
-	for(var j=0;j<listOfMonths;j++){
-		var bodyRow=document.createElement('tr');
-		for(var k=0; k<4;k++){
-			var bodyCell = document.createElement('td');
-			switch(k){
-				case 0:
-					bodyCell.innerHTML = projectMonths[j];
-					break;
-				case 1:
-					var bodyCellInput = document.createElement('input');
-					bodyCellInput.setAttribute('type','text');
-					bodyCellInput.setAttribute('id',projectMonths[j]+'OriginalCum');
-					bodyCellInput.setAttribute('name',projectMonths[j]+'OriginalCum');
-					bodyCellInput.value = result.financialData[2][projectMonths[j]];
-					bodyCell.appendChild(bodyCellInput);
-					break;
-				case 2:
-					var bodyCellInput = document.createElement('input');
-					bodyCellInput.setAttribute('type','text');
-					bodyCellInput.setAttribute('id',projectMonths[j]+'CurrentCum');
-					bodyCellInput.setAttribute('name',projectMonths[j]+'CurrentCum');
-					bodyCellInput.value=result.financialData[0][projectMonths[j]];
-					bodyCell.appendChild(bodyCellInput);
-					break;
-				case 3:
-					var bodyCellInput = document.createElement('input');
-					bodyCellInput.setAttribute('type','text');
-					bodyCellInput.setAttribute('id',projectMonths[j]+'ActualCum');
-					bodyCellInput.setAttribute('name',projectMonths[j]+'ActualCum');
-					bodyCellInput.value = result.financialData[1][projectMonths[j]];
-					bodyCell.appendChild(bodyCellInput);
-					break;
-
+	const tableBody = document.createElement('tbody');
+	const listOfMonths = projectMonths.length;
+	for(let j=0;j<listOfMonths;j++){
+		const bodyRow=document.createElement('tr');
+		for(let k=0; k<4;k++){
+			const bodyCell = document.createElement('td');
+			if(k==0){
+				bodyCell.innerHTML = projectMonths[j];
+			}else{
+				const bodyCellInput = document.createElement('input');
+				const bodyCellId = (k==1)?projectMonths[j]+'OriginalCum':
+									(k==2)?projectMonths[j]+'CurrentCum':
+									projectMonths[j]+'ActualCum';
+				const bodyCellValue = (k==1)?result.financialData[2][projectMonths[j]]:
+									(k==2)?result.financialData[0][projectMonths[j]]:
+									result.financialData[1][projectMonths[j]]
+				bodyCellInput.setAttribute('type','text');
+				bodyCellInput.setAttribute('id',projectMonths[j]+bodyCellId);
+				bodyCellInput.setAttribute('name',projectMonths[j]+bodyCellId);
+				bodyCellInput.value = bodyCellValue;
+				bodyCell.appendChild(bodyCellInput);
 			}
 			bodyRow.appendChild(bodyCell);
 		}
@@ -3103,69 +2515,46 @@ function createPredTurnoverTbl(){
 	document.querySelector('#turnoverContent').appendChild(predTurnoverTbl);
 }
 
-function createCostflowTbl(){
-	var costflowTbl = document.createElement('table');
+const createCostflowTbl = ()=>{
+	const costflowTbl = document.createElement('table');
 	costflowTbl.setAttribute('id','costflowTbl');
 	costflowTbl.setAttribute('class','striped');
-	var tableHeader = document.createElement('thead');
-	var headerRow = document.createElement('tr');
-	for(var i=0;i<4;i++){
-		var rowCell = document.createElement('th');
-		switch(i){
-			case 0:
-				var cellText=document.createTextNode('Month');
-				break;
-			case 1:
-				var cellText=document.createTextNode('Cum Certified Cash');
-				break;
-			case 2:
-				var cellText=document.createTextNode('current Cum T.O');
-				break;
-			case 3:
-				var cellText=document.createTextNode('Actual Cum T.O');
-				break;
-		}
+	const tableHeader = document.createElement('thead');
+	const headerRow = document.createElement('tr');
+	for(let i=0;i<4;i++){
+		const rowCell = document.createElement('th');
+		const cellText = (i==0)?document.createTextNode('Month'):
+							(i==1)?document.createTextNode('Cum Certified T.O'):
+							(i==2)?document.createTextNode('Current Cum T.O'):
+							document.createTextNode('Actual Cum T.O');
 		rowCell.appendChild(cellText);
 		headerRow.appendChild(rowCell);
 	}
 	tableHeader.appendChild(headerRow);
 	costflowTbl.appendChild(tableHeader)
-	var listOfMonths = projectMonths.length;
-	var tableBody = document.createElement('tbody');
-	for(var j=0;j<listOfMonths;j++){
-		var bodyRow=document.createElement('tr');
-		for(var k=0; k<4;k++){
-			var cumTgtCostflow=(result.financialData[0][projectMonths[j]]*(1-0.1)).toFixed(0);
-			var bodyCell = document.createElement('td');
-			switch(k){
-				case 0:
-					bodyCell.innerHTML = projectMonths[j];
-					break;
-				case 1:
-					var bodyCellInput = document.createElement('input');
-					bodyCellInput.setAttribute('type','text');
-					bodyCellInput.setAttribute('id','costFlow'+projectMonths[j]+'CumCertifiedCash');
-					bodyCellInput.setAttribute('name','costFlow'+projectMonths[j]+'CumCertifiedCash');
-					bodyCellInput.value = result.financialData[0][projectMonths[j]];
-					bodyCell.appendChild(bodyCellInput);
-					break;
-				case 2:
-					var bodyCellInput = document.createElement('input');
-					bodyCellInput.setAttribute('type','text');
-					bodyCellInput.setAttribute('id','costFlow'+projectMonths[j]+'CurrentCum');
-					bodyCellInput.setAttribute('name','costFlow'+projectMonths[j]+'CurrentCum');
-					bodyCellInput.value=cumTgtCostflow;
-					bodyCell.appendChild(bodyCellInput);
-					break;
-				case 3:
-					var bodyCellInput = document.createElement('input');
-					bodyCellInput.setAttribute('type','text');
-					bodyCellInput.setAttribute('id','costFlow'+projectMonths[j]+'AcutalCum');
-					bodyCellInput.setAttribute('name','costFlow'+projectMonths[j]+'AcutalCum');
-					bodyCellInput.value = result.financialData[3][projectMonths[j]];
-					bodyCell.appendChild(bodyCellInput);
-					break;
-
+	const listOfMonths = projectMonths.length;
+	const tableBody = document.createElement('tbody');
+	for(let j=0;j<listOfMonths;j++){
+		const bodyRow=document.createElement('tr');
+		for(let k=0; k<4;k++){
+			const cumTgtCostflow=(result.financialData[0][projectMonths[j]]*(1-0.1)).toFixed(0);
+			const bodyCell = document.createElement('td');
+			let bodyCellInput;
+			if(k==0){
+				bodyCell.innerHTML = projectMonths[j];
+			}else{
+				const bodyCellInput = document.createElement('input');
+				const bodyCellId = (k==1)?projectMonths[j]+'CumCertifiedCash':
+									(k==2)?projectMonths[j]+'CurrentCum':
+									projectMonths[j]+'ActualCum';
+				const bodyCellValue = (k==1)?result.financialData[0][projectMonths[j]]:
+										(k==2)?cumTgtCostflow:
+										result.financialData[3][projectMonths[j]];
+				bodyCellInput.setAttribute('type','text');
+				bodyCellInput.setAttribute('id','costFlow'+projectMonths[j]+'CumCertifiedCash');
+				bodyCellInput.setAttribute('name','costFlow'+projectMonths[j]+'CumCertifiedCash');
+				bodyCellInput.value =bodyCellValue; 
+				bodyCell.appendChild(bodyCellInput);
 			}
 			bodyRow.appendChild(bodyCell);
 		}
@@ -3175,75 +2564,53 @@ function createCostflowTbl(){
 	document.querySelector('#costflowContent').appendChild(costflowTbl);
 }
 
-
-
 //Subcontractor Financial Data Section
-
-function createSubContractorSection(location){
-	var sectionLocation = document.querySelector(location);
-	var section= createDiv('subContractorContainer','row');
-	var subContractorDiv = createDataCard('col s12 l12', 'subContractor', 'subConOrderVariations', 'Subcontractor Orders and Variations');
+const createSubContractorSection = location=>{
+	const sectionLocation = document.querySelector(location);
+	const section= createDiv('subContractorContainer','row');
+	const subContractorDiv = createDataCard('col s12 l12', 'subContractor', 'subConOrderVariations', 'Subcontractor Orders and Variations');
 	section.appendChild(subContractorDiv);
 	sectionLocation.appendChild(section);
 }
 
-function createsubConOrderVarTbl(){
-	var tblLength = result.SubConFinData.length;
+const createsubConOrderVarTbl = ()=>{
+	const tblLength = result.SubConFinData.length;
 	if(tblLength>0){
-		var startOfFieldID;
-		var middleOfFieldID=1;
-		var endOfFieldID;
-		var tableLocation = document.querySelector('#subConOrderVariations');
-		var subConOrderTable = document.createElement('table');
+		const tableLocation = document.querySelector('#subConOrderVariations');
+		const subConOrderTable = document.createElement('table');
 		subConOrderTable.setAttribute('id','subbieOrders');
 		subConOrderTable.setAttribute('class','striped');
-		var subConHeader = document.createElement('thead');
-		var headerRow = document.createElement('tr');
-		for(var i=0;i<6;i++){
-			var headerCell = document.createElement('th');
+		const subConHeader = document.createElement('thead');
+		const headerRow = document.createElement('tr');
+		for(let i=0;i<6;i++){
+			const headerCell = document.createElement('th');
+			const headerCellText = (i==0)?document.createTextNode('Trade'):
+									(i==1)?document.createTextNode('Sub-Contract Nett Order Value'):
+									(i==2)?document.createTextNode('Design Development'):
+									(i==3)?document.createTextNode('Package'):
+									(i==4)?document.createTextNode('Site'):
+									document.createTextNode('Recoverable Variations');
 			headerCell.setAttribute('class','center-align');
-			switch(i){
-				case 0:
-					var headerCellText = document.createTextNode('Trade');
-					break;
-				case 1:
-					var headerCellText = document.createTextNode('Sub-Contract Nett Order Value');
-					break;
-				case 2:
-					var headerCellText = document.createTextNode('Design Development');
-					break;
-				case 3:
-					var headerCellText = document.createTextNode('Package');
-					break;
-				case 4:
-					var headerCellText = document.createTextNode('Site');
-					break;
-				case 5:
-					var headerCellText = document.createTextNode('Recoverable Variations');
-			}
 			headerCell.appendChild(headerCellText);
 			headerRow.appendChild(headerCell);
 		}
 		subConHeader.appendChild(headerRow);
 		subConOrderTable.appendChild(subConHeader);
-		var subConBody = document.createElement('tbody');
-		var colsIds=Object.keys(result.SubConFinData[0]);
+		const subConBody = document.createElement('tbody');
+		let colsIds=Object.keys(result.SubConFinData[0]);
 		colsIds.shift();
-		for (var j=0; j<tblLength; j++){
-			var bodyRow = document.createElement('tr');
-			if(middleOfFieldID==51){middleOfFieldID=1};
-			for(var k=0; k<colsIds.length;k++){
-				var bodyCell = document.createElement('td');
-				var cellInput = document.createElement('input');
-				var bodyCellId= colsIds[k]+(j+1);
+		for (let j=0; j<tblLength; j++){
+			const bodyRow = document.createElement('tr');
+			for(let k=0; k<colsIds.length;k++){
+				const bodyCell = document.createElement('td');
+				const cellInput = document.createElement('input');
+				const bodyCellId= colsIds[k]+(j+1);
 				cellInput.setAttribute('id',bodyCellId);
 				cellInput.setAttribute('name',bodyCellId);
 				bodyCell.appendChild(cellInput);
 				bodyRow.appendChild(bodyCell)
-				endOfFieldID++;
 			}
 			subConBody.appendChild(bodyRow);
-			middleOfFieldID++;
 		}
 		subConOrderTable.appendChild(subConBody)
 
@@ -3252,18 +2619,17 @@ function createsubConOrderVarTbl(){
 		populateSubConOrderVarTbl();
 	}
 	else{
-		var alternativeText = document.createTextNode('- No Information to Display - ');
+		const alternativeText = document.createTextNode('- No Information to Display - ');
 		tableLocation.appendChild(alternativeText);
 	}
 }
 
-function populateSubConOrderVarTbl(){
-	var middleOfFieldID=1;
+const populateSubConOrderVarTbl = ()=>{
 	for(var prop in result.SubConFinData){
 		if(result.SubConFinData.hasOwnProperty(prop)){
 			for(var innerProp in result.SubConFinData[prop]){
 				if(innerProp!='ContractNumber'){
-					var fieldID = '#'+innerProp+(parseInt(prop)+1);
+					const fieldID = '#'+innerProp+(parseInt(prop)+1);
 					document.querySelector(fieldID).value = result.SubConFinData[prop][innerProp];
 				}
 			}
@@ -3271,17 +2637,14 @@ function populateSubConOrderVarTbl(){
 	}
 }
 
-
-
 //HS Data Section Structure
-
-function createHSDataSection(locaton){
-	var sectionLocation = document.querySelector(locaton);
-	var HsRow = createDiv('HsRow','row');
-	var monthlyAuditCard = createDataCard('col s12 l2','monthlyAudit','HSMonthlyAudit','Monthly Audit');
-	var accidentTradeTypeCard = createMultiDataCard('col s12 l4', 'accidentTradeType', 2, '', ['By Type','By Trade'])
-	var accidentReportCard = createDataCard('col s12 l3','accidentReport','tblAccidentReport','Accident Report');
-	var daysLostCard = createDataCard('col s12 l3', 'daysLost', 'daysLostContent', 'Days Lost');
+const createHSDataSection = location=>{
+	const sectionLocation = document.querySelector(location);
+	const HsRow = createDiv('HsRow','row');
+	const monthlyAuditCard = createDataCard('col s12 l2','monthlyAudit','HSMonthlyAudit','Monthly Audit');
+	const accidentTradeTypeCard = createMultiDataCard('col s12 l4', 'accidentTradeType', 2, '', ['By Type','By Trade'])
+	const accidentReportCard = createDataCard('col s12 l3','accidentReport','tblAccidentReport','Accident Report');
+	const daysLostCard = createDataCard('col s12 l3', 'daysLost', 'daysLostContent', 'Days Lost');
 	HsRow.appendChild(monthlyAuditCard);
 	HsRow.appendChild(accidentTradeTypeCard);
 	HsRow.appendChild(accidentReportCard);
@@ -3289,64 +2652,48 @@ function createHSDataSection(locaton){
 	sectionLocation.appendChild(HsRow);
 }
 
-function getProjectMonths(){
-	projectMonths = Object.getOwnPropertyNames(result.progress);
-	projectMonths.shift();
-	projectMonths.shift();
+const getProjectMonths = ()=>{
+	projectMonths = Object.keys(result.progress).slice(1);
 }
 
 //HS Data Section Create Table
-function createHSMonthlyAuditTbl(){
-	var tableLocation = document.querySelector('#HSMonthlyAudit');
-	var HSAuditTable = document.createElement('table');
+const createHSMonthlyAuditTbl = ()=>{
+	const tableLocation = document.querySelector('#HSMonthlyAudit');
+	const HSAuditTable = document.createElement('table');
+	const tableHeader = document.createElement('thead');
+	const headerRow = document.createElement('tr');
 	HSAuditTable.setAttribute('id','monthlyAuditTbl');
 	HSAuditTable.setAttribute('class','striped');
-	var tableHeader = document.createElement('thead');
-	var headerRow = document.createElement('tr');
-	for(var i=0; i<3;i++){
-		var headerCell = document.createElement('th');
+	for(let i=0; i<3;i++){
+		const headerCell = document.createElement('th');
+		const cellText = (i==0)?document.createTextNode('%'):document.createTextNode('Score');
 		headerCell.setAttribute('class','center-align');
-		if(i==1){
-			var cellText = document.createTextNode('%');
-			headerCell.appendChild(cellText);
-		}else if(i==2){
-			var cellText = document.createTextNode('Score');
-			headerCell.appendChild(cellText);
-		}	
+		headerCell.appendChild(cellText);
 		headerRow.appendChild(headerCell);
 	}
 	tableHeader.appendChild(headerRow);
 	HSAuditTable.appendChild(tableHeader);
-	var tableBody = document.createElement('tbody');
-	var numOfRows = projectMonths.length;
-	for(var j=0;j<numOfRows;j++){
-		var bodyRow = document.createElement('tr');
-		var	percentage =result.HSData[1][projectMonths[j]];
-		var	score = result.HSData[0][projectMonths[j]];
-		if(percentage==undefined){percentage=0};
-		if(score==undefined){score=0};
-		for(var k=0; k<3;k++){
-			var bodyCell = document.createElement('td');
-			switch(k){
-				case 0:
-					bodyCell.appendChild(document.createTextNode(projectMonths[j]));
-					break;
-				case 1:
-					var bodyCellInput = document.createElement('input');
-					bodyCellInput.setAttribute('type','text');
-					bodyCellInput.setAttribute('id',projectMonths[j]+'Pct');
-					bodyCellInput.setAttribute('name',projectMonths[j]+'Pct');	
-					bodyCellInput.value = percentage;
-					bodyCell.appendChild(bodyCellInput);
-					break;
-				case 2:
-					var bodyCellInput = document.createElement('input');
-					bodyCellInput.setAttribute('type','text');
-					bodyCellInput.setAttribute('id',projectMonths[j]+'Value');
-					bodyCellInput.setAttribute('name',projectMonths[j]+'Value');
-					bodyCellInput.value = score;
-					bodyCell.appendChild(bodyCellInput);
-					break;
+	const tableBody = document.createElement('tbody');
+	const numOfRows = projectMonths.length;
+	for(let j=0;j<numOfRows;j++){
+		const bodyRow = document.createElement('tr');
+		const percentage = (result.HSData[1][projectMonths[j]]==undefined)?0:result.HSData[1][projectMonths[j]];
+		const score = (result.HSData[0][projectMonths[j]]==undefined)?0:result.HSData[0][projectMonths[j]];
+		for(let k=0; k<3;k++){
+			const bodyCell = document.createElement('td');
+			if(k==0){
+				bodyCell.appendChild(document.createTextNode(projectMonths[j]));
+			}
+			else{
+				const bodyCellInput = document.createElement('input');
+				const fieldId=(k==1)?projectMonths[j]+'Pct':projectMonths[j]+'Value';
+				const fieldValue=(k==1)?percentage:score;
+				bodyCellInput.setAttribute('type','text');
+				bodyCellInput.setAttribute('id',fieldId);
+				bodyCellInput.setAttribute('name',fieldId);	
+				bodyCellInput.value = fieldValue;
+				bodyCell.appendChild(bodyCellInput);
+
 			}
 			bodyRow.appendChild(bodyCell);
 		}
@@ -3356,210 +2703,84 @@ function createHSMonthlyAuditTbl(){
 	tableLocation.appendChild(HSAuditTable);
 }
 
-function tblAccidentType(location){
-	var accidentTypeTblLoc=document.querySelector(location);
-	var typeTable = document.createElement('table');
+const tblAccidentType = location=>{
+	const accidentTypeTblLoc=document.querySelector(location);
+	const typeData = ['abdomen','arms','back','burns','chest','eyes','face','feet','hands','head','jaw','legs','muscular','neck','pelvis','penis','shoulder','skeletal'];
+	const rowNum = typeData.length;
+	const typeTable = createTwoColBody(rowNum,typeData,false,['Type','Frequency'], true);
 	typeTable.setAttribute('id','accidentsType');
 	typeTable.setAttribute('class','striped');
-	var tableHeader = document.createElement('thead');
-	var headerRow = document.createElement('tr');	
-	for(var i=0;i<2;i++){
-		var headerRowCell = document.createElement('th');
-		var headerText;
-		switch(i){
-			case 0:
-				headerText=document.createTextNode('Type');
-				break;
-			case 1:
-				headerText=document.createTextNode('Frequency');
-		}
-		headerRowCell.appendChild(headerText);
-		headerRow.appendChild(headerRowCell);
-	}
-	tableHeader.appendChild(headerRow);
-	typeTable.appendChild(tableHeader);
-	var tableBody = document.createElement('tbody');
-	var typeData = ['abdomen','arms','back','burns','chest','eyes','face','feet','hands','head','jaw','legs','muscular','neck','pelvis','penis','shoulder','skeletal'];
-	var rowNum = typeData.length;
-	for(var j=0;j<rowNum;j++){
-		if(elem != 'ContractNumber'){
-			var tableBodyRow = document.createElement('tr');
-			for(var k=0; k<2;k++){
-				var bodyRowCell =document.createElement('td');
-				var bodyRowCellText;
-				switch(k){
-					case 0:
-						bodyRowCellText = document.createTextNode(typeData[j]);
-						bodyRowCell.appendChild(bodyRowCellText);
-						break;
-					case 1:
-						var cellID = getTypeFieldID(typeData[j])
-						var bodyCellInput = document.createElement('input');
-						bodyCellInput.setAttribute('type','number');
-						bodyCellInput.setAttribute('id',typeData[j]+'Value');
-						bodyCellInput.setAttribute('name',typeData[j]+'Value');
-						bodyCellInput.value = '0';
-						bodyRowCell.appendChild(bodyCellInput);
-						break;
-				}
-				
-				tableBodyRow.appendChild(bodyRowCell);
-			}
-			tableBody.appendChild(tableBodyRow);
-		}
-	}
-	typeTable.appendChild(tableBody);
 	accidentTypeTblLoc.appendChild(typeTable);
+	fillAccidentTables(typeData);
 }
 
-function tblAccidentTrade(location){
-	var accidentTradeTblLoc=document.querySelector(location);
-	var tradeTable = document.createElement('table');
+const fillAccidentTables = data =>{
+	const tblSize = data.length;
+	for(let i=0;i<tblSize;i++){
+		for(let j=0;j<2;j++){
+			const cellId = (j==0)?'#'+data[i]:'#'+data[i]+'Value';
+			const cellValue = (j==0)?data[i]:'0';
+			(j==0)? fillStaticField(cellId, cellValue):	document.querySelector(cellId).value = cellValue;
+		}
+	}
+}
+
+const fillStaticField = (cell,data) =>{
+	const cellValue = data.charAt(0).toUpperCase()+data.slice(1).replace(/([A-Z])/g, ' $1'); 
+	document.querySelector(cell).innerHTML = cellValue;
+}
+
+
+const tblAccidentTrade = location=>{
+	const accidentTradeTblLoc=document.querySelector(location);
+	const tradeData = ['asbestosRemoval','brickwork','carpentry','cladding','cleaning','demolition','electrical','fencing','flooring','forklift','frame','glazing','groundwork','insulation','labourer','landscaping','lifts','lightningProtection','management','mastic','mechanical','metalwork','paintingAndDecoration','pestControl','piling','plastering','plumbing','render','roofing','scaffolding','steelwork','tiling','treeSurgery','waterProofing','windows'];
+	const rowNum = tradeData.length;
+	const tradeTable =  createTwoColBody(rowNum,tradeData,false,['Type','Frequency'],true);
 	tradeTable.setAttribute('id','accidentsTrade');
 	tradeTable.setAttribute('class','striped');
-	var tableHeader = document.createElement('thead');
-	var headerRow = document.createElement('tr');	
-	for(var i=0;i<2;i++){
-		var headerRowCell = document.createElement('th');
-		var headerText;
-		switch(i){
-			case 0:
-				headerText=document.createTextNode('Type');
-				break;
-			case 1:
-				headerText=document.createTextNode('Frequency');
-		}
-		headerRowCell.appendChild(headerText);
-		headerRow.appendChild(headerRowCell);
-	}
-	tableHeader.appendChild(headerRow);
-	tradeTable.appendChild(tableHeader);
-	var tableBody = document.createElement('tbody');
-	var tradeData = ['asbestosRemoval','brickwork','carpentry','cladding','cleaning','demolition','electrical','fencing','flooring','forklift','frame','glazing','groundwork','insulation','labourer','landscaping','lifts','lightningProtection','management','mastic','mechanical','metalwork','paintingandDecoration','pestControl','piling','plastering','plumbing','render','roofing','scaffolding','steelwork','tiling','treeSurgery','waterProofing','windows'];
-	var rowNum = tradeData.length;
-	for(var j=0;j<rowNum;j++){
-		var tableBodyRow = document.createElement('tr');
-		for(var k=0; k<2;k++){
-			var bodyRowCell =document.createElement('td');
-			var bodyRowCellText;
-			switch(k){
-				case 0:
-					bodyRowCellText = document.createTextNode(tradeData[j]);
-					bodyRowCell.appendChild(bodyRowCellText);
-					break;
-				case 1:
-					var cellID = getTradeFieldID(tradeData[j])
-					var bodyCellInput = document.createElement('input');
-					bodyCellInput.setAttribute('type','number');
-					bodyCellInput.setAttribute('id',tradeData[j]+'Value');
-					bodyCellInput.setAttribute('name',tradeData[j]+'Value');
-					bodyCellInput.value = '0';
-					bodyRowCell.appendChild(bodyCellInput);
-					break;
-			}
-			tableBodyRow.appendChild(bodyRowCell);
-		}
-		tableBody.appendChild(tableBodyRow);
-	}
-	tradeTable.appendChild(tableBody);
 	accidentTradeTblLoc.appendChild(tradeTable);
+	fillAccidentTables(tradeData);
 }
 
-function createAccidentReportTbl(){
-	var tableLocation = document.querySelector('#tblAccidentReport');
-	var accidentReportTable = document.createElement('table');
+const createAccidentReportTbl = ()=>{
+	const tableLocation = document.querySelector('#tblAccidentReport');
+	const accidentReportTable = document.createElement('table');
 	accidentReportTable.setAttribute('class','striped');
 	accidentReportTable.setAttribute('id','AccidentReportTbl');
-	var tblHead = document.createElement('thead');
-	var tblHeadRow = document.createElement('tr');
-	for(var i=0;i<5;i++){
-		var tblHeadRowCell = document.createElement('th');
-		var tblHeadRowCellTxt;
-		switch(i){
-			case 0:
-				tblHeadRowCellTxt=document.createTextNode('Date');
-				break;
-			case 1:
-				tblHeadRowCellTxt=document.createTextNode('Trade');
-				break;
-			case 2:
-				tblHeadRowCellTxt=document.createTextNode('Type');
-				break;
-			case 3:
-				tblHeadRowCellTxt=document.createTextNode('Lost Days');
-				break;
-			case 4:
-				tblHeadRowCellTxt=document.createTextNode('Riddor');
-				break;
-		}
+	const tblHead = document.createElement('thead');
+	const tblHeadRow = document.createElement('tr');
+	for(let i=0;i<5;i++){
+		const tblHeadRowCell = document.createElement('th');
+		const tblHeadRowCellTxt= (i==0)?document.createTextNode('Date'):
+								(i==1)?document.createTextNode('Trade'):
+								(i==2)?document.createTextNode('Type'):
+								(i==3)?document.createTextNode('Lost Days'):
+								document.createTextNode('Riddor');
 		tblHeadRowCell.appendChild(tblHeadRowCellTxt);
 		tblHeadRow.appendChild(tblHeadRowCell);
 	}
 	tblHead.appendChild(tblHeadRow);
 	accidentReportTable.appendChild(tblHead);
-	var tblBody = document.createElement('tbody');
-	var tblLength = result.AccidentReport.length;
-	var fieldIdentifier = 1;
-	for(var j=0;j<tblLength;j++){
-		var bodyRow = document.createElement('tr');
-		for(var k=0;k<5;k++){
-			var rowCell = document.createElement('td');
-			var cellInput = document.createElement('input');
-			var fieldID = 'accidentReport';
-			switch(k){
-				case 0:
-					cellInput.setAttribute('class','datepicker');
-					cellInput.setAttribute('type','text');
-					cellInput.setAttribute('id','_datepicker_'+fieldID+(parseInt(j)+1));
-					cellInput.setAttribute('onChange','constructDate()');
-					var hiddenInput  = document.createElement('input');
-					hiddenInput.setAttribute('type','hidden');
-					hiddenInput.setAttribute('name',fieldID+(parseInt(j)+1)+'_hour');
-					hiddenInput.setAttribute('value','0');
-					rowCell.appendChild(hiddenInput);
-					var hiddenInput2  = document.createElement('input');
-					hiddenInput2.setAttribute('type','hidden');
-					hiddenInput2.setAttribute('name',fieldID+(parseInt(j)+1)+'_minute');
-					hiddenInput2.setAttribute('value','0');
-					rowCell.appendChild(hiddenInput2);
-					var hiddenInput3  = document.createElement('input');
-					hiddenInput3.setAttribute('type','hidden');
-					hiddenInput3.setAttribute('name',fieldID+(parseInt(j)+1)+'_second');
-					hiddenInput3.setAttribute('value','0');
-					rowCell.appendChild(hiddenInput3);
-					var hiddenInput4  = document.createElement('input');
-					hiddenInput4.setAttribute('type','hidden');
-					hiddenInput4.setAttribute('name',fieldID+(parseInt(j)+1)+'_ampm');
-					hiddenInput4.setAttribute('value','0');
-					rowCell.appendChild(hiddenInput4);
-					var hiddenInput5  = document.createElement('input');
-					hiddenInput5.setAttribute('type','hidden');
-					hiddenInput5.setAttribute('name',fieldID+(parseInt(j)+1)+'_dirtyFlag');
-					hiddenInput5.setAttribute('value','0');
-					rowCell.appendChild(hiddenInput5);
-					var hiddenInput6  = document.createElement('input');
-					hiddenInput6.setAttribute('type','hidden');
-					hiddenInput6.setAttribute('name',fieldID+(parseInt(j)+1));
-					hiddenInput6.setAttribute('id',fieldID+(parseInt(j)+1));
-					hiddenInput6.setAttribute('value','[LL_FormTag'+fieldID+'/]');
-					rowCell.appendChild(hiddenInput6);
-					break;
-				case 1:
-					cellInput.setAttribute('type','text');
-					cellInput.setAttribute('id',fieldID+(parseInt(j)+1)+'Trade');
-					break;
-				case 2:
-					cellInput.setAttribute('type','text');
-					cellInput.setAttribute('id',fieldID+(parseInt(j)+1)+'Type');
-					break;
-				case 3:
-					cellInput.setAttribute('type','text');
-					cellInput.setAttribute('id',fieldID+(parseInt(j)+1)+'LostDays');
-					break;
-				case 4:
-					cellInput.setAttribute('type','text');
-					cellInput.setAttribute('id',fieldID+(parseInt(j)+1)+'Riddor');
-					break;
+	const tblBody = document.createElement('tbody');
+	const tblLength = result.AccidentReport.length;
+	for(let j=0;j<tblLength;j++){
+		const bodyRow = document.createElement('tr');
+		for(let k=0;k<5;k++){
+			const rowCell = document.createElement('td');
+			const cellInput = document.createElement('input');
+			const fieldID = (k==0)?'accidentReport'+(parseInt(j)+1):
+							(k==1)?'accidentReport'+(parseInt(j)+1)+'Trade':
+							(k==2)?'accidentReport'+(parseInt(j)+1)+'Type':
+							(k==3)?'accidentReport'+(parseInt(j)+1)+'LostDays':
+							'accidentReport'+(parseInt(j)+1)+'Riddor';
+			if(k==0){
+				cellInput.setAttribute('class','datepicker');
+				cellInput.setAttribute('type','text');
+				cellInput.setAttribute('id','_datepicker_'+fieldID);
+				cellInput.setAttribute('onChange','constructDate()');
+			}else{
+				cellInput.setAttribute('type','text');
+				cellInput.setAttribute('id',fieldID);
 			}
 			rowCell.appendChild(cellInput);
 			bodyRow.appendChild(rowCell);
@@ -3570,58 +2791,42 @@ function createAccidentReportTbl(){
 	tableLocation.appendChild(accidentReportTable);
 }
 
-function createDaysLostTbl(){
-	var tblLocation = document.querySelector('#daysLostContent');
-	var DaysLostTable = document.createElement('table');
+const createDaysLostTbl = ()=>{
+	const tblLocation = document.querySelector('#daysLostContent');
+	const DaysLostTable = document.createElement('table');
+	const tableHeader=document.createElement('thead');
+	const headerRow = document.createElement('tr');
 	DaysLostTable.setAttribute('id','daysLostTbl');
 	DaysLostTable.setAttribute('class','striped');
-	var tableHeader=document.createElement('thead');
-	var headerRow = document.createElement('tr');
-	for(var i=0;i<3;i++){
-		var headerRowCell=document.createElement('th');
-		var headerRowCellTxt;
-		switch(i){
-			case 0:
-				headerRowCellTxt=document.createTextNode('Month');
-				break;
-			case 1:
-				headerRowCellTxt=document.createTextNode('Riddor (7Days +)');
-				break;
-			case 2:
-				headerRowCellTxt=document.createTextNode('Non-Riddor Lost time 0-6 Days');
-				break;
-		}
+	for(let i=0;i<3;i++){
+		const headerRowCell=document.createElement('th');
+		const headerRowCellTxt= i=0?document.createTextNode('Month'):
+								i=1?document.createTextNode('Riddor (7Days +)'):
+								document.createTextNode('Non-Riddor Lost time 0-6 Days');
 		headerRowCell.appendChild(headerRowCellTxt);
 		headerRow.appendChild(headerRowCell);
 	}
 	tableHeader.appendChild(headerRow);
 	DaysLostTable.appendChild(tableHeader);
-	var tableBody = document.createElement('tbody');
-	var latestMonth = projectMonths[projectMonths.length-1];
+	const tableBody = document.createElement('tbody');
+	const latestMonth = projectMonths[projectMonths.length-1];
 	tableLength=projectMonths.length;
-	for(var j=0;j<tableLength;j++){
-		var bodyRow = document.createElement('tr');
-		for(var k=0;k<3;k++){
-			var bodyRowCell = document.createElement('td');
+	for(let j=0;j<tableLength;j++){
+		const bodyRow = document.createElement('tr');
+		for(let k=0;k<3;k++){
+			const bodyRowCell = document.createElement('td');
+			const fieldId = (k==1)?'riddor'+projectMonths[j]:'nonRiddor'+projectMonths[j];
 			bodyRowCell.setAttribute('class','center-align');
-			var bodyRowCellTxt;
 			switch(k){
 				case 0:
 					bodyRowCell.appendChild(document.createTextNode(projectMonths[j]));
 					break;
 				case 1:
-					var bodyCellInput = document.createElement('input');
-					bodyCellInput.setAttribute('type','text');
-					bodyCellInput.setAttribute('id','riddor'+projectMonths[j]);
-					bodyCellInput.setAttribute('name','riddor'+projectMonths[j]);
-					bodyCellInput.setAttribute('value',0);
-					bodyRowCell.appendChild(bodyCellInput);
-					break;
 				case 2:
-					var bodyCellInput = document.createElement('input');
+					const bodyCellInput = document.createElement('input');
 					bodyCellInput.setAttribute('type','text');
-					bodyCellInput.setAttribute('id','nonRiddor'+projectMonths[j]);
-					bodyCellInput.setAttribute('name','nonRiddor'+projectMonths[j]);
+					bodyCellInput.setAttribute('id',fieldId);
+					bodyCellInput.setAttribute('name',fieldId);
 					bodyCellInput.setAttribute('value',0);
 					bodyRowCell.appendChild(bodyCellInput);
 					break;
@@ -3635,12 +2840,12 @@ function createDaysLostTbl(){
 	tblLocation.appendChild(DaysLostTable);
 }
 
-function HSMonthlyAuditAvg(){
-	var HSsum=0;
-	var numberOfMonths=0;
-	for(var i=0;i<projectMonths.length;i++){
+const HSMonthlyAuditAvg = ()=>{
+	let HSsum=0;
+	let numberOfMonths=0;
+	for(let i=0;i<projectMonths.length;i++){
 		if(projectMonths[i]!="___rowNum__"){
-			var currentMonth = projectMonths[i];
+			const currentMonth = projectMonths[i];
 			if(currentMonth.substr(3,5)>=17){
 				if(result.HSData[0][currentMonth]!=undefined){
 					HSsum+=parseInt(result.HSData[0][currentMonth]);
@@ -3654,12 +2859,12 @@ function HSMonthlyAuditAvg(){
 	document.querySelector("#HSAuditActual").value = (HSsum/numberOfMonths).toFixed(0);
 }
 
-function HSMonthlyAuditAvgPct(){
-	var HSsum=0;
-	var numberOfMonths=0;
-	for(var i=0;i<projectMonths.length;i++){
+const HSMonthlyAuditAvgPct = ()=>{
+	let HSsum=0;
+	let numberOfMonths=0;
+	for(let i=0;i<projectMonths.length;i++){
 		if(projectMonths[i]!="___rowNum__"){
-			var currentMonth = projectMonths[i];
+			const currentMonth = projectMonths[i];
 			if(currentMonth.substr(3,5)>=17){
 				if(result.HSData[1][currentMonth]!=undefined){
 					HSsum+=parseInt(result.HSData[1][currentMonth]);
@@ -3673,41 +2878,41 @@ function HSMonthlyAuditAvgPct(){
 	document.querySelector("#HSAuditPctActual").value = (HSsum/numberOfMonths).toFixed(0);
 }
 
-function populateAccidentReportTbl(){
-	var middleOfFieldID=1;
-	var dateMonth;
-	var dateYear;
+const populateAccidentReportTbl = ()=>{
+	let dateMonth;
+	let dateYear;
 	for(var prop in result.AccidentReport){
 		if(result.AccidentReport.hasOwnProperty(prop)){
 			for(var innerProp in result.AccidentReport[prop]){
-				if(middleOfFieldID==51){middleOfFieldID=1};
+				let fieldID;
+				let totalLostDays;
 				if(innerProp!='ContractNumber' && typeof(innerProp)!==undefined){
 					if(innerProp=='Date'){
-						var fieldID ='#_datepicker_accidentReport'+(parseInt(prop)+1);
+						fieldID ='#_datepicker_accidentReport'+(parseInt(prop)+1);
 						dateMonth= result.AccidentReport[prop]["Date"].substr(3,2);
 						dateYear = result.AccidentReport[prop]["Date"].substr(6,2);
 
 					}else{
-						var fieldID = '#accidentReport'+(parseInt(prop)+1)+innerProp;
+						fieldID = '#accidentReport'+(parseInt(prop)+1)+innerProp;
 					}
 					document.querySelector(fieldID).value = result.AccidentReport[prop][innerProp];
 					switch(innerProp){
 						case 'Type':
-							var type = result.AccidentReport[prop][innerProp];
-							var typeTableID = '#'+getTypeFieldID(type);
-							var currentTypeValue = document.querySelector(typeTableID).value;
-							document.querySelector(typeTableID).value=++currentTypeValue;
+							const type = result.AccidentReport[prop][innerProp];
+							const typeTableID = '#'+getTypeFieldID(type);
+							const currentTypeValue = ++(document.querySelector(typeTableID).value);
+							document.querySelector(typeTableID).value=currentTypeValue;
 							break;
 						case 'Trade':
-							var trade = getTradeCategory(result.AccidentReport[prop][innerProp]);
-							var tradeTableID = '#'+getTradeFieldID(trade);
-							var currentTradeValue = document.querySelector(tradeTableID).value;
-							document.querySelector(tradeTableID).value=++currentTradeValue;
+							const trade = getTradeCategory(result.AccidentReport[prop][innerProp]);
+							const tradeTableID = '#'+getTradeFieldID(trade);
+							const currentTradeValue = ++(document.querySelector(tradeTableID).value);
+							document.querySelector(tradeTableID).value=currentTradeValue;
 							break;
 						case 'LostDays':
-							var newdaysLost =parseInt(result.AccidentReport[prop][innerProp].replace(/[^0-9 ]/g, ""));
-							var lostDaysFieldID='#'+findLostDaysID(dateMonth,dateYear,'nonRiddor');
-							var totalLostDays=parseInt(document.querySelector(lostDaysFieldID).value);
+							const newdaysLost =parseInt(result.AccidentReport[prop][innerProp].replace(/[^0-9 ]/g, ""));
+							const lostDaysFieldID='#'+findLostDaysID(dateMonth,dateYear,'nonRiddor');
+							totalLostDays=parseInt(document.querySelector(lostDaysFieldID).value);
 							if(newdaysLost<7){
 								totalLostDays+=newdaysLost;
 								document.querySelector(lostDaysFieldID).value=totalLostDays;
@@ -3715,10 +2920,9 @@ function populateAccidentReportTbl(){
 							document.querySelector(lostDaysFieldID).setAttribute('value',totalLostDays);
 							break;
 						case 'Riddor':
-							var riddorFieldID='#'+findLostDaysID(dateMonth,dateYear,'riddor');
-							var totalRiddor = parseInt(document.querySelector(riddorFieldID).value);
-							var riddor = parseInt(result.AccidentReport[prop][innerProp]);
-							totalRiddor+=riddor;
+							const riddorFieldID='#'+findLostDaysID(dateMonth,dateYear,'riddor');
+							const riddor = parseInt(result.AccidentReport[prop][innerProp]);
+							const totalRiddor = parseInt(document.querySelector(riddorFieldID).value)+riddor;
 							document.querySelector(riddorFieldID).value=totalRiddor;
 							document.querySelector(riddorFieldID).setAttribute('value',totalLostDays);
 							break;
@@ -3729,13 +2933,9 @@ function populateAccidentReportTbl(){
 	}
 }
 
-function findLostDaysID(month, year, fieldType){
-	var writtenMonth = getMonthName(month);
-	var fieldDate = writtenMonth+year;
-	if(fieldType=='nonRiddor'){
-		var fieldID = 'nonRiddor'+fieldDate;
-	}else{
-		var fieldID = 'riddor'+fieldDate;
-	}
+const findLostDaysID = (month, year, fieldType)=>{
+	const writtenMonth = getMonthName(month);
+	const fieldDate = writtenMonth+year;
+	const fieldID = (fieldType=='nonRiddor')?'nonRiddor'+fieldDate:'riddor'+fieldDate;
 	return fieldID;
 }
