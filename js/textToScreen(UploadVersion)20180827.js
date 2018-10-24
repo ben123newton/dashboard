@@ -1,4 +1,4 @@
-		
+
 const X = XLSX;
 let result = {};
 let con;
@@ -737,18 +737,27 @@ const formatDate = (datetag, rowName)=>{
 	}
 }
 
-const numberformatter  = (val, isFinancial)=>{
-	 const value = isFinancial==true?setCurrency(formatNum(addCommas(parseFloat(val)))):formatNum(addCommas(parseFloat(val)));
+const numberformatter  = (val, type)=>{
+	 const value = type=='financial'?setCurrency(formatNum(addCommas(parseFloat(val)))):
+	 				type=='percentage'?setPercentage(formatNum(addCommas(parseFloat(val)))):
+	 				formatNum(addCommas(parseFloat(val)));
 	 return value;
 }
 
 const formatNum = (val) => {
-    const formattedValue = value < 0 ? '(' + output.replace('-', '') + ')' : output;
+    const formattedValue = val < '0' ? '(' + val.replace('-', '') + ')' : val;
     return formattedValue;
 }
 
+const setPercentage = val =>{
+	const valSize = val.length;	
+	const currencyValue = val.charAt(valSize-1)==')'?substr(0,valSize-1)+'%'+val.substr(valSize-1,valSize):val+'%';
+	return currencyValue;
+}
+
 const setCurrency = val =>{
-	const currencyValue = val.chartAt(0)='('?val.substr(0,1)+'£'+val.substr(1,val.length):'£'+val;
+	const currencyValue = val.charAt(0)=='('?val.substr(0,1)+'£'+val.substr(1,val.length):'£'+val;
+	return currencyValue;
 }
 
 const sortTwoColTable = (tableId)=>{ 
@@ -894,39 +903,39 @@ const populateTables = ()=>{
 
 const populateKpiTable = ()=>{
 	//Adherence to Prelim Budget
-	document.querySelector('#adherencePctTarget').value = result.projectKPIs.AdherenceTgtPct;
-	document.querySelector('#adherenceTarget').value = addCommas(result.projectKPIs.AdherenceTarget);
-	document.querySelector('#adherenceActual').value = addCommas(result.projectKPIs.AdherenceActual);
+	document.querySelector('#adherencePctTarget').value = numberformatter(result.projectKPIs.AdherenceTgtPct,'percentage');
+	document.querySelector('#adherenceTarget').value = numberformatter(result.projectKPIs.AdherenceTarget,'financial');
+	document.querySelector('#adherenceActual').value = numberformatter(result.projectKPIs.AdherenceActual);
 	percentageDifference(parseInt(result.projectKPIs.AdherenceActual),parseInt(result.projectKPIs.AdherenceTarget),'#adherencePctActual');
 	calculateVariance(document.querySelector('#adherencePctActual').value,result.projectKPIs.AdherenceTgtPct, '#adherencePctVariance');
 	calculateVariance(result.projectKPIs.AdherenceActual, result.projectKPIs.AdherenceTarget, '#adherenceVariance' );
 	//Monthly Predictability of Cash Flow
-	document.querySelector('#monthlyCashflowPctTarget').value = result.projectKPIs.MonthlyCashFlowPredTgtPct;
-	document.querySelector('#monthlyCashflowTarget').value = addCommas(result.valueInformation.MonthlyForecastTurnover);//same as forecastMTurnover
-	document.querySelector('#monthlyCashflowActual').value = addCommas(result.valueInformation.ValInMonthTurnover);//same as valMTurnover
+	document.querySelector('#monthlyCashflowPctTarget').value = numberformatter(result.projectKPIs.MonthlyCashFlowPredTgtPct,'percentage');
+	document.querySelector('#monthlyCashflowTarget').value = numberformatter(result.valueInformation.MonthlyForecastTurnover,'financial');//same as forecastMTurnover
+	document.querySelector('#monthlyCashflowActual').value = numberformatter(result.valueInformation.ValInMonthTurnover,'financial');//same as valMTurnover
 	calculateVariance(result.valueInformation.ValInMonthTurnover, result.valueInformation.MonthlyForecastTurnover, '#monthlyCashflowVariance' );
 	percentageDifference(result.valueInformation.ValInMonthTurnover,result.valueInformation.MonthlyForecastTurnover,'#monthlyCashflowPctActual')
 	calculatePercentageVariance(document.querySelector('#monthlyCashflowPctActual').value, result.projectKPIs.MonthlyCashFlowPredTgtPct, '#monthlyCashflowPctVariance' );
 	//Quarterly Predictability of Cash Flow
-	document.querySelector('#qtrCashflowPctTarget').value = result.projectKPIs.QtrCashFlowPredTgtPct;
-	document.querySelector('#qtrCashflowTarget').value = addCommas(result.valueInformation.ForecastForQuarterTurnover);//same as forecastMTurnover
-	document.querySelector('#qtrCashflowActual').value = addCommas(result.valueInformation.ValInQuarterTurnover);//same as valMTurnover
+	document.querySelector('#qtrCashflowPctTarget').value = numberformatter(result.projectKPIs.QtrCashFlowPredTgtPct,'percentage');
+	document.querySelector('#qtrCashflowTarget').value = numberformatter(result.valueInformation.ForecastForQuarterTurnover,'financial');//same as forecastMTurnover
+	document.querySelector('#qtrCashflowActual').value = numberformatter(result.valueInformation.ValInQuarterTurnover,'financial');//same as valMTurnover
 	calculateVariance(result.valueInformation.ValInQuarterTurnover, result.valueInformation.ForecastForQuarterTurnover, '#qtrCashflowVariance' );
 	percentageDifference(result.valueInformation.ValInQuarterTurnover,result.valueInformation.ForecastForQuarterTurnover,'#qtrCashflowPctActual')
 	calculatePercentageVariance(document.querySelector('#qtrCashflowPctActual').value, result.projectKPIs.QtrCashFlowPredTgtPct, '#qtrCashflowPctVariance' );
 	//Non-Recoverable Works
-	document.querySelector('#nonRecWorksPctTarget').value = result.projectKPIs.NonRecWorksTgtPct;
+	document.querySelector('#nonRecWorksPctTarget').value = numberformatter(result.projectKPIs.NonRecWorksTgtPct,'percentage');
 	document.querySelector('#nonRecWorksPctActual').value = ((result.projectKPIs.NonRecWorksActPct)*100).toFixed(0);
 	document.querySelector('#nonRecWorksTarget').value = '£0';
-	document.querySelector('#nonRecWorksActual').value = addCommas(result.projectKPIs.NonRecoverableWorks);
+	document.querySelector('#nonRecWorksActual').value = numberformatter(result.projectKPIs.NonRecoverableWorks,'financial');
 	calculateVariance(result.projectKPIs.NonRecoverableWorks, document.querySelector('#nonRecWorksTarget').value, '#nonRecWorksVariance');
 	calculatePercentageVariance(document.querySelector('#nonRecWorksPctActual').value, result.projectKPIs.NonRecWorksTgtPct, '#nonRecWorksPctVariance' );
 	//Predicability of Programme
 	document.querySelector('#predOfProgramTarget').value = 100;
-	document.querySelector('#predOfProgramActual').value = addCommas(result.projectKPIs.PredOfProgrammeAct);
+	document.querySelector('#predOfProgramActual').value = numberformatter(result.projectKPIs.PredOfProgrammeAct,'financial');
 	calculatePercentageVariance(result.projectKPIs.PredOfProgrammeAct,document.querySelector('#predOfProgramTarget').value,  '#predOfProgramVariance' );
 	//HS Audit Score
-	document.querySelector('#HSAuditPctTarget').value = result.projectKPIs.HAuditScoreTgtPct;
+	document.querySelector('#HSAuditPctTarget').value = numberformatter(result.projectKPIs.HAuditScoreTgtPct,'percentage');
 	HSMonthlyAuditAvgPct();
 	calculatePercentageVariance(document.querySelector('#HSAuditPctActual').value,document.querySelector('#HSAuditPctTarget').value,'#HSAuditPctVariance');
 
@@ -1040,7 +1049,7 @@ const populateProgressTbl = ()=>{
 //calculation functions
 const calculateVariance = (fig1, fig2, targetField)=>{
 	const difference = (parseFloat(fig1.replace(/,/g, '')) - parseFloat(fig2.replace(/,/g, ''))).toFixed(0);
-	const numericVariance =formatNum(difference,true);
+	const numericVariance =numberformatter(difference,'financial');
 	document.querySelector(targetField).value = numericVariance
 	moreThanZero(targetField);
 }
@@ -1310,18 +1319,18 @@ const createCompletionDatesTbl = ()=>{
 
 //summary section - fill tables
 const populateValuationInfoTbl = ()=>{
-	document.querySelector('#valTurnover').value = formatNum(result.valueInformation.ValtoDateTurnover,true);
-	document.querySelector('#valMargin').value = formatNum(result.valueInformation.ValtoDateMargin,true);
-	document.querySelector('#monthlyValTurnover').value = formatNum(result.valueInformation.ValInMonthTurnover,true);
-	document.querySelector('#monthlyValMargin').value = formatNum(result.valueInformation.ValInMonthMargin,true);
-	document.querySelector('#monthlyForecastTurnover').value = formatNum(result.valueInformation.MonthlyForecastTurnover,true);
-	document.querySelector('#monthlyForecastMargin').value = formatNum(result.valueInformation.MonthlyForecastMargin,true);
+	document.querySelector('#valTurnover').value = numberformatter(result.valueInformation.ValtoDateTurnover,'financial');
+	document.querySelector('#valMargin').value = numberformatter(result.valueInformation.ValtoDateMargin,'financial');
+	document.querySelector('#monthlyValTurnover').value = numberformatter(result.valueInformation.ValInMonthTurnover,'financial');
+	document.querySelector('#monthlyValMargin').value = numberformatter(result.valueInformation.ValInMonthMargin,'financial');
+	document.querySelector('#monthlyForecastTurnover').value = numberformatter(result.valueInformation.MonthlyForecastTurnover,'financial');
+	document.querySelector('#monthlyForecastMargin').value = numberformatter(result.valueInformation.MonthlyForecastMargin,'financial');
 	calculateVariance(result.valueInformation.ValInMonthTurnover, result.valueInformation.MonthlyForecastTurnover , '#monthlyVarianceTurnover');
 	calculateVariance(result.valueInformation.ValInMonthMargin, result.valueInformation.MonthlyForecastMargin, '#monthlyVarianceMargin');
-	document.querySelector('#qtrValueTurnover').value = formatNum(result.valueInformation.ValInQuarterTurnover,true);
-	document.querySelector('#qtrValueMargin').value = formatNum(result.valueInformation.ValInQuarterMargin,true);
-	document.querySelector('#qtrForecastTurnover').value = formatNum(result.valueInformation.ForecastForQuarterTurnover,true);
-	document.querySelector('#qtrForecastMargin').value = formatNum(result.valueInformation.ForecastForQuarterMargin,true);
+	document.querySelector('#qtrValueTurnover').value = numberformatter(result.valueInformation.ValInQuarterTurnover,'financial');
+	document.querySelector('#qtrValueMargin').value = numberformatter(result.valueInformation.ValInQuarterMargin,'financial');
+	document.querySelector('#qtrForecastTurnover').value = numberformatter(result.valueInformation.ForecastForQuarterTurnover,'financial');
+	document.querySelector('#qtrForecastMargin').value = numberformatter(result.valueInformation.ForecastForQuarterMargin,'financial');
 	calculateVariance(result.valueInformation.ValInQuarterTurnover, result.valueInformation.ForecastForQuarterTurnover, '#qtrVarianceTurnover');
 	calculateVariance(result.valueInformation.ValInQuarterMargin, result.valueInformation.ForecastForQuarterMargin, '#qtrVarianceMargin');
 	document.querySelector('#weeksCompleted').value = weeksCompleted;
@@ -1341,10 +1350,10 @@ const populateOverheadContributionTbl = ()=>{
 			const dataRef=(j==0)?'Gross'+ tblRows[i]:'Movement'+ tblRows[i];
 			const fieldID=(j==0)?'#'+tblRows[i].toLowerCase()+'Gross':'#'+tblRows[i].toLowerCase()+'Movement';
 			if(dataRef.includes('Total')){
-				document.querySelector(fieldID).value = formatNum(overheadData[dataRef],true);
+				document.querySelector(fieldID).value = numberformatter(overheadData[dataRef],'financial');
 				moreThanZero(fieldID);
 			}else{
-				document.querySelector(fieldID).value= formatNum(overheadData[dataRef],true);
+				document.querySelector(fieldID).value= numberformatter(overheadData[dataRef],'financial');
 			}
 		}
 	}
