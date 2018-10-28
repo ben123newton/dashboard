@@ -13,56 +13,56 @@
 	</head>
 	<body class="dashboard">
 		<div id='testdiv' class='testDiv'></div>
-    	<form name="contractDashboard">
-			<div class='navbar-fixed' >
-				<nav>
-					<div class="nav-wrapper">
-						<ul>
-	  						<li><a href='#' data-target='slide-out' class='sidenav-trigger show-on-large'><i class='material-icons'>menu</i></a></li>
-		  				</ul>
-		  			</div>
-		  		</nav>
-			</div>
-			<ul id='slide-out' class='sidenav'>
-	    		<li>
-	    			<div class="user-view">
-						<a href="#!user"><img src="/img/higgins/images/clientlogo2.png"></a>
-	    			</div>
-	    		</li>
-	    		<li><a class="subheader">Summary</a></li>
-	    		<li><a href='#summary-page' onclick='hideSections("summary-page")'><i class='material-icons'>dashboard</i>Summary</a></li>
-	    		
-	    		<li><a class="subheader">Graphs</a></li>
-	    		<li><a href='#progressGraphs' onclick='hideSections("progressGraphs")'><i class='material-icons'>trending_up</i>Progress</a></li>
-	    		<li><a href='#financialGraph' onclick='hideSections("financialGraph")'><i class='material-icons'>attach_money</i>Financial</a></li>
-				<li><a href='#ccsCosts' onclick='hideSections("ccsCosts")'><i class='material-icons'>credit_card</i>CCS&amp;Cost</a></li>
-				<li><a href="#subcontractorGraphs" onclick='hideSections("subcontractorGraphs")'><i class='material-icons'>assessment</i>Sub-Contractor Finance</a></li>
-				<li><a href='#hsGraphs' onclick='hideSections("hsGraphs")'><i class='material-icons'>assignment_turned_in</i>Health &amp; Safety</a></li>
-				<li><a href='#timeValueGraphs' onclick='hideSections("timeValueGraphs")')><i class='material-icons'>query_builder</i>TimeValue</a></li>
-	    		
-	    		<li><a class="subheader">Data</a></li>    		
-	    		<li><a href='#projectKPIs' onclick='hideSections("projectKPIs")'><i class='material-icons'>tune</i>Project KPI</a></li>
-	    		<li><a href='#progress' onclick='hideSections("progress")'><i class='material-icons'>trending_up</i>Progress</a></li>
-	    		<li><a href='#financialData' onclick='hideSections("financialData")'><i class='material-icons'>attach_money</i>Financial Data</a></li>
-	    		<li><a href="#subContractorData" onclick='hideSections("subContractorData")'><i class='material-icons'>assignment</i>Sub-Contractor Finance</a></li>
-	    		<li><a href='#hsData' onclick='hideSections("hsData")'><i class='material-icons'>assignment_turned_in</i>Health &amp; Safety</a></li>
-	  		</ul>
-	  		<div class='input-field inline' id='inputData'>
-	        	<input id="contractNumber" type="text" class="validate" onchange="conNum()">
-	        	<label for="contractNumber">Contract Number</label>
-	        	<div class="file-field input-field">
-	        		<div class="btn">
-	        			<span>File</span>
-	        			<input type="file" name="xlfile" id="xlf" accept=".xls, .xlsx" />
-	        		</div>
-	        		<div class="file-path-wrapper">
-	        			<input class="file-path validate" type="text">
-	      			</div>
-	        	</div>	
-				<select name="format" onchange="setfmt()">
-					<option value="json" selected> JSON</option>
-				</select>
-			</div>
+		<div class='navbar-fixed' >
+			<nav>
+				<div class="nav-wrapper">
+					<ul>
+  						<li><a href='#' data-target='slide-out' class='sidenav-trigger show-on-large'><i class='material-icons'>menu</i></a></li>
+	  				</ul>
+	  			</div>
+	  		</nav>
+		</div>
+		<ul id='slide-out' class='sidenav'>
+    		<li>
+    			<div class="user-view">
+					<img src="./images/logoHere.jpg">
+    			</div>
+    		</li>
+    		<li><a class="subheader">Summary</a></li>
+    		<li><a href='#summary-page' onclick='hideSections("summary-page")'><i class='material-icons'>dashboard</i>Summary</a></li>
+    		
+    		<li><a class="subheader">Graphs</a></li>
+    		<li><a href='#progressGraphs' onclick='hideSections("progressGraphs")'><i class='material-icons'>trending_up</i>Progress</a></li>
+    		<li><a href='#financialGraph' onclick='hideSections("financialGraph")'><i class='material-icons'>attach_money</i>Financial</a></li>
+			<li><a href='#ccsCosts' onclick='hideSections("ccsCosts")'><i class='material-icons'>credit_card</i>CCS&amp;Cost</a></li>
+			<li><a href="#subcontractorGraphs" onclick='hideSections("subcontractorGraphs")'><i class='material-icons'>assessment</i>Sub-Contractor Finance</a></li>
+			<li><a href='#hsGraphs' onclick='hideSections("hsGraphs")'><i class='material-icons'>assignment_turned_in</i>Health &amp; Safety</a></li>
+			<li><a href='#timeValueGraphs' onclick='hideSections("timeValueGraphs")')><i class='material-icons'>query_builder</i>TimeValue</a></li>
+    		
+    		<li><a class="subheader">Data</a></li>    		
+    		<li><a href='#projectKPIs' onclick='hideSections("projectKPIs")'><i class='material-icons'>tune</i>Project KPI</a></li>
+    		<li><a href='#progress' onclick='hideSections("progress")'><i class='material-icons'>trending_up</i>Progress</a></li>
+    		<li><a href='#financialData' onclick='hideSections("financialData")'><i class='material-icons'>attach_money</i>Financial Data</a></li>
+    		<li><a href="#subContractorData" onclick='hideSections("subContractorData")'><i class='material-icons'>assignment</i>Sub-Contractor Finance</a></li>
+    		<li><a href='#hsData' onclick='hideSections("hsData")'><i class='material-icons'>assignment_turned_in</i>Health &amp; Safety</a></li>
+  		</ul>
+  		<div class='input-field inline' id='inputData'>
+        	<input id="contractNumber" type="text" class="validate" onchange="conNum()">
+        	<label for="contractNumber">Contract Number</label>
+        	<div class="file-field input-field">
+        		<div class="btn">
+        			<span>File</span>
+        			<input type="file" name="xlfile" id="xlf" accept=".xls, .xlsx" />
+        		</div>
+        		<div class="file-path-wrapper">
+        			<input class="file-path validate" type="text">
+      			</div>
+        	</div>	
+			<select name="format" onchange="setfmt()">
+				<option value="json" selected> JSON</option>
+			</select>
+		</div>
+    	<form name="contractDashboard" id="contractDashboard">
 			<section id='summary-page'>
 		    </section>
 		    <section id='progressGraphs'>

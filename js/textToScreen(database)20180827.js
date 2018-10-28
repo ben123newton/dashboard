@@ -72,7 +72,8 @@ const to_json = workbook=> {
 	populateTables();
 	createGraphsContent();
 	//createGraphs();
-	//createEnforcementActionTbl()
+	//createEnforcementActionTbl()();
+	hideSections('summary-page');
 	return result;
 }
 
@@ -583,7 +584,7 @@ const hideSections = sectionName=>{
 	for (let i=0;i<section.length;i++){
 		(sectionName!=section[i])? document.querySelector('#'+section[i]).style.display = "none":document.querySelector('#'+section[i]).style.display = "block";
 	}
-	document.body.scrollTop = 0;
+	document.body.scrollTop = 200;
 }
 
 const hideInput = ()=>{
